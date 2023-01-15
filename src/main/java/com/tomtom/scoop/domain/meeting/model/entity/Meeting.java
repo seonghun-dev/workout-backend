@@ -6,6 +6,7 @@ import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import org.springframework.data.geo.Point;
 
 import java.time.LocalDateTime;
 
@@ -40,6 +41,9 @@ public class Meeting extends BaseTimeEntity {
 
     @Column(nullable = false)
     private LocalDateTime eventDate;
+
+    @Column(nullable = false)
+    private Point location;
 
     @Column(nullable = false)
     private Integer viewCount;
