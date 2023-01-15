@@ -16,6 +16,7 @@ import java.time.LocalDateTime;
 public class Meeting extends BaseTimeEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "meeting_id")
     private Long id;
 
     @Column(nullable = false, columnDefinition = "VARCHAR(255)")
