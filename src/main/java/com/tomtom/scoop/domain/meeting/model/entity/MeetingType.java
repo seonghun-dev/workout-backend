@@ -14,7 +14,7 @@ public class MeetingType {
     @Id
     @Column(name = "meeting_type_id")
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private String id;
+    private Long id;
 
     @Column(nullable = false, columnDefinition = "VARCHAR(255)")
     private String name;
