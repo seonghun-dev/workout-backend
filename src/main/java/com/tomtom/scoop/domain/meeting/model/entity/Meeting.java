@@ -22,6 +22,10 @@ public class Meeting extends BaseTimeEntity {
     @Column(nullable = false, columnDefinition = "VARCHAR(255)")
     private String title;
 
+    @ManyToOne
+    @JoinColumn(name = "meeting_type_id")
+    private MeetingType meetingType;
+
     @Column(nullable = false)
     private Integer memberLimit;
 
@@ -39,6 +43,10 @@ public class Meeting extends BaseTimeEntity {
 
     @Column(nullable = false)
     private Integer viewCount;
+
+    public void setMeetingType(MeetingType meetingType) {
+        this.meetingType = meetingType;
+    }
 
     public Meeting(MeetingDto.request meetingDto) {
         this.title = meetingDto.getTitle();
