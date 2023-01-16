@@ -41,4 +41,7 @@ public class User {
     @Column(columnDefinition = "VARCHAR(255)")
     private String profileImg;
 
+    @OneToMany(mappedBy = "user")
+    private List<UserExerciseLevel> userExerciseLevels;
+
 }
