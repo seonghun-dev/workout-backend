@@ -3,6 +3,7 @@ package com.tomtom.scoop.domain.meeting.model.entity;
 import com.tomtom.scoop.domain.common.BaseTimeEntity;
 import com.tomtom.scoop.domain.common.Gender;
 import com.tomtom.scoop.domain.meeting.model.dto.MeetingDto;
+import com.tomtom.scoop.domain.user.model.entity.User;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -20,6 +21,10 @@ public class Meeting extends BaseTimeEntity {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "meeting_id")
     private Long id;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "user_id")
+    private User user;
 
     @Column(nullable = false, columnDefinition = "VARCHAR(255)")
     private String title;
