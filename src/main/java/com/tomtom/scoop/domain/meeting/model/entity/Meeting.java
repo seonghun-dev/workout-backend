@@ -52,6 +52,9 @@ public class Meeting extends BaseTimeEntity {
     private Point location;
 
     @Column(nullable = false)
+    private String locationName;
+
+    @Column(nullable = false)
     private Integer viewCount;
 
     public void setMeetingType(MeetingType meetingType) {
