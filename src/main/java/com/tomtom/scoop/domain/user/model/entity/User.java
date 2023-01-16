@@ -44,4 +44,7 @@ public class User {
     @OneToMany(mappedBy = "user")
     private List<UserExerciseLevel> userExerciseLevels;
 
+    @OneToMany(mappedBy = "user")
+    private List<UserLocation> userLocations;
+
 }
