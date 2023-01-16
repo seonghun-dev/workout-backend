@@ -47,4 +47,7 @@ public class User {
     @OneToMany(mappedBy = "user")
     private List<UserLocation> userLocations;
 
+    @OneToMany(mappedBy = "user")
+    private List<UserKeyword> userKeywords;
+
 }
