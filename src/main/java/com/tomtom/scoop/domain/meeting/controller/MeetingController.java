@@ -67,6 +67,12 @@ public class MeetingController {
         return meetingService.findLikeMeetingByUser(userId);
     }
 
+    @GetMapping("/search")
+    @ResponseBody
+    public List<MeetingDto.response> searchMeetingByKeyword(@RequestParam("keyword") String keyword) {
+        return meetingService.searchMeetingByKeyword(keyword);
+    }
+
 
 
 }

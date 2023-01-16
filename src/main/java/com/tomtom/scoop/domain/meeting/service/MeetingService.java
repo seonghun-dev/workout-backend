@@ -120,4 +120,18 @@ public class MeetingService {
         )).toList();
     }
 
+    public List<MeetingDto.response> searchMeetingByKeyword(String keyword) {
+        List<Meeting> meetings = meetingRepository.findAll();
+        return meetings.stream().map(meeting -> new MeetingDto.response(
+                meeting.getId(),
+                meeting.getTitle(),
+                meeting.getMemberLimit(),
+                meeting.getContent(),
+                meeting.getGender(),
+                meeting.getImgUrl(),
+                meeting.getEventDate(),
+                meeting.getCreatedAt()
+        )).toList();
+    }
+
 }
