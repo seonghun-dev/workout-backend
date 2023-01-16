@@ -1,6 +1,6 @@
 package com.tomtom.scoop.domain.meeting.model.dto;
 
-import com.tomtom.scoop.domain.meeting.model.entity.Gender;
+import com.tomtom.scoop.domain.common.Gender;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
