@@ -78,4 +78,46 @@ public class MeetingService {
         )).toList();
     }
 
+    public List<MeetingDto.response> findUpcomingMeetingByUser(Long userId) {
+        List<Meeting> meetings = meetingRepository.findAll();
+        return meetings.stream().map(meeting -> new MeetingDto.response(
+                meeting.getId(),
+                meeting.getTitle(),
+                meeting.getMemberLimit(),
+                meeting.getContent(),
+                meeting.getGender(),
+                meeting.getImgUrl(),
+                meeting.getEventDate(),
+                meeting.getCreatedAt()
+        )).toList();
+    }
+
+    public List<MeetingDto.response> findPastMeetingByUser(Long userId) {
+        List<Meeting> meetings = meetingRepository.findAll();
+        return meetings.stream().map(meeting -> new MeetingDto.response(
+                meeting.getId(),
+                meeting.getTitle(),
+                meeting.getMemberLimit(),
+                meeting.getContent(),
+                meeting.getGender(),
+                meeting.getImgUrl(),
+                meeting.getEventDate(),
+                meeting.getCreatedAt()
+        )).toList();
+    }
+
+    public List<MeetingDto.response> findLikeMeetingByUser(Long userId) {
+        List<Meeting> meetings = meetingRepository.findAll();
+        return meetings.stream().map(meeting -> new MeetingDto.response(
+                meeting.getId(),
+                meeting.getTitle(),
+                meeting.getMemberLimit(),
+                meeting.getContent(),
+                meeting.getGender(),
+                meeting.getImgUrl(),
+                meeting.getEventDate(),
+                meeting.getCreatedAt()
+        )).toList();
+    }
+
 }
