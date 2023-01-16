@@ -22,12 +22,10 @@ public class Review extends BaseTimeEntity {
     private Meeting meeting;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "user_id")
-    private User receiverUser;
+    private User receiver;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "user_id")
-    private User reviewerUser;
+    private User reviewer;
 
     @Column(nullable = false)
     private Integer rating;
