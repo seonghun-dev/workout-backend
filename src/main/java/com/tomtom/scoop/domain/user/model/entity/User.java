@@ -17,6 +17,9 @@ public class User {
     private Long id;
 
     @Column(columnDefinition = "VARCHAR(255)")
+    private String oauthId;
+
+    @Column(columnDefinition = "VARCHAR(255)")
     private String name;
 
     @Column(columnDefinition = "VARCHAR(255)")
@@ -49,5 +52,13 @@ public class User {
 
     @OneToMany(mappedBy = "user")
     private List<UserKeyword> userKeywords;
+
+    private User(String oauthId) {
+        this.oauthId = oauthId;
+    }
+
+    public static User of(String oauthId){
+        return new User(oauthId);
+    }
 
 }
