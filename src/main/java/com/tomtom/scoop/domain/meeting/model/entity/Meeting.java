@@ -1,6 +1,7 @@
 package com.tomtom.scoop.domain.meeting.model.entity;
 
 import com.tomtom.scoop.domain.common.BaseTimeEntity;
+import com.tomtom.scoop.domain.common.Gender;
 import com.tomtom.scoop.domain.meeting.model.dto.MeetingDto;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;

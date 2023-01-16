@@ -1,5 +1,6 @@
 package com.tomtom.scoop.domain.user.model.dto;
 
+import com.tomtom.scoop.domain.common.Gender;
 import com.tomtom.scoop.domain.user.model.entity.*;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;

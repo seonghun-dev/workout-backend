@@ -1,5 +1,6 @@
 package com.tomtom.scoop.domain.user.model.entity;
 
+import com.tomtom.scoop.domain.common.Gender;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
