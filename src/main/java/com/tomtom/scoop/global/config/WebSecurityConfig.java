@@ -1,6 +1,7 @@
 package com.tomtom.scoop.global.config;
 
 import com.tomtom.scoop.global.security.OAuthService;
+import com.tomtom.scoop.global.security.OAuthSuccessHandler;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -14,6 +15,7 @@ import org.springframework.security.web.SecurityFilterChain;
 public class WebSecurityConfig{
 
     private final OAuthService oAuthService;
+    private final OAuthSuccessHandler oAuthSuccessHandler;
 
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception{
@@ -28,7 +30,9 @@ public class WebSecurityConfig{
                 .oauth2Login()
                 .defaultSuccessUrl("/")
                 .userInfoEndpoint()
-                .userService(oAuthService);
+                .userService(oAuthService)
+                .and()
+                .successHandler(oAuthSuccessHandler);
         return http.build();
 
     }
