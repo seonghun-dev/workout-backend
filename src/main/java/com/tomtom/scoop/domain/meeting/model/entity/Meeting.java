@@ -11,6 +11,7 @@ import lombok.NoArgsConstructor;
 import org.locationtech.jts.geom.Point;
 
 import java.time.LocalDateTime;
+import java.util.List;
 
 @Getter
 @NoArgsConstructor
@@ -56,6 +57,12 @@ public class Meeting extends BaseTimeEntity {
 
     @Column(nullable = false)
     private Integer viewCount;
+
+    @OneToMany(mappedBy = "meeting")
+    private List<MeetingLike> meetingLikes;
+
+    @OneToMany(mappedBy = "meeting")
+    private List<UserMeeting> userMeetings;
 
     public void setMeetingType(MeetingType meetingType) {
         this.meetingType = meetingType;
