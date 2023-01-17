@@ -64,10 +64,6 @@ public class Meeting extends BaseTimeEntity {
     @OneToMany(mappedBy = "meeting")
     private List<UserMeeting> userMeetings;
 
-    public void setMeetingType(MeetingType meetingType) {
-        this.meetingType = meetingType;
-    }
-
     public Meeting(MeetingDto.request meetingDto) {
         this.title = meetingDto.getTitle();
         this.memberLimit = meetingDto.getMemberLimit();
@@ -75,6 +71,10 @@ public class Meeting extends BaseTimeEntity {
         this.gender = Gender.BOTH;
         this.imgUrl = meetingDto.getImgUrl();
         this.viewCount = 0;
+    }
+
+    public void setMeetingType(MeetingType meetingType) {
+        this.meetingType = meetingType;
     }
 
 }

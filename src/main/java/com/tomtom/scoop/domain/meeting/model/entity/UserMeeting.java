@@ -27,5 +27,4 @@ public class UserMeeting extends BaseTimeEntity {
     private MeetingStatus status;
 
 
-
 }
