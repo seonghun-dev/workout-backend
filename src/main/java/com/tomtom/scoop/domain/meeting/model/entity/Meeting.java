@@ -3,6 +3,7 @@ package com.tomtom.scoop.domain.meeting.model.entity;
 import com.tomtom.scoop.domain.common.BaseTimeEntity;
 import com.tomtom.scoop.domain.common.Gender;
 import com.tomtom.scoop.domain.meeting.model.dto.MeetingDto;
+import com.tomtom.scoop.domain.user.model.entity.ExerciseLevel;
 import com.tomtom.scoop.domain.user.model.entity.User;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
@@ -50,19 +51,21 @@ public class Meeting extends BaseTimeEntity {
     private LocalDateTime eventDate;
 
     @Column(nullable = false)
-    private Point location;
-
-    @Column(nullable = false)
-    private String locationName;
-
-    @Column(nullable = false)
     private Integer viewCount;
+
+    @OneToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "meeting_location_id")
+    private MeetingLocation meetingLocation;
 
     @OneToMany(mappedBy = "meeting")
     private List<MeetingLike> meetingLikes;
 
     @OneToMany(mappedBy = "meeting")
     private List<UserMeeting> userMeetings;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "exercise_level_id")
+    private ExerciseLevel exerciseLevel;
 
     public Meeting(MeetingDto.request meetingDto) {
         this.title = meetingDto.getTitle();
