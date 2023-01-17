@@ -1,7 +1,5 @@
-package com.tomtom.scoop.domain.user.service;
+package com.tomtom.scoop.global.security;
 
-import com.tomtom.scoop.domain.user.model.dto.OAuthAttributes;
-import com.tomtom.scoop.domain.user.model.dto.UserProfile;
 import com.tomtom.scoop.domain.user.model.entity.User;
 import com.tomtom.scoop.domain.user.repository.UserRepository;
 import lombok.RequiredArgsConstructor;

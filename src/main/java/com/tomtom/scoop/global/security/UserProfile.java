@@ -1,4 +1,4 @@
-package com.tomtom.scoop.domain.user.model.dto;
+package com.tomtom.scoop.global.security;
 
 import com.tomtom.scoop.domain.user.model.entity.User;
 import lombok.Getter;

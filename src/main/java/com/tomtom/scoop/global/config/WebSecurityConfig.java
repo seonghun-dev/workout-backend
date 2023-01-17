@@ -1,6 +1,6 @@
 package com.tomtom.scoop.global.config;
 
-import com.tomtom.scoop.domain.user.service.OAuthService;
+import com.tomtom.scoop.global.security.OAuthService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;

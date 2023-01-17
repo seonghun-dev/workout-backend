@@ -1,4 +1,4 @@
-package com.tomtom.scoop.domain.user.model.dto;
+package com.tomtom.scoop.global.security;
 
 import java.util.Arrays;
 import java.util.Map;
