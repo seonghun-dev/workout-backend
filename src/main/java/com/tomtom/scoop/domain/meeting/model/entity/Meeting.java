@@ -3,6 +3,8 @@ package com.tomtom.scoop.domain.meeting.model.entity;
 import com.tomtom.scoop.domain.common.BaseTimeEntity;
 import com.tomtom.scoop.domain.common.Gender;
 import com.tomtom.scoop.domain.meeting.model.dto.MeetingDto;
+import com.tomtom.scoop.domain.user.model.entity.ExerciseLevel;
+import com.tomtom.scoop.domain.user.model.entity.User;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -10,6 +12,7 @@ import lombok.NoArgsConstructor;
 import org.locationtech.jts.geom.Point;
 
 import java.time.LocalDateTime;
+import java.util.List;
 
 @Getter
 @NoArgsConstructor
@@ -20,6 +23,10 @@ public class Meeting extends BaseTimeEntity {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "meeting_id")
     private Long id;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "user_id")
+    private User user;
 
     @Column(nullable = false, columnDefinition = "VARCHAR(255)")
     private String title;
@@ -44,14 +51,21 @@ public class Meeting extends BaseTimeEntity {
     private LocalDateTime eventDate;
 
     @Column(nullable = false)
-    private Point location;
-
-    @Column(nullable = false)
     private Integer viewCount;
 
-    public void setMeetingType(MeetingType meetingType) {
-        this.meetingType = meetingType;
-    }
+    @OneToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "meeting_location_id")
+    private MeetingLocation meetingLocation;
+
+    @OneToMany(mappedBy = "meeting")
+    private List<MeetingLike> meetingLikes;
+
+    @OneToMany(mappedBy = "meeting")
+    private List<UserMeeting> userMeetings;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "exercise_level_id")
+    private ExerciseLevel exerciseLevel;
 
     public Meeting(MeetingDto.request meetingDto) {
         this.title = meetingDto.getTitle();
@@ -60,6 +74,10 @@ public class Meeting extends BaseTimeEntity {
         this.gender = Gender.BOTH;
         this.imgUrl = meetingDto.getImgUrl();
         this.viewCount = 0;
+    }
+
+    public void setMeetingType(MeetingType meetingType) {
+        this.meetingType = meetingType;
     }
 
 }
