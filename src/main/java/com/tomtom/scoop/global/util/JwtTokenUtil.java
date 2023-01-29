@@ -41,19 +41,19 @@ public class JwtTokenUtil {
 
 
     public static String generateAccessToken(String oauthId, String key, long expireTime) {
+        return createToken(oauthId, key, expireTime);
+    }
+
+    public static String generateRefreshToken(String oauthId, String key, long expireTime){
+        return createToken(oauthId, key, expireTime);
+    }
+
+    private static String createToken(String oauthId, String key, long expireTime) {
         Claims claims = Jwts.claims();
         claims.put("oauthId", oauthId);
 
         return Jwts.builder()
                 .setClaims(claims)
-                .setIssuedAt(new Date(System.currentTimeMillis()))
-                .setExpiration(new Date(System.currentTimeMillis() + expireTime))
-                .signWith(getSigningKey(key), SignatureAlgorithm.HS256)
-                .compact();
-    }
-
-    public static String generateRefreshToken(String oauthId, String key, long expireTime){
-        return Jwts.builder()
                 .setIssuedAt(new Date(System.currentTimeMillis()))
                 .setExpiration(new Date(System.currentTimeMillis() + expireTime))
                 .signWith(getSigningKey(key), SignatureAlgorithm.HS256)
