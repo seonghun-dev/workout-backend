@@ -3,6 +3,7 @@ package com.tomtom.scoop.domain.user.service;
 import com.tomtom.scoop.domain.user.model.dto.UserDto;
 import com.tomtom.scoop.domain.user.model.entity.User;
 import com.tomtom.scoop.domain.user.repository.UserRepository;
+import com.tomtom.scoop.global.security.CustomUserDetails;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
@@ -17,8 +18,8 @@ public class UserService {
 
 
     @Transactional(readOnly = true)
-    public UserDto.response loadUserByOauthId(String oauthId) throws UsernameNotFoundException {
-        return userRepository.findByOauthId(oauthId).map(findUser -> new UserDto.response(findUser)).orElseThrow(
+    public CustomUserDetails loadUserByOauthId(String oauthId) throws UsernameNotFoundException {
+        return userRepository.findByOauthId(oauthId).map(findUser -> new CustomUserDetails(findUser)).orElseThrow(
                 () -> new IllegalArgumentException()
         );
         
