@@ -9,6 +9,7 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpHeaders;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -19,33 +20,31 @@ import org.springframework.web.filter.OncePerRequestFilter;
 import java.io.IOException;
 
 @Slf4j
-@RequiredArgsConstructor
 public class JwtTokenFilter extends OncePerRequestFilter {
-    private final UserService userService;
-    private final String secretKey;
+    @Autowired
+    private CustomUserDetailsService userDetailsService;
 
+    @Autowired
+    private JwtTokenUtil jwtTokenUtil;
 
     @Override
     protected void doFilterInternal(HttpServletRequest request,
                                     HttpServletResponse response,
                                     FilterChain chain)
             throws ServletException, IOException {
-        final String header = request.getHeader(HttpHeaders.AUTHORIZATION);
-        final String token;
         try {
-            if (header == null || !header.startsWith("Bearer ")) {
-                log.error(header);
+            final String token = jwtTokenUtil.resolveToken(request);
+
+            if (token == null) {
                 log.error("Authorization Header does not start with Bearer {}", request.getRequestURI());
                 chain.doFilter(request, response);
                 return;
             }
 
-            token = header.split(" ")[1].trim();
+            String oauthId = jwtTokenUtil.getOauthId(token);
+            CustomUserDetails userDetails = (CustomUserDetails) userDetailsService.loadUserByUsername(oauthId);
 
-            String oauthId = JwtTokenUtil.getOauthId(token, secretKey);
-            CustomUserDetails userDetails = userService.loadUserByOauthId(oauthId);
-
-            if (!JwtTokenUtil.validate(token, userDetails.getOauthId(), secretKey)) {
+            if (!jwtTokenUtil.validate(token, userDetails.getOauthId())) {
                 chain.doFilter(request, response);
                 return;
             }

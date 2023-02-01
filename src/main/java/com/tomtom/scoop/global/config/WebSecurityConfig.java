@@ -1,9 +1,11 @@
 package com.tomtom.scoop.global.config;
 
 import com.tomtom.scoop.domain.user.service.UserService;
+import com.tomtom.scoop.global.security.CustomUserDetailsService;
 import com.tomtom.scoop.global.security.JwtTokenFilter;
 import com.tomtom.scoop.global.security.OAuthService;
 import com.tomtom.scoop.global.security.OAuthSuccessHandler;
+import com.tomtom.scoop.global.util.JwtTokenUtil;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
@@ -24,10 +26,8 @@ import java.util.Arrays;
 public class WebSecurityConfig{
 
     private final OAuthService oAuthService;
-    private final UserService userService;
     private final OAuthSuccessHandler oAuthSuccessHandler;
-    @Value("${jwt.secret-key}")
-    private static String secretKey;
+
 
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception{
@@ -35,6 +35,8 @@ public class WebSecurityConfig{
         http
                 .cors()
                 .and()
+                .httpBasic().disable()
+                .formLogin().disable()
                 .csrf().disable().authorizeHttpRequests()
                 .anyRequest().authenticated()
                 .and()
@@ -42,7 +44,7 @@ public class WebSecurityConfig{
                 .logoutUrl("/logout")
                 .logoutSuccessUrl("/")
                 .and()
-                .addFilterBefore(new JwtTokenFilter(userService,secretKey), UsernamePasswordAuthenticationFilter.class)
+                .addFilterBefore(new JwtTokenFilter(), UsernamePasswordAuthenticationFilter.class)
                 .oauth2Login()
                 .defaultSuccessUrl("/")
                 .userInfoEndpoint()
