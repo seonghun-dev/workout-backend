@@ -18,11 +18,10 @@ public class UserService {
 
 
     @Transactional(readOnly = true)
-    public CustomUserDetails loadUserByOauthId(String oauthId) throws UsernameNotFoundException {
-        return userRepository.findByOauthId(oauthId).map(findUser -> new CustomUserDetails(findUser)).orElseThrow(
+    public User findByOauthId(String oauthId){
+        return userRepository.findByOauthId(oauthId).orElseThrow(
                 () -> new IllegalArgumentException()
         );
-        
     }
 
 }
