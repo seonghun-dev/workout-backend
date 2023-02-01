@@ -1,7 +1,7 @@
 package com.tomtom.scoop.global.security;
 
 import com.tomtom.scoop.domain.user.model.entity.User;
-import com.tomtom.scoop.domain.user.repository.RedisRepository;
+import com.tomtom.scoop.domain.user.repository.RefreshTokenRepository;
 import com.tomtom.scoop.domain.user.service.UserService;
 import com.tomtom.scoop.global.common.RefreshToken;
 import com.tomtom.scoop.global.util.JwtTokenUtil;
@@ -26,7 +26,7 @@ public class OAuthSuccessHandler extends SimpleUrlAuthenticationSuccessHandler {
 
     private final UserService userService;
     private final JwtTokenUtil jwtTokenUtil;
-    private final RedisRepository redisRepository;
+    private final RefreshTokenRepository refreshTokenRepository;
     private long refreshTokenValidTime = Duration.ofDays(14).toMillis();
 
     @Override
@@ -39,7 +39,7 @@ public class OAuthSuccessHandler extends SimpleUrlAuthenticationSuccessHandler {
         String refreshToken = jwtTokenUtil.generateRefreshToken(oauthId);
 
 
-        redisRepository.save(
+        refreshTokenRepository.save(
                 RefreshToken.builder()
                 .key(oauthId)
                 .value(refreshToken)
