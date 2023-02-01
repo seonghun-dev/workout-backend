@@ -16,15 +16,11 @@ import org.springframework.data.redis.serializer.StringRedisSerializer;
 @RequiredArgsConstructor
 public class RedisConfig {
 
-    @Value("${spring.redis.host}")
-    private String host;
-
-    @Value("${spring.redis.port}")
-    private int port;
+    private final RedisProperties redisProperties;
 
     @Bean
     public RedisConnectionFactory redisConnectionFactory() {
-        return new LettuceConnectionFactory(host, port);
+        return new LettuceConnectionFactory(redisProperties.getHost(), redisProperties.getPort());
     }
 
     @Bean
