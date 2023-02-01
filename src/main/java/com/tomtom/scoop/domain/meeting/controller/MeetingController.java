@@ -49,4 +49,29 @@ public class MeetingController {
         meetingService.deleteMeeting(id);
     }
 
+    @GetMapping("/upcoming")
+    @ResponseBody
+    public List<MeetingDto.response> findUpcomingMeetingByUser(@RequestParam("userId") Long userId) {
+        return meetingService.findUpcomingMeetingByUser(userId);
+    }
+
+    @GetMapping("/past")
+    @ResponseBody
+    public List<MeetingDto.response> findPastMeetingByUser(@RequestParam("userId") Long userId) {
+        return meetingService.findPastMeetingByUser(userId);
+    }
+
+    @GetMapping("/like")
+    @ResponseBody
+    public List<MeetingDto.response> findLikeMeetingByUser(@RequestParam("userId") Long userId) {
+        return meetingService.findLikeMeetingByUser(userId);
+    }
+
+    @GetMapping("/search")
+    @ResponseBody
+    public List<MeetingDto.response> searchMeetingByKeyword(@RequestParam("keyword") String keyword) {
+        return meetingService.searchMeetingByKeyword(keyword);
+    }
+
+
 }
