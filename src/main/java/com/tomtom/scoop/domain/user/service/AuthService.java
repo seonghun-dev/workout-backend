@@ -1,11 +1,12 @@
 package com.tomtom.scoop.domain.user.service;
 
+import com.tomtom.scoop.domain.user.model.dao.LogoutAccessToken;
 import com.tomtom.scoop.domain.user.model.dto.TokenDto;
 import com.tomtom.scoop.domain.user.model.entity.User;
 import com.tomtom.scoop.domain.user.repository.LogoutAccessTokenRepository;
 import com.tomtom.scoop.domain.user.repository.RefreshTokenRepository;
 import com.tomtom.scoop.domain.user.repository.UserRepository;
-import com.tomtom.scoop.global.common.TokenDao;
+import com.tomtom.scoop.domain.user.model.dao.RefreshToken;
 import com.tomtom.scoop.global.exception.CustomException;
 import com.tomtom.scoop.global.exception.ErrorCode;
 import com.tomtom.scoop.global.util.JwtTokenUtil;
@@ -39,7 +40,7 @@ public class AuthService {
             String token = jwtTokenUtil.resolveToken(request);
             String oauthId = jwtTokenUtil.getOauthId(token);
 
-            Optional<TokenDao> refreshToken = refreshTokenRepository.findById(oauthId);
+            Optional<RefreshToken> refreshToken = refreshTokenRepository.findById(oauthId);
             refreshToken.orElseThrow(
                     () -> new CustomException(ErrorCode.UNAUTHORIZED)
             );
@@ -55,7 +56,7 @@ public class AuthService {
                     String newRefreshToken = jwtTokenUtil.generateRefreshToken(oauthId);
 
 
-                    refreshTokenRepository.save(new TokenDao(oauthId,newRefreshToken, Duration.ofDays(14).toMillis()));
+                    refreshTokenRepository.save(new RefreshToken(oauthId,newRefreshToken, Duration.ofDays(14).toMillis()));
 
                     return new TokenDto(newAccessToken,newRefreshToken);
                 }
@@ -70,6 +71,6 @@ public class AuthService {
         String accessToken = tokenDto.getAccessToken();
         long remainTime = jwtTokenUtil.getRemainTime(accessToken);
         refreshTokenRepository.deleteById(oauthId);
-        logoutAccessTokenRepository.save(TokenDao.builder().key(oauthId).value(accessToken).expiredTime(remainTime).build());
+        logoutAccessTokenRepository.save(LogoutAccessToken.builder().key(oauthId).value(accessToken).expiredTime(remainTime).build());
     }
 }
