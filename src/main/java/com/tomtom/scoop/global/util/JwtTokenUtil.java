@@ -92,6 +92,10 @@ public class JwtTokenUtil {
         return null;
     }
 
+    public Long getRemainTime(String token){
+        return extractAllClaims(token).getExpiration().getTime();
+    }
+
     public Authentication getAuthentication(String token) {
         CustomUserDetails userDetails = (CustomUserDetails) userDetailsService.loadUserByUsername(getOauthId(token));
         return new UsernamePasswordAuthenticationToken(userDetails, token, userDetails.getAuthorities());
