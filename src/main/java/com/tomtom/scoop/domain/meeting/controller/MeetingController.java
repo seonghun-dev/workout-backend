@@ -1,7 +1,9 @@
 package com.tomtom.scoop.domain.meeting.controller;
 
 import com.tomtom.scoop.domain.meeting.model.dto.MeetingDto;
+import com.tomtom.scoop.domain.meeting.model.dto.request.MeetingRequestDto;
 import com.tomtom.scoop.domain.meeting.service.MeetingService;
+import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
@@ -31,8 +33,9 @@ public class MeetingController {
     @PostMapping
     @ResponseBody
     @ResponseStatus(HttpStatus.CREATED)
-    public MeetingDto.response createMeeting(@RequestBody MeetingDto.request meetingDto) {
-        return meetingService.createMeeting(meetingDto);
+    @Transactional
+    public MeetingDto.response createMeeting(@RequestBody MeetingRequestDto meetingRequestDto) {
+        return meetingService.createMeeting(meetingRequestDto);
     }
 
     @PatchMapping("/{id}")
