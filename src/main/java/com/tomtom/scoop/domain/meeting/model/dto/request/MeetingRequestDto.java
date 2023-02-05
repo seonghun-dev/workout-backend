@@ -4,9 +4,6 @@ import com.tomtom.scoop.domain.common.Gender;
 import jakarta.validation.constraints.NotNull;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
-import org.springframework.format.annotation.DateTimeFormat;
-
-import java.time.LocalDateTime;
 
 @Getter
 @AllArgsConstructor
@@ -36,8 +33,11 @@ public class MeetingRequestDto {
 
     private String locationCity;
 
-    @NotNull
-    @DateTimeFormat(pattern = "yyyy-MM-dd")
-    private LocalDateTime eventDate;
+    private String exerciseName;
+
+    private String exerciseLevel;
+
+    private String meetingType;
+
 
 }

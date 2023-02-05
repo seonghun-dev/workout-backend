@@ -5,10 +5,7 @@ import com.tomtom.scoop.domain.common.Gender;
 import com.tomtom.scoop.domain.user.model.entity.ExerciseLevel;
 import com.tomtom.scoop.domain.user.model.entity.User;
 import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
+import lombok.*;
 
 import java.time.LocalDateTime;
 import java.util.List;
@@ -24,7 +21,7 @@ public class Meeting extends BaseTimeEntity {
     @Column(name = "meeting_id")
     private Long id;
 
-    @ManyToOne(fetch = FetchType.LAZY)
+    @ManyToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
     @JoinColumn(name = "user_id")
     private User user;
 
@@ -52,6 +49,10 @@ public class Meeting extends BaseTimeEntity {
 
     @Column(nullable = false)
     private Integer viewCount;
+
+    @Column(nullable = false)
+    @Setter
+    private boolean isDeleted;
 
     @OneToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "meeting_location_id")

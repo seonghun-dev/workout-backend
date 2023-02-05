@@ -2,9 +2,12 @@ package com.tomtom.scoop.domain.meeting.controller;
 
 import com.tomtom.scoop.domain.meeting.model.dto.MeetingDto;
 import com.tomtom.scoop.domain.meeting.model.dto.request.MeetingRequestDto;
+import com.tomtom.scoop.domain.meeting.model.dto.response.MeetingDetailResponseDto;
+import com.tomtom.scoop.domain.meeting.model.dto.response.MeetingListResponseDto;
 import com.tomtom.scoop.domain.meeting.service.MeetingService;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 
@@ -20,13 +23,13 @@ public class MeetingController {
 
     @GetMapping
     @ResponseBody
-    public List<MeetingDto.response> findAllMeetings() {
-        return meetingService.findAllMeetings();
+    public List<MeetingListResponseDto> findAllMeetings(Pageable pageable) {
+        return meetingService.findAllMeetings(pageable);
     }
 
     @GetMapping("/{id}")
     @ResponseBody
-    public MeetingDto.response findMeetingById(@PathVariable("id") Long id) {
+    public MeetingDetailResponseDto findMeetingById(@PathVariable("id") Long id) {
         return meetingService.findMeetingById(id);
     }
 
@@ -54,14 +57,14 @@ public class MeetingController {
 
     @GetMapping("/upcoming")
     @ResponseBody
-    public List<MeetingDto.response> findUpcomingMeetingByUser(@RequestParam("userId") Long userId) {
-        return meetingService.findUpcomingMeetingByUser(userId);
+    public List<MeetingListResponseDto> findUpcomingMeetingByUser(@RequestParam("userId") Long userId, Pageable pageable) {
+        return meetingService.findUpcomingMeetingByUser(userId, pageable);
     }
 
     @GetMapping("/past")
     @ResponseBody
-    public List<MeetingDto.response> findPastMeetingByUser(@RequestParam("userId") Long userId) {
-        return meetingService.findPastMeetingByUser(userId);
+    public List<MeetingListResponseDto> findPastMeetingByUser(@RequestParam("userId") Long userId, Pageable pageable) {
+        return meetingService.findPastMeetingByUser(userId, pageable);
     }
 
     @GetMapping("/like")
@@ -72,8 +75,8 @@ public class MeetingController {
 
     @GetMapping("/search")
     @ResponseBody
-    public List<MeetingDto.response> searchMeetingByKeyword(@RequestParam("keyword") String keyword) {
-        return meetingService.searchMeetingByKeyword(keyword);
+    public List<MeetingDto.response> searchMeetingByKeyword(@RequestParam("keyword") String keyword, Pageable pageable) {
+        return meetingService.searchMeetingByKeyword(keyword, pageable);
     }
 
 
