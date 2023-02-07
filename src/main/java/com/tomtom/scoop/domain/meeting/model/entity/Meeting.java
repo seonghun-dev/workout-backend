@@ -36,6 +36,10 @@ public class Meeting extends BaseTimeEntity {
     private Integer memberLimit;
 
     @Column(nullable = false)
+    @Setter
+    private Integer memberCount;
+
+    @Column(nullable = false)
     private String content;
 
     @Enumerated(EnumType.STRING)
