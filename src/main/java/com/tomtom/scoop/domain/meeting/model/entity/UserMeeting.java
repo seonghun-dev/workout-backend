@@ -3,10 +3,7 @@ package com.tomtom.scoop.domain.meeting.model.entity;
 import com.tomtom.scoop.domain.common.BaseTimeEntity;
 import com.tomtom.scoop.domain.user.model.entity.User;
 import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
+import lombok.*;
 
 @Getter
 @Builder
@@ -26,6 +23,8 @@ public class UserMeeting extends BaseTimeEntity {
     @JoinColumn(name = "user_id")
     private User user;
 
+    @Setter
+    @Enumerated(EnumType.STRING)
     private MeetingStatus status;
 
 
