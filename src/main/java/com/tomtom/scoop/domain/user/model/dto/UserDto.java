@@ -51,15 +51,15 @@ public class UserDto {
 
         public response(CustomUserDetails userDetails) {
             this.oauthId = userDetails.getOauthId();
-            this.name = userDetails.getName();
-            this.phone = userDetails.getPhone();
-            this.nickname = userDetails.getNickname();
-            this.rating = userDetails.getRating();
-            this.age = userDetails.getAge();
-            this.gender = userDetails.getGender();
-            this.deviceToken = userDetails.getDeviceToken();
-            this.isDeleted = userDetails.isDeleted();
-            this.profileImg = userDetails.getProfileImg();
+            this.name = userDetails.getUser().getName();
+            this.phone = userDetails.getUser().getPhone();
+            this.nickname = userDetails.getUser().getNickname();
+            this.rating = userDetails.getUser().getRating();
+            this.age = userDetails.getUser().getAge();
+            this.gender = userDetails.getUser().getGender();
+            this.deviceToken = userDetails.getUser().getDeviceToken();
+            this.isDeleted = userDetails.getUser().isDeleted();
+            this.profileImg = userDetails.getUser().getProfileImg();
         }
     }
 

@@ -2,14 +2,10 @@ package com.tomtom.scoop.domain.meeting.model.entity;
 
 import com.tomtom.scoop.domain.common.BaseTimeEntity;
 import com.tomtom.scoop.domain.common.Gender;
-import com.tomtom.scoop.domain.meeting.model.dto.MeetingDto;
 import com.tomtom.scoop.domain.user.model.entity.ExerciseLevel;
 import com.tomtom.scoop.domain.user.model.entity.User;
 import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import org.locationtech.jts.geom.Point;
+import lombok.*;
 
 import java.time.LocalDateTime;
 import java.util.List;
@@ -17,6 +13,7 @@ import java.util.List;
 @Getter
 @NoArgsConstructor
 @AllArgsConstructor
+@Builder
 @Entity
 public class Meeting extends BaseTimeEntity {
     @Id
@@ -24,7 +21,7 @@ public class Meeting extends BaseTimeEntity {
     @Column(name = "meeting_id")
     private Long id;
 
-    @ManyToOne(fetch = FetchType.LAZY)
+    @ManyToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
     @JoinColumn(name = "user_id")
     private User user;
 
@@ -37,6 +34,10 @@ public class Meeting extends BaseTimeEntity {
 
     @Column(nullable = false)
     private Integer memberLimit;
+
+    @Column(nullable = false)
+    @Setter
+    private Integer memberCount;
 
     @Column(nullable = false)
     private String content;
@@ -53,6 +54,10 @@ public class Meeting extends BaseTimeEntity {
     @Column(nullable = false)
     private Integer viewCount;
 
+    @Column(nullable = false)
+    @Setter
+    private boolean isDeleted;
+
     @OneToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "meeting_location_id")
     private MeetingLocation meetingLocation;
@@ -66,18 +71,5 @@ public class Meeting extends BaseTimeEntity {
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "exercise_level_id")
     private ExerciseLevel exerciseLevel;
-
-    public Meeting(MeetingDto.request meetingDto) {
-        this.title = meetingDto.getTitle();
-        this.memberLimit = meetingDto.getMemberLimit();
-        this.content = meetingDto.getContent();
-        this.gender = Gender.BOTH;
-        this.imgUrl = meetingDto.getImgUrl();
-        this.viewCount = 0;
-    }
-
-    public void setMeetingType(MeetingType meetingType) {
-        this.meetingType = meetingType;
-    }
 
 }
