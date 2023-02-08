@@ -2,9 +2,6 @@ package com.tomtom.scoop.global.security;
 
 import com.tomtom.scoop.domain.common.Gender;
 import com.tomtom.scoop.domain.user.model.entity.User;
-import com.tomtom.scoop.domain.user.model.entity.UserExerciseLevel;
-import com.tomtom.scoop.domain.user.model.entity.UserKeyword;
-import com.tomtom.scoop.domain.user.model.entity.UserLocation;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -12,7 +9,6 @@ import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
 import java.util.Collection;
-import java.util.List;
 
 @Getter
 @NoArgsConstructor
