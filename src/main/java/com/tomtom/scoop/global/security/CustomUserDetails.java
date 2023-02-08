@@ -15,30 +15,11 @@ import java.util.Collection;
 @AllArgsConstructor
 public class CustomUserDetails implements UserDetails {
 
-    private String oauthId;
-    private String name;
-    private String phone;
-    private String nickname;
-    private Float rating;
-    private Integer age;
-    private Gender gender;
-    private String deviceToken;
-    private boolean isDeleted;
-    private String profileImg;
+    private User user;
 
-    public CustomUserDetails(User user) {
-        this.oauthId = user.getOauthId();
-        this.name = user.getName();
-        this.phone = user.getPhone();
-        this.nickname = user.getNickname();
-        this.rating = user.getRating();
-        this.age = user.getAge();
-        this.gender = user.getGender();
-        this.deviceToken = user.getDeviceToken();
-        this.isDeleted = user.isDeleted();
-        this.profileImg = user.getProfileImg();
+    public String getOauthId() {
+        return this.user.getOauthId();
     }
-
 
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
@@ -52,7 +33,7 @@ public class CustomUserDetails implements UserDetails {
 
     @Override
     public String getUsername() {
-        return nickname;
+        return this.user.getNickname();
     }
 
     @Override
