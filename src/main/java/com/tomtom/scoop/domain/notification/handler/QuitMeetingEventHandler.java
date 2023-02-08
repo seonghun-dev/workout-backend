@@ -2,8 +2,8 @@ package com.tomtom.scoop.domain.notification.handler;
 
 import com.tomtom.scoop.domain.notification.constants.NotificationPageConstants;
 import com.tomtom.scoop.domain.notification.event.QuitMeetingEvent;
-import com.tomtom.scoop.domain.notification.model.Notification;
-import com.tomtom.scoop.domain.notification.model.NotificationAction;
+import com.tomtom.scoop.domain.notification.model.entity.Notification;
+import com.tomtom.scoop.domain.notification.model.entity.NotificationAction;
 import com.tomtom.scoop.domain.notification.repository.NotificationActionRepository;
 import com.tomtom.scoop.domain.notification.repository.NotificationRepository;
 import lombok.AllArgsConstructor;

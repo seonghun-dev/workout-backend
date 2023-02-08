@@ -1,6 +1,6 @@
 package com.tomtom.scoop.domain.notification.service;
 
-import com.tomtom.scoop.domain.notification.model.Notification;
+import com.tomtom.scoop.domain.notification.model.entity.Notification;
 import com.tomtom.scoop.domain.notification.repository.NotificationRepository;
 import com.tomtom.scoop.domain.user.model.entity.User;
 import com.tomtom.scoop.domain.user.repository.UserRepository;

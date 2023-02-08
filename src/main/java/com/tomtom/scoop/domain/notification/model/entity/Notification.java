@@ -1,4 +1,4 @@
-package com.tomtom.scoop.domain.notification.model;
+package com.tomtom.scoop.domain.notification.model.entity;
 
 import com.tomtom.scoop.domain.common.BaseTimeEntity;
 import com.tomtom.scoop.domain.user.model.entity.User;

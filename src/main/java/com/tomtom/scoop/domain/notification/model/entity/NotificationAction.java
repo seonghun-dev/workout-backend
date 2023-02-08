@@ -1,4 +1,4 @@
-package com.tomtom.scoop.domain.notification.model;
+package com.tomtom.scoop.domain.notification.model.entity;
 
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
