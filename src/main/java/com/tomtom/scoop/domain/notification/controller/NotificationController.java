@@ -22,5 +22,18 @@ public class NotificationController {
         return notificationService.findAllNotifications(userId, pageable);
     }
 
+    @PostMapping("/{notificationId}/read")
+    public void markNotificationsAsRead(@RequestParam("userId") Long userId,
+                                        @PathVariable("notificationId") Long notificationId) {
+        notificationService.markNotificationsAsRead(userId, notificationId);
+    }
+
+    @DeleteMapping("/{notificationId}")
+    public void deleteNotification(@RequestParam("userId") Long userId,
+                                   @PathVariable("notificationId") Long notificationId) {
+        notificationService.deleteNotification(userId, notificationId);
+    }
+
+
 
 }

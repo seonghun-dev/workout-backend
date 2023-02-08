@@ -3,10 +3,7 @@ package com.tomtom.scoop.domain.notification.model;
 import com.tomtom.scoop.domain.common.BaseTimeEntity;
 import com.tomtom.scoop.domain.user.model.entity.User;
 import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
+import lombok.*;
 
 @Getter
 @NoArgsConstructor
@@ -30,9 +27,11 @@ public class Notification extends BaseTimeEntity {
     @Column(nullable = false, columnDefinition = "VARCHAR(255)")
     private String content;
 
+    @Setter
     @Column(nullable = false)
     private Boolean isRead;
 
+    @Setter
     @Column(nullable = false)
     private Boolean isDeleted;
 

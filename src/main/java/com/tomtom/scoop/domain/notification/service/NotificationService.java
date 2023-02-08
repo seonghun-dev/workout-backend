@@ -10,6 +10,7 @@ import org.springframework.stereotype.Service;
 import org.webjars.NotFoundException;
 
 import java.util.List;
+import java.util.Objects;
 
 @Service
 @RequiredArgsConstructor
@@ -25,6 +26,24 @@ public class NotificationService {
                 .orElseThrow(() -> new NotFoundException(String.format("User with id %s not found", userId)));
 
         return notificationRepository.findByUser(user, pageable);
+    }
+
+    public void markNotificationsAsRead(Long userId, Long notificationId) {
+        Notification notification = notificationRepository.findById(notificationId)
+                .orElseThrow(() -> new NotFoundException(String.format("Notification with id %s not found", notificationId)));
+        if (notification.getUser() != null && !Objects.equals(notification.getUser().getId(), userId))
+            throw new IllegalArgumentException(String.format("Notification with id %s does not belong to user with id %s", notificationId, userId));
+        notification.setIsRead(true);
+        notificationRepository.save(notification);
+    }
+
+    public void deleteNotification(Long userId, Long notificationId) {
+        Notification notification = notificationRepository.findById(notificationId)
+                .orElseThrow(() -> new NotFoundException(String.format("Notification with id %s not found", notificationId)));
+        if (notification.getUser() != null && !Objects.equals(notification.getUser().getId(), userId))
+            throw new IllegalArgumentException(String.format("Notification with id %s does not belong to user with id %s", notificationId, userId));
+        notification.setIsDeleted(true);
+        notificationRepository.save(notification);
     }
 
 
