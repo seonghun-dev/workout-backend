@@ -27,6 +27,8 @@ public class WebSecurityConfig{
 
     private final OAuthService oAuthService;
     private final OAuthSuccessHandler oAuthSuccessHandler;
+    private final JwtTokenUtil jwtTokenUtil;
+    private final CustomUserDetailsService customUserDetailsService;
 
 
     @Bean
@@ -44,7 +46,7 @@ public class WebSecurityConfig{
                 .logoutUrl("/logout")
                 .logoutSuccessUrl("/")
                 .and()
-                .addFilterBefore(new JwtTokenFilter(), UsernamePasswordAuthenticationFilter.class)
+                .addFilterBefore(new JwtTokenFilter(customUserDetailsService, jwtTokenUtil), UsernamePasswordAuthenticationFilter.class)
                 .oauth2Login()
                 .defaultSuccessUrl("/")
                 .userInfoEndpoint()

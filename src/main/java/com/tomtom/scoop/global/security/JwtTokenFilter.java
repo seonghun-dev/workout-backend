@@ -20,12 +20,11 @@ import org.springframework.web.filter.OncePerRequestFilter;
 import java.io.IOException;
 
 @Slf4j
+@RequiredArgsConstructor
 public class JwtTokenFilter extends OncePerRequestFilter {
-    @Autowired
-    private CustomUserDetailsService userDetailsService;
+    private final CustomUserDetailsService userDetailsService;
 
-    @Autowired
-    private JwtTokenUtil jwtTokenUtil;
+    private final JwtTokenUtil jwtTokenUtil;
 
     @Override
     protected void doFilterInternal(HttpServletRequest request,
@@ -34,7 +33,6 @@ public class JwtTokenFilter extends OncePerRequestFilter {
             throws ServletException, IOException {
         try {
             final String token = jwtTokenUtil.resolveToken(request);
-
             if (token == null) {
                 log.error("Authorization Header does not start with Bearer {}", request.getRequestURI());
                 chain.doFilter(request, response);
