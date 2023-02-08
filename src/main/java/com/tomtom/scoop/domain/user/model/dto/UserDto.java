@@ -24,7 +24,8 @@ public class UserDto {
         private Integer age;
         private Gender gender;
         private String profileImg;
-        private List<UserExerciseLevel> exerciseLevels;
+        private String StatusMessage;
+        private List<ExerciseLevelDto> exerciseLevels;
         private List<UserLocation> locations;
         private List<String> keywords;
     }
@@ -45,6 +46,7 @@ public class UserDto {
         private String deviceToken;
         private boolean isDeleted;
         private String profileImg;
+        private String statusMessage;
         private List<UserExerciseLevel> userExerciseLevels;
         private List<UserLocation> userLocations;
         private List<UserKeyword> userKeywords;
@@ -60,6 +62,7 @@ public class UserDto {
             this.deviceToken = userDetails.getUser().getDeviceToken();
             this.isDeleted = userDetails.getUser().isDeleted();
             this.profileImg = userDetails.getUser().getProfileImg();
+            this.statusMessage = userDetails.getUser().getStatusMessage();
         }
     }
 

@@ -54,6 +54,9 @@ public class User {
     @OneToMany(mappedBy = "user")
     private List<UserKeyword> userKeywords;
 
+    @Column
+    private String statusMessage;
+
     private User(String oauthId) {
         this.oauthId = oauthId;
     }
