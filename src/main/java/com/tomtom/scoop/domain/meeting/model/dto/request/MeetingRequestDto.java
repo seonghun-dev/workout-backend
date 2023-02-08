@@ -27,14 +27,19 @@ public class MeetingRequestDto {
     @NotNull
     private Float locationLongitude;
 
+    @NotNull
     private String locationName;
 
+    @NotNull
     private String locationDetail;
 
+    @NotNull
     private String locationCity;
 
+    @NotNull
     private String exerciseName;
 
+    @NotNull
     private String exerciseLevel;
 
     private String meetingType;
