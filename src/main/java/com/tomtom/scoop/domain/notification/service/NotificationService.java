@@ -1,5 +1,7 @@
 package com.tomtom.scoop.domain.notification.service;
 
+import com.tomtom.scoop.domain.notification.model.dto.NotificationActionDto;
+import com.tomtom.scoop.domain.notification.model.dto.NotificationListResponseDto;
 import com.tomtom.scoop.domain.notification.model.entity.Notification;
 import com.tomtom.scoop.domain.notification.repository.NotificationRepository;
 import com.tomtom.scoop.domain.user.model.entity.User;
@@ -20,12 +22,24 @@ public class NotificationService {
 
     private final UserRepository userRepository;
 
-    public List<Notification> findAllNotifications(Long userId, Pageable pageable) {
+    public List<NotificationListResponseDto> findAllNotifications(Long userId, Pageable pageable) {
 
         User user = userRepository.findById(userId)
                 .orElseThrow(() -> new NotFoundException(String.format("User with id %s not found", userId)));
-
-        return notificationRepository.findByUser(user, pageable);
+        List<Notification> notifications = notificationRepository.findByUser(user, pageable);
+        return notifications.stream().map(
+                notification ->
+                        NotificationListResponseDto.builder()
+                                .id(notification.getId())
+                                .title(notification.getTitle())
+                                .content(notification.getContent())
+                                .isRead(notification.getIsRead())
+                                .createdAt(notification.getCreatedAt())
+                                .action(NotificationActionDto.builder()
+                                        .page(notification.getNotificationAction().getPage())
+                                        .contentId(notification.getNotificationAction().getContentId())
+                                        .build()).build()
+        ).toList();
     }
 
     public void markNotificationsAsRead(Long userId, Long notificationId) {

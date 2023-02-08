@@ -1,5 +1,6 @@
 package com.tomtom.scoop.domain.notification.controller;
 
+import com.tomtom.scoop.domain.notification.model.dto.NotificationListResponseDto;
 import com.tomtom.scoop.domain.notification.model.entity.Notification;
 import com.tomtom.scoop.domain.notification.service.NotificationService;
 import lombok.RequiredArgsConstructor;
@@ -17,8 +18,8 @@ public class NotificationController {
 
     @GetMapping
     @ResponseBody
-    public List<Notification> findAllNotifications(@RequestParam("userId") Long userId,
-                                                   Pageable pageable) {
+    public List<NotificationListResponseDto> findAllNotifications(@RequestParam("userId") Long userId,
+                                                                  Pageable pageable) {
         return notificationService.findAllNotifications(userId, pageable);
     }
 
