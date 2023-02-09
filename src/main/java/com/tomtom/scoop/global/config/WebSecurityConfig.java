@@ -1,10 +1,7 @@
 package com.tomtom.scoop.global.config;
 
 import com.tomtom.scoop.domain.user.service.UserService;
-import com.tomtom.scoop.global.security.CustomUserDetailsService;
-import com.tomtom.scoop.global.security.JwtTokenFilter;
-import com.tomtom.scoop.global.security.OAuthService;
-import com.tomtom.scoop.global.security.OAuthSuccessHandler;
+import com.tomtom.scoop.global.security.*;
 import com.tomtom.scoop.global.util.JwtTokenUtil;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
@@ -47,6 +44,9 @@ public class WebSecurityConfig{
                 .logoutSuccessUrl("/")
                 .and()
                 .addFilterBefore(new JwtTokenFilter(customUserDetailsService, jwtTokenUtil), UsernamePasswordAuthenticationFilter.class)
+                .exceptionHandling()
+                .authenticationEntryPoint(new CustomAuthenticationEntryPoint())
+                .and()
                 .oauth2Login()
                 .defaultSuccessUrl("/")
                 .userInfoEndpoint()
