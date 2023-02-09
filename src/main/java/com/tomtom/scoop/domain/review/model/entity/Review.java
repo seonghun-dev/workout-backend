@@ -4,14 +4,13 @@ import com.tomtom.scoop.domain.common.BaseTimeEntity;
 import com.tomtom.scoop.domain.meeting.model.entity.Meeting;
 import com.tomtom.scoop.domain.user.model.entity.User;
 import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
+import lombok.*;
 
 @Getter
 @NoArgsConstructor
 @AllArgsConstructor
 @Entity
+@Builder
 public class Review extends BaseTimeEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -30,9 +29,11 @@ public class Review extends BaseTimeEntity {
     @Column(nullable = false)
     private Integer rating;
 
+    @Setter
     @Column(nullable = false)
     private Boolean isReviewerHidden;
 
+    @Setter
     @Column(nullable = false)
     private Boolean isReceiverHidden;
 
