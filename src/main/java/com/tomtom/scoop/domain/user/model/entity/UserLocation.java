@@ -1,35 +1,30 @@
 package com.tomtom.scoop.domain.user.model.entity;
 
 import jakarta.persistence.*;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 import org.locationtech.jts.geom.Point;
 
 @Entity
 @Getter
+@Builder
+@NoArgsConstructor
+@AllArgsConstructor
 public class UserLocation {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "user_location_id")
     private Long id;
 
-    @ManyToOne
-    @JoinColumn(name = "user_id")
-    private User user;
+    @Column(nullable = false, columnDefinition = "VARCHAR(255)")
+    private String county;
 
-    @ManyToOne
-    @JoinColumn(name = "location_id")
-    private Location location;
+    @Column(nullable = false, columnDefinition = "VARCHAR(255)")
+    private String city;
 
-    @Column(nullable = false, columnDefinition = "TINYINT")
-    private boolean isDeleted;
-
-    @Column(nullable = false)
-    private Point loc;
-
-    @Column(nullable = false, name = "\"range\"")
-    private Float range;
-
-    @Column(nullable = false, columnDefinition = "TINYINT")
-    private boolean isVerified;
+    @Column(nullable = false, columnDefinition = "VARCHAR(255)")
+    private String dong;
 
 }
