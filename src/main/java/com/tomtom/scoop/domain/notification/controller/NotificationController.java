@@ -1,7 +1,6 @@
 package com.tomtom.scoop.domain.notification.controller;
 
 import com.tomtom.scoop.domain.notification.model.dto.NotificationListResponseDto;
-import com.tomtom.scoop.domain.notification.model.entity.Notification;
 import com.tomtom.scoop.domain.notification.service.NotificationService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Pageable;

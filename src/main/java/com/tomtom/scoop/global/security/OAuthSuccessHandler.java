@@ -1,11 +1,10 @@
 package com.tomtom.scoop.global.security;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.tomtom.scoop.domain.user.model.dto.TokenDto;
+import com.tomtom.scoop.domain.user.model.dao.RefreshToken;
 import com.tomtom.scoop.domain.user.model.entity.User;
 import com.tomtom.scoop.domain.user.repository.RefreshTokenRepository;
 import com.tomtom.scoop.domain.user.service.UserService;
-import com.tomtom.scoop.domain.user.model.dao.RefreshToken;
 import com.tomtom.scoop.global.util.JwtTokenUtil;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;

@@ -3,13 +3,10 @@ package com.tomtom.scoop.domain.user.model.dto.response;
 import com.tomtom.scoop.domain.common.Gender;
 import com.tomtom.scoop.domain.user.model.dto.ExerciseLevelDto;
 import com.tomtom.scoop.domain.user.model.dto.UserLocationDto;
-import com.tomtom.scoop.domain.user.model.entity.*;
-import com.tomtom.scoop.global.security.CustomUserDetails;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
-import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 

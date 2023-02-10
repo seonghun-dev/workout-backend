@@ -1,12 +1,12 @@
 package com.tomtom.scoop.domain.user.service;
 
 import com.tomtom.scoop.domain.user.model.dao.LogoutAccessToken;
+import com.tomtom.scoop.domain.user.model.dao.RefreshToken;
 import com.tomtom.scoop.domain.user.model.dto.TokenDto;
 import com.tomtom.scoop.domain.user.model.entity.User;
 import com.tomtom.scoop.domain.user.repository.LogoutAccessTokenRepository;
 import com.tomtom.scoop.domain.user.repository.RefreshTokenRepository;
 import com.tomtom.scoop.domain.user.repository.UserRepository;
-import com.tomtom.scoop.domain.user.model.dao.RefreshToken;
 import com.tomtom.scoop.global.exception.CustomException;
 import com.tomtom.scoop.global.exception.ErrorCode;
 import com.tomtom.scoop.global.util.JwtTokenUtil;

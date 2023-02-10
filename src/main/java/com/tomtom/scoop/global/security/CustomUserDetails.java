@@ -1,6 +1,5 @@
 package com.tomtom.scoop.global.security;
 
-import com.tomtom.scoop.domain.common.Gender;
 import com.tomtom.scoop.domain.user.model.entity.User;
 import lombok.AllArgsConstructor;
 import lombok.Getter;

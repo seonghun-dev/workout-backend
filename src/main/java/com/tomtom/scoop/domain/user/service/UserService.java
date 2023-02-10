@@ -2,9 +2,9 @@ package com.tomtom.scoop.domain.user.service;
 
 import com.tomtom.scoop.domain.user.model.dto.ExerciseLevelDto;
 import com.tomtom.scoop.domain.user.model.dto.UserLocationDto;
+import com.tomtom.scoop.domain.user.model.dto.request.UserJoinDto;
 import com.tomtom.scoop.domain.user.model.dto.request.UserUpdateDto;
 import com.tomtom.scoop.domain.user.model.dto.response.UserResponseDto;
-import com.tomtom.scoop.domain.user.model.dto.request.UserJoinDto;
 import com.tomtom.scoop.domain.user.model.entity.*;
 import com.tomtom.scoop.domain.user.repository.*;
 import com.tomtom.scoop.global.exception.CustomException;
