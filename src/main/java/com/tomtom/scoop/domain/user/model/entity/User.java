@@ -67,17 +67,18 @@ public class User {
     public static User of(String oauthId){
         return new User(oauthId);
     }
-    public void join(UserJoinDto userJoinDto){
+    public void join(UserJoinDto userJoinDto, UserLocation userLocation,String imgUrl){
         this.name = userJoinDto.getName();
         this.nickname = userJoinDto.getNickname();
         this.phone = userJoinDto.getPhone();
         this.gender = userJoinDto.getGender();
-        this.profileImg = userJoinDto.getProfileImg();
+        this.userLocation = userLocation;
+        this.profileImg = imgUrl;
     }
 
-    public void update(UserUpdateDto userUpdateDto){
+    public void update(UserUpdateDto userUpdateDto, String imgUrl){
         this.nickname = userUpdateDto.getNickname();
-        this.profileImg = userUpdateDto.getProfileImg();
+        this.profileImg = imgUrl;
         this.statusMessage = userUpdateDto.getStatusMessage();
     }
 

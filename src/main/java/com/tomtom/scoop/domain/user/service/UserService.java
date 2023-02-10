@@ -12,6 +12,7 @@ import com.tomtom.scoop.global.exception.ErrorCode;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.util.List;
 import java.util.Optional;
@@ -36,7 +37,7 @@ public class UserService {
         );
     }
 
-    public UserResponseDto join(User user, UserJoinDto userJoinDto){
+    public UserResponseDto join(User user, UserJoinDto userJoinDto, MultipartFile file){
 
         saveUserExerciseLevel(user, userJoinDto.getExerciseLevels());
 
@@ -44,10 +45,8 @@ public class UserService {
 
         UserLocation userLocation = saveUserLocation(userJoinDto.getUserLocation());
 
-
         userLocationRepository.save(userLocation);
-        user.setUserLocation(userLocation);
-        user.join(userJoinDto);
+        user.join(userJoinDto, userLocation, file.getName());
         userRepository.save(user);
 
         return UserResponseDto.builder()
@@ -65,7 +64,7 @@ public class UserService {
                 .build();
     }
 
-    public UserResponseDto update(User user, UserUpdateDto userUpdateDto){
+    public UserResponseDto update(User user, UserUpdateDto userUpdateDto, MultipartFile file){
 
         userExerciseLevelRepository.deleteAllByUser(user);
 
@@ -80,7 +79,7 @@ public class UserService {
         UserLocation userLocation = saveUserLocation(userUpdateDto.getUserLocation());
         userLocationRepository.save(userLocation);
         user.setUserLocation(userLocation);
-        user.update(userUpdateDto);
+        user.update(userUpdateDto, file.getName());
         userRepository.save(user);
 
         return UserResponseDto.builder()
@@ -101,8 +100,6 @@ public class UserService {
     @Transactional(readOnly = true)
     public UserResponseDto me(User user){
         user = userRepository.findById(user.getId()).get();
-//        List<UserExerciseLevel> userExerciseLevels = userExerciseLevelRepository.findByUser(user);
-//        List<UserKeyword> userKeywords = userKeywordRepository.findByUser(user);
         return UserResponseDto.builder()
                 .id(user.getId())
                 .name(user.getName())
@@ -117,7 +114,8 @@ public class UserService {
                                 userExerciseLevel.getExerciseLevel().getExercise().getName(),
                                 userExerciseLevel.getExerciseLevel().getLevel())
                 ).toList())
-                .userLocation(new UserLocationDto(
+                .userLocation(user.getUserLocation()==null?null:
+                        new UserLocationDto(
                         user.getUserLocation().getCounty(),
                         user.getUserLocation().getCity(),
                         user.getUserLocation().getDong()))

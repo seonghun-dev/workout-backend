@@ -17,7 +17,6 @@ public class UserJoinDto {
     private String phone;
     private String nickname;
     private Gender gender;
-    private String profileImg;
     private List<ExerciseLevelDto> exerciseLevels;
     private UserLocationDto userLocation;
     private List<String> keywords;

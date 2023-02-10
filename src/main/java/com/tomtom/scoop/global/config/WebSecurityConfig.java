@@ -45,7 +45,7 @@ public class WebSecurityConfig{
                 .and()
                 .addFilterBefore(new JwtTokenFilter(customUserDetailsService, jwtTokenUtil), UsernamePasswordAuthenticationFilter.class)
                 .exceptionHandling()
-                .authenticationEntryPoint(new CustomAuthenticationEntryPoint())
+//                .authenticationEntryPoint(new CustomAuthenticationEntryPoint())
                 .and()
                 .oauth2Login()
                 .defaultSuccessUrl("/")

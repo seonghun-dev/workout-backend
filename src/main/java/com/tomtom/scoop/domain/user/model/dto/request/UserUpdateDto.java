@@ -14,7 +14,6 @@ import java.util.List;
 public class UserUpdateDto {
 
     private String nickname;
-    private String profileImg;
     private String statusMessage;
     private List<ExerciseLevelDto> exerciseLevels;
     private UserLocationDto userLocation;
