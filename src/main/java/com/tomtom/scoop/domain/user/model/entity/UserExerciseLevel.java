@@ -3,6 +3,7 @@ package com.tomtom.scoop.domain.user.model.entity;
 import com.tomtom.scoop.domain.common.BaseTimeEntity;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
@@ -10,6 +11,7 @@ import lombok.NoArgsConstructor;
 @Getter
 @NoArgsConstructor
 @AllArgsConstructor
+@Builder
 public class UserExerciseLevel extends BaseTimeEntity {
 
     @Id

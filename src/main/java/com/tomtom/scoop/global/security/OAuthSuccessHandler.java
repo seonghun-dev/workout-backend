@@ -1,5 +1,7 @@
 package com.tomtom.scoop.global.security;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.tomtom.scoop.domain.user.model.dto.TokenDto;
 import com.tomtom.scoop.domain.user.model.entity.User;
 import com.tomtom.scoop.domain.user.repository.RefreshTokenRepository;
 import com.tomtom.scoop.domain.user.service.UserService;
@@ -8,8 +10,9 @@ import com.tomtom.scoop.global.util.JwtTokenUtil;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
-import lombok.RequiredArgsConstructor;
+import lombok.*;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.http.HttpStatus;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.oauth2.core.user.OAuth2User;
 import org.springframework.security.web.authentication.SimpleUrlAuthenticationSuccessHandler;
@@ -46,16 +49,16 @@ public class OAuthSuccessHandler extends SimpleUrlAuthenticationSuccessHandler {
                 .expiredTime(refreshTokenValidTime)
                 .build());
 
-        String redirectUrl = makeRedirectUrl("http://localhost:3000/", accessToken, refreshToken);
-
         User findUser = userService.findByOauthId(oauthId);
-
+        LoginResult loginResult = new LoginResult(accessToken, refreshToken,false);
         //새로운 회원일 경우
         if (findUser.getName() == null){
-            redirectUrl = makeRedirectUrl("http://localhost:3000/set/", accessToken, refreshToken);
+            loginResult.isFirst = true;
         }
-
-        getRedirectStrategy().sendRedirect(request, response, redirectUrl);
+        response.setContentType("application/json");
+        response.setStatus(HttpStatus.CREATED.value());
+        ObjectMapper mapper = new ObjectMapper();
+        response.getWriter().write(mapper.writeValueAsString(loginResult));
     }
 
     private String makeRedirectUrl(String url,String accessToken, String refreshToken) {
@@ -64,6 +67,16 @@ public class OAuthSuccessHandler extends SimpleUrlAuthenticationSuccessHandler {
                 .queryParam("accessToken", accessToken)
                 .queryParam("refreshToken", refreshToken)
                 .build().toUriString();
+    }
+
+    @Getter
+    @Setter
+    @NoArgsConstructor
+    @AllArgsConstructor
+    private class LoginResult{
+        private String accessToken;
+        private String refreshToken;
+        private boolean isFirst;
     }
 
 }

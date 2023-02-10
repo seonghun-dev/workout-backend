@@ -6,8 +6,6 @@ import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
-import java.util.List;
-
 @Entity
 @Getter
 @NoArgsConstructor
@@ -25,8 +23,8 @@ public class ExerciseLevel extends BaseTimeEntity {
     @Column(nullable = false, columnDefinition = "VARCHAR(255)")
     private String level;
 
-    @Column(nullable = false, columnDefinition = "TEXT")
-    private String detail;
+//    @Column(nullable = false, columnDefinition = "TEXT")
+//    private String detail;
 
 
 }

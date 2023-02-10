@@ -1,5 +1,6 @@
 package com.tomtom.scoop.domain.common.model;
 
+import com.tomtom.scoop.global.exception.ErrorCode;
 import lombok.AccessLevel;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -31,6 +32,11 @@ public class ResponseDto<T> implements Serializable {
                 .build();
     }
 
+    public static ResponseEntity<ErrorCode> error(ErrorCode errorCode) {
+        return ResponseEntity
+                .status(errorCode.getStatus())
+                .body(errorCode);
+    }
+
 
 }
-
