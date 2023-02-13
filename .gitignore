@@ -37,3 +37,4 @@ out/
 .vscode/
 /src/main/resources/application-oauth.properties
 /src/main/resources/scoop-fcm.json
+/src/main/resources/application-secret.properties
