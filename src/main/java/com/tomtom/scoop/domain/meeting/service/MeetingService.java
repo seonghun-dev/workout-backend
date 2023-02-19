@@ -23,7 +23,6 @@ import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import org.webjars.NotFoundException;
 
 import java.time.LocalDateTime;
 import java.util.List;
@@ -48,13 +47,13 @@ public class MeetingService {
         final Integer DEFAULT_MEMBER_COUNT = 1;
 
         MeetingType meetingType = meetingTypeRepository.findByName(meetingDto.getMeetingType())
-                .orElseThrow(() -> new CustomException(ErrorCode.NOT_FOUND));
+                .orElseThrow(() -> new CustomException(ErrorCode.MEETING_TYPE_NOT_FOUND));
 
         Exercise exercise = exerciseRepository.findByName(meetingDto.getExerciseName())
-                .orElseThrow(() -> new CustomException(ErrorCode.NOT_FOUND));
+                .orElseThrow(() -> new CustomException(ErrorCode.EXERCISE_NOT_FOUND));
 
         ExerciseLevel exerciseLevel = exerciseLevelRepository.findByLevelAndExerciseId(meetingDto.getExerciseLevel(), exercise.getId())
-                .orElseThrow(() -> new CustomException(ErrorCode.NOT_FOUND));
+                .orElseThrow(() -> new CustomException(ErrorCode.EXERCISE_LEVEL_NOT_FOUND));
 
         LocalDateTime today = meetingDto.getMeetingDate();
 
@@ -108,7 +107,7 @@ public class MeetingService {
 
     public MeetingDetailResponseDto findMeetingById(Long id) {
         Meeting meeting = meetingRepository.findById(id)
-                .orElseThrow(() -> new NotFoundException("해당 그룹이 없습니다. id=" + id));
+                .orElseThrow(() -> new CustomException(ErrorCode.MEETING_NOT_FOUND));
 
         return getMeetingDetailResponseDto(meeting);
     }
@@ -123,10 +122,10 @@ public class MeetingService {
 
     public MeetingDetailResponseDto joinMeeting(User user, Long id) {
         Meeting meeting = meetingRepository.findById(id)
-                .orElseThrow(() -> new NotFoundException("해당 그룹이 없습니다. id=" + id));
+                .orElseThrow(() -> new CustomException(ErrorCode.MEETING_NOT_FOUND));
 
         userMeetingRepository.findByMeetingAndUser(meeting, user).ifPresent(userMeeting -> {
-            throw new IllegalArgumentException("이미 가입을 신청한 그룹입니다.");
+            throw new CustomException(ErrorCode.ALREADY_JOINED_MEETING);
         });
 
         UserMeeting userMeeting = UserMeeting.builder()
@@ -222,7 +221,7 @@ public class MeetingService {
                 .orElseThrow(() -> new IllegalArgumentException("해당 그룹이 없습니다. id=" + id));
 
         if (meeting.getUser() != user) {
-            throw new IllegalArgumentException("해당 그룹의 주최자가 아닙니다.");
+            throw new CustomException(ErrorCode.NOT_MEETING_OWNER);
         }
 
         UserMeeting userMeeting = userMeetingRepository.findByMeetingAndUser(meeting, requestUser)
@@ -242,7 +241,7 @@ public class MeetingService {
                 .orElseThrow(() -> new IllegalArgumentException("해당 그룹이 없습니다. id=" + id));
 
         if (meeting.getUser() != user) {
-            throw new IllegalArgumentException("해당 그룹의 주최자가 아닙니다.");
+            throw new CustomException(ErrorCode.NOT_MEETING_OWNER);
         }
 
         UserMeeting userMeeting = userMeetingRepository.findByMeetingAndUser(meeting, requestUser)

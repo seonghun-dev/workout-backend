@@ -15,7 +15,19 @@ public enum ErrorCode {
 
 
     // Common
-    NOT_FOUND(HttpStatus.NOT_FOUND, "", "Not Found the Contents");
+    NOT_FOUND(HttpStatus.NOT_FOUND, "", "Not Found the Contents"),
+
+
+
+    // Meeting
+    MEETING_NOT_FOUND(HttpStatus.NOT_FOUND, "MEETING-0001", "Not Found the Meeting"),
+    MEETING_TYPE_NOT_FOUND(HttpStatus.NOT_FOUND, "MEETING-0002", "Not Found the Meeting Type"),
+    ALREADY_JOINED_MEETING(HttpStatus.BAD_REQUEST, "MEETING-0003", "Already Joined the Meeting"),
+    NOT_MEETING_OWNER(HttpStatus.FORBIDDEN, "MEETING-0004", "Not Owner of the Meeting"),
+
+    // Exercise
+    EXERCISE_NOT_FOUND(HttpStatus.NOT_FOUND, "EXERCISE-0001", "Not Found the Exercise"),
+    EXERCISE_LEVEL_NOT_FOUND(HttpStatus.NOT_FOUND, "EXERCISE-0002", "Not Found the Exercise Level");
 
 
     private final HttpStatus status;
