@@ -56,7 +56,7 @@ public class MeetingService {
         ExerciseLevel exerciseLevel = exerciseLevelRepository.findByLevelAndExerciseId(meetingDto.getExerciseLevel(), exercise.getId())
                 .orElseThrow(() -> new CustomException(ErrorCode.NOT_FOUND));
 
-        LocalDateTime today = LocalDateTime.now();
+        LocalDateTime today = meetingDto.getMeetingDate();
 
 
         GeometryFactory gf = new GeometryFactory();
