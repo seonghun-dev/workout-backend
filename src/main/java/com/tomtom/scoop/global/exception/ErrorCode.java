@@ -7,14 +7,15 @@ import org.springframework.http.HttpStatus;
 @Getter
 @RequiredArgsConstructor
 public enum ErrorCode {
+    // Auth
     UNAUTHORIZED(HttpStatus.UNAUTHORIZED, "", "Unauthorized"),
     JWT_ACCESS_TOKEN_EXPIRED(HttpStatus.UNAUTHORIZED, "TOKEN-0001", "Access token has expired"),
     JWT_REFRESH_TOKEN_EXPIRED(HttpStatus.UNAUTHORIZED, "TOKEN-0002", "Refresh token has expired"),
+    INVALID_TOKEN(HttpStatus.UNAUTHORIZED, "TOKEN-0003", "Invalid token"),
 
 
-    NOT_FOUND(HttpStatus.NOT_FOUND, "Notfound", "Not Found the Contents"),
-
-    INVALID_TOKEN(HttpStatus.UNAUTHORIZED, "TOKEN-0003","Invalid token");
+    // Common
+    NOT_FOUND(HttpStatus.NOT_FOUND, "", "Not Found the Contents");
 
 
     private final HttpStatus status;
