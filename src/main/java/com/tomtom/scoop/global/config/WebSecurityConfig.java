@@ -39,7 +39,7 @@ public class WebSecurityConfig {
                 .httpBasic().disable()
                 .formLogin().disable()
                 .csrf().disable().authorizeHttpRequests()
-                .requestMatchers("/health", "/", "/v3/api-docs/**", "/swagger*/**", "/swagger-ui/").permitAll()
+                .requestMatchers("/health", "/", "/v3/api-docs/**", "/swagger*/**", "/swagger-ui/", "/api-docs.html").permitAll()
                 .anyRequest().authenticated()
                 .and()
                 .logout()
