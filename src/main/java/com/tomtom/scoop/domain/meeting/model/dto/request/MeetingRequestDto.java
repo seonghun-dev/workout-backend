@@ -16,7 +16,7 @@ public class MeetingRequestDto {
     @NotNull
     private String title;
 
-    @Schema(description = "Meeting content", example = "Let's run together In KonKuk the park")
+    @Schema(description = "Meeting content", example = "Run together In KonKuk the park")
     @NotNull
     private String content;
 
@@ -28,7 +28,7 @@ public class MeetingRequestDto {
     @NotNull
     private Gender gender;
 
-    @Schema(description = "Meeting start time", example = "2021-08-01 10:00:00")
+    @Schema(description = "Meeting start time", example = "2023-02-19T11:24:25.151Z")
     private LocalDateTime meetingDate;
 
     @Schema(description = "Meeting location latitude", example = "37.5419")
