@@ -8,6 +8,7 @@ import org.springframework.http.HttpStatus;
 @RequiredArgsConstructor
 public enum ErrorCode {
     // Common
+    BAD_REQUEST(HttpStatus.BAD_REQUEST, "C-0000", "Bad Request"),
     NOT_FOUND(HttpStatus.NOT_FOUND, "C-0001", "Not Found the Contents"),
     INTERNAL_SERVER_ERROR(HttpStatus.INTERNAL_SERVER_ERROR, "C-0002", "Internal Server Error"),
 
