@@ -7,7 +7,7 @@ import com.tomtom.scoop.domain.user.model.entity.User;
 import com.tomtom.scoop.domain.user.repository.LogoutAccessTokenRepository;
 import com.tomtom.scoop.domain.user.repository.RefreshTokenRepository;
 import com.tomtom.scoop.domain.user.repository.UserRepository;
-import com.tomtom.scoop.global.exception.CustomException;
+import com.tomtom.scoop.global.exception.BusinessException;
 import com.tomtom.scoop.global.exception.ErrorCode;
 import com.tomtom.scoop.global.util.JwtTokenUtil;
 import io.jsonwebtoken.ExpiredJwtException;
@@ -16,7 +16,6 @@ import jakarta.servlet.http.HttpServletResponse;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import java.io.IOException;
 import java.time.Duration;
 import java.util.Optional;
 
@@ -35,34 +34,34 @@ public class AuthService {
     @Autowired
     UserRepository userRepository;
 
-    public TokenDto reissue(HttpServletRequest request, HttpServletResponse response) throws IOException {
+    public TokenDto reissue(HttpServletRequest request, HttpServletResponse response) {
         try {
             String token = jwtTokenUtil.resolveToken(request);
             String oauthId = jwtTokenUtil.getOauthId(token);
 
             Optional<RefreshToken> refreshToken = refreshTokenRepository.findById(oauthId);
             refreshToken.orElseThrow(
-                    () -> new CustomException(ErrorCode.UNAUTHORIZED)
+                    () -> new BusinessException(ErrorCode.UNAUTHORIZED)
             );
 
-            boolean isTokenValid = jwtTokenUtil.validate(refreshToken.get().getValue(),oauthId);
+            boolean isTokenValid = jwtTokenUtil.validate(refreshToken.get().getValue(), oauthId);
 
-            if(isTokenValid) {
+            if (isTokenValid) {
 
                 Optional<User> findUser = userRepository.findByOauthId(oauthId);
 
-                if(findUser.isPresent()) {
+                if (findUser.isPresent()) {
                     String newAccessToken = jwtTokenUtil.generateAccessToken(oauthId);
                     String newRefreshToken = jwtTokenUtil.generateRefreshToken(oauthId);
 
 
-                    refreshTokenRepository.save(new RefreshToken(oauthId,newRefreshToken, Duration.ofDays(14).toMillis()));
+                    refreshTokenRepository.save(new RefreshToken(oauthId, newRefreshToken, Duration.ofDays(14).toMillis()));
 
-                    return new TokenDto(newAccessToken,newRefreshToken);
+                    return new TokenDto(newAccessToken, newRefreshToken);
                 }
             }
-        } catch(ExpiredJwtException e) {
-            throw new CustomException(ErrorCode.JWT_REFRESH_TOKEN_EXPIRED);
+        } catch (ExpiredJwtException e) {
+            throw new BusinessException(ErrorCode.JWT_REFRESH_TOKEN_EXPIRED);
         }
         return null;
     }

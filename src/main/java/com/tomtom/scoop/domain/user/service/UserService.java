@@ -7,8 +7,9 @@ import com.tomtom.scoop.domain.user.model.dto.request.UserUpdateDto;
 import com.tomtom.scoop.domain.user.model.dto.response.UserResponseDto;
 import com.tomtom.scoop.domain.user.model.entity.*;
 import com.tomtom.scoop.domain.user.repository.*;
-import com.tomtom.scoop.global.exception.CustomException;
+import com.tomtom.scoop.global.exception.BusinessException;
 import com.tomtom.scoop.global.exception.ErrorCode;
+import com.tomtom.scoop.global.exception.NotFoundException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -31,13 +32,11 @@ public class UserService {
 
 
     @Transactional(readOnly = true)
-    public User findByOauthId(String oauthId){
-        return userRepository.findByOauthId(oauthId).orElseThrow(
-                () -> new IllegalArgumentException()
-        );
+    public User findByOauthId(String oauthId) {
+        return userRepository.findByOauthId(oauthId).orElseThrow(() -> new BusinessException(ErrorCode.AUTH_ID_NOT_FOUND));
     }
 
-    public UserResponseDto join(User user, UserJoinDto userJoinDto, MultipartFile file){
+    public UserResponseDto join(User user, UserJoinDto userJoinDto, MultipartFile file) {
 
         saveUserExerciseLevel(user, userJoinDto.getExerciseLevels());
 
@@ -64,14 +63,14 @@ public class UserService {
                 .build();
     }
 
-    public UserResponseDto update(User user, UserUpdateDto userUpdateDto, MultipartFile file){
+    public UserResponseDto update(User user, UserUpdateDto userUpdateDto, MultipartFile file) {
 
         userExerciseLevelRepository.deleteAllByUser(user);
 
         saveUserExerciseLevel(user, userUpdateDto.getExerciseLevels());
 
         List<UserKeyword> userKeywords = userKeywordRepository.findByUser(user);
-        if(userKeywords != null || !userKeywords.isEmpty()){
+        if (userKeywords != null || !userKeywords.isEmpty()) {
             userKeywordRepository.deleteAllByUser(user);
         }
         saveUserKeyword(userUpdateDto.getKeywords(), user);
@@ -98,7 +97,7 @@ public class UserService {
     }
 
     @Transactional(readOnly = true)
-    public UserResponseDto me(User user){
+    public UserResponseDto me(User user) {
         user = userRepository.findById(user.getId()).get();
         return UserResponseDto.builder()
                 .id(user.getId())
@@ -114,11 +113,11 @@ public class UserService {
                                 userExerciseLevel.getExerciseLevel().getExercise().getName(),
                                 userExerciseLevel.getExerciseLevel().getLevel())
                 ).toList())
-                .userLocation(user.getUserLocation()==null?null:
+                .userLocation(user.getUserLocation() == null ? null :
                         new UserLocationDto(
-                        user.getUserLocation().getCounty(),
-                        user.getUserLocation().getCity(),
-                        user.getUserLocation().getDong()))
+                                user.getUserLocation().getCounty(),
+                                user.getUserLocation().getCity(),
+                                user.getUserLocation().getDong()))
                 .userKeywords(user.getUserKeywords().stream().map(
                         UserKeyword::getKeyword
                 ).toList())
@@ -128,22 +127,23 @@ public class UserService {
     public void saveUserExerciseLevel(User user, List<ExerciseLevelDto> exerciseLevels) {
         exerciseLevels.forEach(exerciseLevelDto -> {
             Exercise exercise = exerciseRepository.findByName(exerciseLevelDto.getExerciseName())
-                    .orElseThrow(() -> new CustomException(ErrorCode.NOT_FOUND));
+                    .orElseThrow(() -> new NotFoundException(ErrorCode.NOT_FOUND, exerciseLevelDto.getExerciseName()));
             ExerciseLevel exerciseLevel = exerciseLevelRepository.findByLevelAndExerciseId(exerciseLevelDto.getLevel(), exercise.getId())
-                    .orElseThrow(() -> new CustomException(ErrorCode.NOT_FOUND));
+                    .orElseThrow(() -> new NotFoundException(ErrorCode.NOT_FOUND, exerciseLevelDto.getLevel()));
 
             UserExerciseLevel userExerciseLevel = UserExerciseLevel.builder().exerciseLevel(exerciseLevel).user(user).build();
             userExerciseLevelRepository.save(userExerciseLevel);
         });
     }
-    public void saveUserKeyword(List<String> userKeywords, User user){
+
+    public void saveUserKeyword(List<String> userKeywords, User user) {
         userKeywords.forEach(keyword -> {
             UserKeyword userKeyword = UserKeyword.builder().keyword(keyword).user(user).build();
             userKeywordRepository.save(userKeyword);
         });
     }
 
-    public UserLocation saveUserLocation(UserLocationDto userLocationDto){
+    public UserLocation saveUserLocation(UserLocationDto userLocationDto) {
         Optional<UserLocation> findUserLocation = userLocationRepository.findByCountyAndCityAndDong(
                 userLocationDto.getCounty(),
                 userLocationDto.getCity(),
