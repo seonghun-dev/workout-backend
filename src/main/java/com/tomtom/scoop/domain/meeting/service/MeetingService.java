@@ -2,6 +2,7 @@ package com.tomtom.scoop.domain.meeting.service;
 
 import com.tomtom.scoop.domain.meeting.model.dto.request.MeetingRequestDto;
 import com.tomtom.scoop.domain.meeting.model.dto.response.MeetingDetailResponseDto;
+import com.tomtom.scoop.domain.meeting.model.dto.response.MeetingImageResponseDto;
 import com.tomtom.scoop.domain.meeting.model.dto.response.MeetingListResponseDto;
 import com.tomtom.scoop.domain.meeting.model.entity.*;
 import com.tomtom.scoop.domain.meeting.repository.*;
@@ -16,6 +17,7 @@ import com.tomtom.scoop.domain.user.repository.UserRepository;
 import com.tomtom.scoop.global.exception.BusinessException;
 import com.tomtom.scoop.global.exception.ErrorCode;
 import com.tomtom.scoop.global.exception.NotFoundException;
+import com.tomtom.scoop.infrastructor.s3.S3Service;
 import lombok.RequiredArgsConstructor;
 import org.locationtech.jts.geom.Coordinate;
 import org.locationtech.jts.geom.GeometryFactory;
@@ -24,7 +26,9 @@ import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.multipart.MultipartFile;
 
+import java.io.IOException;
 import java.time.LocalDateTime;
 import java.util.List;
 
@@ -40,6 +44,8 @@ public class MeetingService {
     private final ExerciseRepository exerciseRepository;
     private final UserRepository userRepository;
     private final MeetingLikeRepository meetingLikeRepository;
+
+    private final S3Service s3Service;
 
     @Transactional
     public MeetingDetailResponseDto createMeeting(User user, MeetingRequestDto meetingDto) {
@@ -305,4 +311,15 @@ public class MeetingService {
                 .build();
     }
 
+    public MeetingImageResponseDto uploadMeetingImage(MultipartFile file) {
+        if(file.isEmpty()) {
+            throw new BusinessException(ErrorCode.FILE_NOT_FOUND);
+        }
+        try {
+            var result = s3Service.upload(file, "meeting");
+            return new MeetingImageResponseDto(result);
+        } catch (IOException e) {
+            throw new BusinessException(ErrorCode.FILE_UPLOAD_ERROR);
+        }
+    }
 }
