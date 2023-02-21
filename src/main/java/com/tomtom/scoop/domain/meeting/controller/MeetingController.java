@@ -3,17 +3,21 @@ package com.tomtom.scoop.domain.meeting.controller;
 import com.tomtom.scoop.domain.common.model.ResponseDto;
 import com.tomtom.scoop.domain.meeting.model.dto.request.MeetingRequestDto;
 import com.tomtom.scoop.domain.meeting.model.dto.response.MeetingDetailResponseDto;
+import com.tomtom.scoop.domain.meeting.model.dto.response.MeetingImageResponseDto;
 import com.tomtom.scoop.domain.meeting.model.dto.response.MeetingListResponseDto;
 import com.tomtom.scoop.domain.meeting.service.MeetingService;
 import com.tomtom.scoop.domain.user.model.entity.User;
 import com.tomtom.scoop.global.annotation.ReqUser;
 import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Pageable;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.util.List;
 
@@ -33,6 +37,15 @@ public class MeetingController {
             @ReqUser() User user,
             @RequestBody MeetingRequestDto meetingRequestDto) {
         var response = meetingService.createMeeting(user, meetingRequestDto);
+        return ResponseDto.created(response);
+    }
+
+    @PostMapping(value = "/images", consumes = MediaType.MULTIPART_FORM_DATA_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
+    @Operation(summary = "Upload meeting image")
+    public ResponseEntity<MeetingImageResponseDto> uploadMeetingImage(
+            @Parameter(description = "multipart/form-data 형식의 이미지를 input으로 받습니다. key 값은 multipartFile 입니다.")
+            @RequestPart("multipartFile") MultipartFile file) {
+        var response = meetingService.uploadMeetingImage(file);
         return ResponseDto.created(response);
     }
 

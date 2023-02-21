@@ -11,6 +11,8 @@ public enum ErrorCode {
     BAD_REQUEST(HttpStatus.BAD_REQUEST, "C-0000", "Bad Request"),
     NOT_FOUND(HttpStatus.NOT_FOUND, "C-0001", "Not Found the Contents"),
     INTERNAL_SERVER_ERROR(HttpStatus.INTERNAL_SERVER_ERROR, "C-0002", "Internal Server Error"),
+    FILE_NOT_FOUND(HttpStatus.NOT_FOUND, "C-0003", "Not Found Upload File"),
+    FILE_UPLOAD_ERROR(HttpStatus.INTERNAL_SERVER_ERROR, "C-0004", "File Upload Error"),
 
     // Auth
     UNAUTHORIZED(HttpStatus.UNAUTHORIZED, "AUTH-0001", "Unauthorized"),
