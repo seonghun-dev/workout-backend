@@ -60,6 +60,7 @@ public class MeetingRequestDto {
     private String exerciseLevel;
 
     @Schema(description = "Meeting Exercise type", example = "Play")
+    @NotNull
     private String meetingType;
 
 }
