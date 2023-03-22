@@ -4,10 +4,7 @@ import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
-import org.springframework.data.annotation.CreatedDate;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
-
-import java.time.LocalDateTime;
 
 @Entity
 @Getter
@@ -23,8 +20,5 @@ public class Exercise {
 
     @Column(nullable = false, columnDefinition = "VARCHAR(255)")
     private String name;
-
-    @CreatedDate
-    private LocalDateTime createdAt;
 
 }
