@@ -24,7 +24,6 @@ import java.util.Optional;
 public class UserService {
 
     private final UserRepository userRepository;
-    private final ExerciseLevelRepository exerciseLevelRepository;
     private final ExerciseRepository exerciseRepository;
     private final UserExerciseLevelRepository userExerciseLevelRepository;
     private final UserKeywordRepository userKeywordRepository;
@@ -110,8 +109,8 @@ public class UserService {
                 .statusMessage(user.getStatusMessage())
                 .userExerciseLevels(user.getUserExerciseLevels().stream().map(
                         userExerciseLevel -> new ExerciseLevelDto(
-                                userExerciseLevel.getExerciseLevel().getExercise().getName(),
-                                userExerciseLevel.getExerciseLevel().getLevel())
+                                userExerciseLevel.getExercise().getName(),
+                                userExerciseLevel.getLevel())
                 ).toList())
                 .userLocation(user.getUserLocation() == null ? null :
                         new UserLocationDto(
@@ -128,10 +127,7 @@ public class UserService {
         exerciseLevels.forEach(exerciseLevelDto -> {
             Exercise exercise = exerciseRepository.findByName(exerciseLevelDto.getExerciseName())
                     .orElseThrow(() -> new NotFoundException(ErrorCode.NOT_FOUND, exerciseLevelDto.getExerciseName()));
-            ExerciseLevel exerciseLevel = exerciseLevelRepository.findByLevelAndExerciseId(exerciseLevelDto.getLevel(), exercise.getId())
-                    .orElseThrow(() -> new NotFoundException(ErrorCode.NOT_FOUND, exerciseLevelDto.getLevel()));
-
-            UserExerciseLevel userExerciseLevel = UserExerciseLevel.builder().exerciseLevel(exerciseLevel).user(user).build();
+            UserExerciseLevel userExerciseLevel = UserExerciseLevel.builder().exercise(exercise).level(exerciseLevelDto.getLevel()).user(user).build();
             userExerciseLevelRepository.save(userExerciseLevel);
         });
     }
