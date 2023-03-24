@@ -5,11 +5,13 @@ import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.validation.constraints.NotNull;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 
 import java.time.LocalDateTime;
 
 @Getter
 @AllArgsConstructor
+@NoArgsConstructor
 public class MeetingRequestDto {
 
     @Schema(description = "Meeting title", example = "Running in the park")
@@ -60,6 +62,7 @@ public class MeetingRequestDto {
     private String exerciseLevel;
 
     @Schema(description = "Meeting Exercise type", example = "Play")
+    @NotNull
     private String meetingType;
 
 }

@@ -1,6 +1,7 @@
 package com.tomtom.scoop.domain.meeting.controller;
 
 import com.tomtom.scoop.domain.common.model.ResponseDto;
+import com.tomtom.scoop.domain.meeting.model.dto.request.FindAllMeetingRequestDto;
 import com.tomtom.scoop.domain.meeting.model.dto.request.MeetingRequestDto;
 import com.tomtom.scoop.domain.meeting.model.dto.response.MeetingDetailResponseDto;
 import com.tomtom.scoop.domain.meeting.model.dto.response.MeetingImageResponseDto;
@@ -52,8 +53,9 @@ public class MeetingController {
 
     @GetMapping
     @Operation(summary = "Find All Meetings")
-    public ResponseEntity<List<MeetingListResponseDto>> findAllMeetings(Pageable pageable) {
-        var response = meetingService.findAllMeetings(pageable);
+    public ResponseEntity<List<MeetingListResponseDto>> findAllMeetings(FindAllMeetingRequestDto findAllMeetingRequestDto
+    ) {
+        var response = meetingService.findAllMeetings(findAllMeetingRequestDto);
         return ResponseDto.ok(response);
     }
 

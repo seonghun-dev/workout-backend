@@ -18,9 +18,12 @@ public class UserExerciseLevel extends BaseTimeEntity {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
+    @Column
+    private String level;
+
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "exerciseLevel_id")
-    private ExerciseLevel exerciseLevel;
+    @JoinColumn(name = "exercise_id")
+    private Exercise exercise;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "user_id")
