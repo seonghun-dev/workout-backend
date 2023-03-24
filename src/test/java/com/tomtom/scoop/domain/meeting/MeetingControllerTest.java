@@ -38,6 +38,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 
 @WebMvcTest(controllers = {MeetingController.class})
 @Import(MeetingController.class)
+@DisplayName("[API][Controller] 모임 관련 테스트")
 public class MeetingControllerTest {
 
     @Autowired
@@ -283,7 +284,7 @@ public class MeetingControllerTest {
     void testApproveMeeting() throws Exception {
 
         ResultActions actions = mvc.perform(
-                post("/v1/meetings/1/accept")
+                post("/v1/meetings/1/user/2/accept")
                         .with(csrf())
                         .contentType(MediaType.APPLICATION_JSON)
                         .accept(MediaType.APPLICATION_JSON)
@@ -298,7 +299,7 @@ public class MeetingControllerTest {
     void testRejectMeeting() throws Exception {
 
         ResultActions actions = mvc.perform(
-                post("/v1/meetings/1/reject")
+                post("/v1/meetings/1/user/2/reject")
                         .with(csrf())
                         .contentType(MediaType.APPLICATION_JSON)
                         .accept(MediaType.APPLICATION_JSON)
@@ -329,7 +330,7 @@ public class MeetingControllerTest {
         given(meetingService.findUserUpcomingMeeting(any(), any())).willReturn(result);
 
         ResultActions actions = mvc.perform(
-                get("/v1/meetings/user/1")
+                get("/v1/meetings/upcoming")
                         .with(csrf())
                         .contentType(MediaType.APPLICATION_JSON)
                         .accept(MediaType.APPLICATION_JSON)
@@ -350,5 +351,189 @@ public class MeetingControllerTest {
                 jsonPath("$[0].meetingType").value("Play")
         );
     }
+
+
+    @Test
+    @DisplayName("[API][GET][Controller] 유저별 참여 완료 모임 조회 테스트")
+    @MockLoginUser
+    void testGetUserCompletedMeetings() throws Exception {
+
+        MeetingListResponseDto element = new MeetingListResponseDto(
+                1L,
+                "Running in the park",
+                "seoul",
+                LocalDateTime.of(2023, 5, 5, 12, 0),
+                5,
+                10,
+                "https://scoop.com/42455.png",
+                "Running",
+                "Beginner",
+                "Play");
+
+        List<MeetingListResponseDto> result = Collections.singletonList(element);
+
+        given(meetingService.findUserPastMeeting(any(), any())).willReturn(result);
+
+        ResultActions actions = mvc.perform(
+                get("/v1/meetings/past")
+                        .with(csrf())
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .accept(MediaType.APPLICATION_JSON)
+        );
+
+        actions.andExpect(status().isOk());
+        actions.andExpect(jsonPath("$").isArray());
+        actions.andExpectAll(
+                jsonPath("$[0].id").value(1L),
+                jsonPath("$[0].title").value("Running in the park"),
+                jsonPath("$[0].city").value("seoul"),
+                jsonPath("$[0].eventDate").value("2023-05-05T12:00:00"),
+                jsonPath("$[0].memberCount").value(5),
+                jsonPath("$[0].memberLimit").value(10),
+                jsonPath("$[0].imgUrl").value("https://scoop.com/42455.png"),
+                jsonPath("$[0].exerciseName").value("Running"),
+                jsonPath("$[0].exerciseLevel").value("Beginner"),
+                jsonPath("$[0].meetingType").value("Play")
+        );
+    }
+
+
+    @Test
+    @DisplayName("[API][GET][Controller] 유저별 참여 대기 모임 조회 테스트")
+    @MockLoginUser
+    void testGetUserWaitingMeetings() throws Exception {
+
+        MeetingListResponseDto element = new MeetingListResponseDto(
+                1L,
+                "Running in the park",
+                "seoul",
+                LocalDateTime.of(2023, 5, 5, 12, 0),
+                5,
+                10,
+                "https://scoop.com/42455.png",
+                "Running",
+                "Beginner",
+                "Play");
+
+        List<MeetingListResponseDto> result = Collections.singletonList(element);
+
+        given(meetingService.findUserWaitingMeeting(any(), any())).willReturn(result);
+
+        ResultActions actions = mvc.perform(
+                get("/v1/meetings/waiting")
+                        .with(csrf())
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .accept(MediaType.APPLICATION_JSON)
+        );
+
+        actions.andExpect(status().isOk());
+        actions.andExpect(jsonPath("$").isArray());
+        actions.andExpectAll(
+                jsonPath("$[0].id").value(1L),
+                jsonPath("$[0].title").value("Running in the park"),
+                jsonPath("$[0].city").value("seoul"),
+                jsonPath("$[0].eventDate").value("2023-05-05T12:00:00"),
+                jsonPath("$[0].memberCount").value(5),
+                jsonPath("$[0].memberLimit").value(10),
+                jsonPath("$[0].imgUrl").value("https://scoop.com/42455.png"),
+                jsonPath("$[0].exerciseName").value("Running"),
+                jsonPath("$[0].exerciseLevel").value("Beginner"),
+                jsonPath("$[0].meetingType").value("Play")
+        );
+    }
+
+    @Test
+    @DisplayName("[API][GET][Controller] 유저 주최 모임 조회 테스트")
+    @MockLoginUser
+    void testGetUserHostMeetings() throws Exception {
+
+        MeetingListResponseDto element = new MeetingListResponseDto(
+                1L,
+                "Running in the park",
+                "seoul",
+                LocalDateTime.of(2023, 5, 5, 12, 0),
+                5,
+                10,
+                "https://scoop.com/42455.png",
+                "Running",
+                "Beginner",
+                "Play");
+
+        List<MeetingListResponseDto> result = Collections.singletonList(element);
+
+        given(meetingService.findOwnerMeetingByUser(any(), any())).willReturn(result);
+
+        ResultActions actions = mvc.perform(
+                get("/v1/meetings/owner")
+                        .with(csrf())
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .accept(MediaType.APPLICATION_JSON)
+        );
+
+        actions.andExpect(status().isOk());
+        actions.andExpect(jsonPath("$").isArray());
+        actions.andExpectAll(
+                jsonPath("$[0].id").value(1L),
+                jsonPath("$[0].title").value("Running in the park"),
+                jsonPath("$[0].city").value("seoul"),
+                jsonPath("$[0].eventDate").value("2023-05-05T12:00:00"),
+                jsonPath("$[0].memberCount").value(5),
+                jsonPath("$[0].memberLimit").value(10),
+                jsonPath("$[0].imgUrl").value("https://scoop.com/42455.png"),
+                jsonPath("$[0].exerciseName").value("Running"),
+                jsonPath("$[0].exerciseLevel").value("Beginner"),
+                jsonPath("$[0].meetingType").value("Play")
+        );
+    }
+
+    @Test
+    @DisplayName("[API][GET][Controller] 유저별 좋아요한 모임 조회 테스트")
+    @MockLoginUser
+    void testGetUserLikeMeetings() throws Exception {
+
+        MeetingListResponseDto element = new MeetingListResponseDto(
+                1L,
+                "Running in the park",
+                "seoul",
+                LocalDateTime.of(2023, 5, 5, 12, 0),
+                5,
+                10,
+                "https://scoop.com/42455.png",
+                "Running",
+                "Beginner",
+                "Play");
+
+        List<MeetingListResponseDto> result = Collections.singletonList(element);
+
+        given(meetingService.findLikeMeetingByUser(any(), any())).willReturn(result);
+
+        ResultActions actions = mvc.perform(
+                get("/v1/meetings/like")
+                        .with(csrf())
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .accept(MediaType.APPLICATION_JSON)
+        );
+
+        actions.andExpect(status().isOk());
+        actions.andExpect(jsonPath("$").isArray());
+        actions.andExpectAll(
+                jsonPath("$[0].id").value(1L),
+                jsonPath("$[0].title").value("Running in the park"),
+                jsonPath("$[0].city").value("seoul"),
+                jsonPath("$[0].eventDate").value("2023-05-05T12:00:00"),
+                jsonPath("$[0].memberCount").value(5),
+                jsonPath("$[0].memberLimit").value(10),
+                jsonPath("$[0].imgUrl").value("https://scoop.com/42455.png"),
+                jsonPath("$[0].exerciseName").value("Running"),
+                jsonPath("$[0].exerciseLevel").value("Beginner"),
+                jsonPath("$[0].meetingType").value("Play")
+        );
+    }
+
+
+
+
+
+
 
 }
