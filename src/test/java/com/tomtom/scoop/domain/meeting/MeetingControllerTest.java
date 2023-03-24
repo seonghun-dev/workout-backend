@@ -530,10 +530,53 @@ public class MeetingControllerTest {
         );
     }
 
+    @Test
+    @DisplayName("[API][POST][Controller] 모임 좋아요 테스트")
+    @MockLoginUser
+    void testLikeMeeting() throws Exception {
 
 
+        ResultActions actions = mvc.perform(
+                post("/v1/meetings/1/like")
+                        .with(csrf())
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .accept(MediaType.APPLICATION_JSON)
+        );
+
+        actions.andExpect(status().isOk());
+    }
+
+    @Test
+    @DisplayName("[API][POST][Controller] 모임 좋아요 취소 테스트")
+    @MockLoginUser
+    void testUnlikeMeeting() throws Exception {
+
+        ResultActions actions = mvc.perform(
+                post("/v1/meetings/1/unlike")
+                        .with(csrf())
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .accept(MediaType.APPLICATION_JSON)
+        );
+
+        actions.andExpect(status().isOk());
+    }
 
 
+    @Test
+    @DisplayName("[API][POST][Controller] 모임 키워드로 조회 테스트")
+    @MockLoginUser
+    void testSearchMeeting() throws Exception {
+
+        ResultActions actions = mvc.perform(
+                get("/v1/meetings/search")
+                        .param("keyword", "Running")
+                        .with(csrf())
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .accept(MediaType.APPLICATION_JSON)
+        );
+
+        actions.andExpect(status().isOk());
+    }
 
 
 }
