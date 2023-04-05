@@ -1156,6 +1156,15 @@ public class MeetingServiceTest {
                 Assertions.assertThat(e.getMessage()).isEqualTo("File Upload Error");
             }
 
+            @Test
+            @DisplayName("[API][Service] 모임 이미지 업로드 실패 테스트- 파일이 없는 경우")
+            void uploadMeetingImageFail2(){
+                multipartFile= new MockMultipartFile("file", "image.jpg", "image/jpeg", "".getBytes());
+
+                Exception e = assertThrows(BusinessException.class, () -> meetingService.uploadMeetingImage(multipartFile));
+                Assertions.assertThat(e.getMessage()).isEqualTo("Not Found Upload File");
+            }
+
         }
     }
 }
