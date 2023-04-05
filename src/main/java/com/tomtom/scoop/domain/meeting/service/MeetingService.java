@@ -151,7 +151,7 @@ public class MeetingService {
         return null;
     }
 
-    public MeetingDetailResponseDto quitMeeting(User user, Long id) {
+    public MeetingDetailResponseDto leaveMeeting(User user, Long id) {
         Meeting meeting = meetingRepository.findById(id)
                 .orElseThrow(() -> new NotFoundException(ErrorCode.MEETING_NOT_FOUND, id));
 

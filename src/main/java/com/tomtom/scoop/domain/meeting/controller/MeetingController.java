@@ -79,7 +79,7 @@ public class MeetingController {
     @Operation(summary = "Quit a meeting")
     @Transactional
     public ResponseEntity<MeetingDetailResponseDto> quitMeeting(@ReqUser() User user, @PathVariable("meetingId") Long meetingId) {
-        var response = meetingService.quitMeeting(user, meetingId);
+        var response = meetingService.leaveMeeting(user, meetingId);
         return ResponseDto.ok(response);
     }
 
