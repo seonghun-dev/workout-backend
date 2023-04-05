@@ -31,7 +31,8 @@ public enum ErrorCode {
     NOT_MEETING_OWNER(HttpStatus.FORBIDDEN, "MEETING-0004", "Not Owner of the Meeting"),
     NOT_LIKED_MEETING(HttpStatus.BAD_REQUEST, "MEETING-0005", "Not Liked the Meeting"),
     NOT_JOINED_USER_IN_MEETING(HttpStatus.BAD_REQUEST, "MEETING-0006", "Not Joined User in the Meeting"),
-
+    OWNER_CANNOT_LEAVE_MEETING(HttpStatus.BAD_REQUEST, "MEETING-0007", "Owner Cannot Leave the Meeting"),
+    REJECTED_USER_CANNOT_LEAVE_MEETING(HttpStatus.BAD_REQUEST, "MEETING-0008", "Rejected User Cannot Leave the Meeting"),
     // Exercise
     EXERCISE_NOT_FOUND(HttpStatus.NOT_FOUND, "EXERCISE-0001", "Not Found the Exercise"),
     EXERCISE_LEVEL_NOT_FOUND(HttpStatus.NOT_FOUND, "EXERCISE-0002", "Not Found the Exercise Level");

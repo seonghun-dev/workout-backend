@@ -157,7 +157,12 @@ public class MeetingService {
 
         UserMeeting userMeeting = userMeetingRepository.findByMeetingAndUser(meeting, user)
                 .orElseThrow(() -> new NotFoundException(ErrorCode.MEETING_NOT_FOUND, id));
-
+        if (userMeeting.getStatus() == MeetingStatus.OWNER) {
+            throw new BusinessException(ErrorCode.OWNER_CANNOT_LEAVE_MEETING);
+        }
+        if (userMeeting.getStatus() == MeetingStatus.REJECTED) {
+            throw new BusinessException(ErrorCode.REJECTED_USER_CANNOT_LEAVE_MEETING);
+        }
         userMeetingRepository.delete(userMeeting);
 
         return null;

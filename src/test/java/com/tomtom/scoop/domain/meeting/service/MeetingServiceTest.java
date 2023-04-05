@@ -8,6 +8,7 @@ import com.tomtom.scoop.domain.user.model.entity.Exercise;
 import com.tomtom.scoop.domain.user.model.entity.User;
 import com.tomtom.scoop.domain.user.repository.ExerciseRepository;
 import com.tomtom.scoop.domain.user.repository.UserRepository;
+import com.tomtom.scoop.global.exception.BusinessException;
 import com.tomtom.scoop.global.exception.NotFoundException;
 import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
@@ -29,7 +30,7 @@ import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.Mockito.when;
+import static org.mockito.Mockito.*;
 
 
 @ExtendWith(MockitoExtension.class)
@@ -379,9 +380,75 @@ public class MeetingServiceTest {
     @DisplayName("[API][Service] 모임 탈퇴 테스트")
     class LeaveMeeting {
 
+        private User owner;
+
+        private User participantUser1;
+
+        private Meeting meeting;
+
+        private UserMeeting ownerMeeting;
+
+        private UserMeeting userMeeting;
+
+        @BeforeEach
+        void setUp() {
+
+            owner = User.builder()
+                    .id(1L)
+                    .name("홍길동")
+                    .profileImg("https://api.scoop.com/user/profile/1.png")
+                    .build();
+
+            participantUser1 = User.builder()
+                    .id(2L)
+                    .name("홍길동")
+                    .profileImg("https://api.scoop.com/user/profile/2.png")
+                    .build();
+
+            ownerMeeting = UserMeeting.builder()
+                    .user(owner)
+                    .meeting(meeting)
+                    .status(MeetingStatus.OWNER)
+                    .build();
+
+            userMeeting = UserMeeting.builder()
+                    .user(participantUser1)
+                    .meeting(meeting)
+                    .status(MeetingStatus.ACCEPTED)
+                    .build();
+
+
+            meeting = Meeting.builder()
+                    .id(1L)
+                    .build();
+
+        }
+
         @Nested
         @DisplayName("[API][Service] 모임 탈퇴 성공 테스트")
         class Success {
+            @Test
+            @DisplayName("[API][Service] ACCEPTED 상태 유저 모임 탈퇴 성공 테스트")
+            void leaveMeetingSuccess1() {
+                when(meetingRepository.findById(any())).thenReturn(Optional.of(meeting));
+                when(userMeetingRepository.findByMeetingAndUser(any(), any())).thenReturn(Optional.of(userMeeting));
+
+                meetingService.leaveMeeting(participantUser1, 1L);
+                verify(userMeetingRepository, times(1)).delete(any());
+
+            }
+
+            @Test
+            @DisplayName("[API][Service] WAITING 상태 유저 모임 탈퇴 성공 테스트")
+            void leaveMeetingSuccess2() {
+                userMeeting.setStatus(MeetingStatus.WAITING);
+                when(meetingRepository.findById(any())).thenReturn(Optional.of(meeting));
+                when(userMeetingRepository.findByMeetingAndUser(any(), any())).thenReturn(Optional.of(userMeeting));
+
+                meetingService.leaveMeeting(participantUser1, 1L);
+                verify(userMeetingRepository, times(1)).delete(any());
+
+            }
 
         }
 
@@ -389,6 +456,46 @@ public class MeetingServiceTest {
         @DisplayName("[API][Service] 모임 탈퇴 실패 테스트")
         class Fail {
 
+            @Test
+            @DisplayName("[API][Service] OWNER 상태 유저 모임 탈퇴 실패 테스트")
+            void leaveMeetingFail1() {
+                when(meetingRepository.findById(any())).thenReturn(Optional.of(meeting));
+                when(userMeetingRepository.findByMeetingAndUser(any(), any())).thenReturn(Optional.of(ownerMeeting));
+
+                Exception e = assertThrows(BusinessException.class, () -> meetingService.leaveMeeting(owner, 1L));
+                Assertions.assertThat(e.getMessage()).isEqualTo("Owner Cannot Leave the Meeting");
+
+            }
+
+            @Test
+            @DisplayName("[API][Service] REJECT 상태 유저 모임 탈퇴 실패 테스트")
+            void leaveMeetingFail2() {
+                userMeeting.setStatus(MeetingStatus.REJECTED);
+                when(meetingRepository.findById(any())).thenReturn(Optional.of(meeting));
+                when(userMeetingRepository.findByMeetingAndUser(any(), any())).thenReturn(Optional.of(userMeeting));
+
+                Exception e = assertThrows(BusinessException.class, () -> meetingService.leaveMeeting(participantUser1, 1L));
+                Assertions.assertThat(e.getMessage()).isEqualTo("Rejected User Cannot Leave the Meeting");
+
+            }
+
+
+            @Test
+            @DisplayName("[API][Service] DB에 존재하지 않는 모임 ID로 모임 탈퇴 실패 테스트")
+            void leaveMeetingFail3() {
+                when(meetingRepository.findById(any())).thenReturn(Optional.empty());
+
+                assertThrows(NotFoundException.class, () -> meetingService.leaveMeeting(participantUser1, 1L));
+            }
+
+            @Test
+            @DisplayName("[API][Service] DB에 존재하지 않는 유저모임 ID로 모임 탈퇴 실패 테스트")
+            void leaveMeetingFail4() {
+                when(meetingRepository.findById(any())).thenReturn(Optional.of(meeting));
+                when(userMeetingRepository.findByMeetingAndUser(any(), any())).thenReturn(Optional.empty());
+
+                assertThrows(NotFoundException.class, () -> meetingService.leaveMeeting(participantUser1, 1L));
+            }
         }
 
     }
