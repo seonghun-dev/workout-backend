@@ -261,6 +261,15 @@ public class MeetingService {
         UserMeeting userMeeting = userMeetingRepository.findByMeetingAndUser(meeting, requestUser)
                 .orElseThrow(() -> new NotFoundException(ErrorCode.NOT_JOINED_USER_IN_MEETING, requestUserId));
 
+        if (userMeeting.getStatus() == MeetingStatus.ACCEPTED) {
+            meeting.setMemberCount(meeting.getMemberCount() - 1);
+            meetingRepository.save(meeting);
+        }
+
+        if (userMeeting.getStatus() == MeetingStatus.OWNER) {
+            throw new BusinessException(ErrorCode.OWNER_CANNOT_REJECT_MEETING);
+        }
+
         userMeeting.setStatus(MeetingStatus.REJECTED);
         userMeetingRepository.save(userMeeting);
         eventPublisher.publishEvent(new JoinMeetingResultEvent(meeting, user, MeetingStatus.REJECTED));

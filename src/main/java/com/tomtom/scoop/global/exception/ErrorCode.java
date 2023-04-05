@@ -34,6 +34,7 @@ public enum ErrorCode {
     OWNER_CANNOT_LEAVE_MEETING(HttpStatus.BAD_REQUEST, "MEETING-0007", "Owner Cannot Leave the Meeting"),
     REJECTED_USER_CANNOT_LEAVE_MEETING(HttpStatus.BAD_REQUEST, "MEETING-0008", "Rejected User Cannot Leave the Meeting"),
     ALREADY_ACCEPTED_USER_IN_MEETING(HttpStatus.BAD_REQUEST, "MEETING-0009", "Already Accepted User in the Meeting"),
+    OWNER_CANNOT_REJECT_MEETING(HttpStatus.BAD_REQUEST, "MEETING-0010", "Owner Cannot Reject Self the Meeting"),
 
     // Exercise
     EXERCISE_NOT_FOUND(HttpStatus.NOT_FOUND, "EXERCISE-0001", "Not Found the Exercise"),
