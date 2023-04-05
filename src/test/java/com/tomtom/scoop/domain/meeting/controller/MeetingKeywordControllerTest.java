@@ -1,9 +1,8 @@
-package com.tomtom.scoop.domain.meeting;
+package com.tomtom.scoop.domain.meeting.controller;
 
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.tomtom.scoop.common.mock.annotation.MockLoginUser;
-import com.tomtom.scoop.domain.meeting.controller.MeetingKeywordController;
 import com.tomtom.scoop.domain.meeting.model.dto.response.MeetingKeywordResponseDto;
 import com.tomtom.scoop.domain.meeting.service.MeetingKeywordService;
 import com.tomtom.scoop.global.telegram.TelegramProvider;
