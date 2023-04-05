@@ -79,7 +79,7 @@ public class MeetingController {
     @Operation(summary = "Quit a meeting")
     @Transactional
     public ResponseEntity<MeetingDetailResponseDto> quitMeeting(@ReqUser() User user, @PathVariable("meetingId") Long meetingId) {
-        var response = meetingService.quitMeeting(user, meetingId);
+        var response = meetingService.leaveMeeting(user, meetingId);
         return ResponseDto.ok(response);
     }
 
@@ -152,7 +152,7 @@ public class MeetingController {
     @PostMapping("/{meetingId}/unlike")
     @Operation(summary = "Unlike a meeting")
     public ResponseEntity<MeetingDetailResponseDto> unlikeMeeting(@ReqUser() User user, @PathVariable("meetingId") Long meetingId) {
-        var response = meetingService.unlikeMeeting(user, meetingId);
+        var response = meetingService.unLikeMeeting(user, meetingId);
         return ResponseDto.ok(response);
     }
 

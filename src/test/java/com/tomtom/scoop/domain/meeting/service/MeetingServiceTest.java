@@ -2,12 +2,14 @@ package com.tomtom.scoop.domain.meeting.service;
 
 import com.tomtom.scoop.domain.common.Gender;
 import com.tomtom.scoop.domain.meeting.model.dto.request.MeetingRequestDto;
+import com.tomtom.scoop.domain.meeting.model.dto.response.MeetingListResponseDto;
 import com.tomtom.scoop.domain.meeting.model.entity.*;
 import com.tomtom.scoop.domain.meeting.repository.*;
 import com.tomtom.scoop.domain.user.model.entity.Exercise;
 import com.tomtom.scoop.domain.user.model.entity.User;
 import com.tomtom.scoop.domain.user.repository.ExerciseRepository;
 import com.tomtom.scoop.domain.user.repository.UserRepository;
+import com.tomtom.scoop.global.exception.BusinessException;
 import com.tomtom.scoop.global.exception.NotFoundException;
 import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
@@ -21,45 +23,40 @@ import org.locationtech.jts.geom.Point;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.Mockito.when;
+import static org.mockito.Mockito.*;
 
 
 @ExtendWith(MockitoExtension.class)
 @DisplayName("[API][Service] 모임 관련 테스트")
 public class MeetingServiceTest {
 
-    @InjectMocks
-    private MeetingService meetingService;
-
     @Mock
     MeetingRepository meetingRepository;
-
     @Mock
     UserMeetingRepository userMeetingRepository;
-
     @Mock
     MeetingLocationRepository meetingLocationRepository;
-
     @Mock
     MeetingTypeRepository meetingTypeRepository;
-
     @Mock
     ExerciseRepository exerciseRepository;
-
     @Mock
     UserRepository userRepository;
-
     @Mock
     MeetingLikeRepository meetingLikeRepository;
-
+    @InjectMocks
+    private MeetingService meetingService;
 
     @Nested
     @DisplayName("[API][Service] 모임 생성 테스트")
@@ -77,7 +74,6 @@ public class MeetingServiceTest {
 
         @BeforeEach
         void setUp() {
-            //given
             user = User.builder()
                     .id(1L)
                     .name("홍길동")
@@ -178,9 +174,7 @@ public class MeetingServiceTest {
 
                 when(meetingTypeRepository.findByName(any())).thenReturn(Optional.empty());
 
-                assertThrows(NotFoundException.class, () -> {
-                    meetingService.createMeeting(user, meetingRequestDto);
-                });
+                assertThrows(NotFoundException.class, () -> meetingService.createMeeting(user, meetingRequestDto));
 
             }
 
@@ -191,9 +185,7 @@ public class MeetingServiceTest {
                 when(meetingTypeRepository.findByName(any())).thenReturn(Optional.of(meetingType));
                 when(exerciseRepository.findByName(any())).thenReturn(Optional.empty());
 
-                assertThrows(NotFoundException.class, () -> {
-                    meetingService.createMeeting(user, meetingRequestDto);
-                });
+                assertThrows(NotFoundException.class, () -> meetingService.createMeeting(user, meetingRequestDto));
 
             }
         }
@@ -205,23 +197,13 @@ public class MeetingServiceTest {
     @DisplayName("[API][Service] 모임 단건 조회 테스트")
     class FindMeetingOne {
 
-        private LocalDateTime today;
-        private User owner;
-        private User participantUser1;
-        private User participantUser2;
-        private User participantUser3;
-        private Exercise exercise;
-        private MeetingType meetingType;
-        private MeetingLocation meetingLocation;
-        private UserMeeting userMeeting;
-
         private Meeting meeting;
 
         private User createUser(Long id) {
             return User.builder()
                     .id(1L)
                     .name("홍길동")
-                    .profileImg("https://api.scoop.com/user/profile/" + id +".png")
+                    .profileImg("https://api.scoop.com/user/profile/" + id + ".png")
                     .build();
         }
 
@@ -232,19 +214,20 @@ public class MeetingServiceTest {
                     .status(meetingStatus)
                     .build();
         }
+
         @BeforeEach
         void setUp() {
 
-            owner = createUser(1L);
-            participantUser1 = createUser(2L);
-            participantUser2 = createUser(3L);
-            participantUser3 = createUser(4L);
+            User owner = createUser(1L);
+            User participantUser1 = createUser(2L);
+            User participantUser2 = createUser(3L);
+            User participantUser3 = createUser(4L);
 
-            today = LocalDateTime.now();
+            LocalDateTime today = LocalDateTime.now();
 
-            exercise = new Exercise(1L, "Running");
-            meetingType = new MeetingType(1L, "Play");
-            meetingLocation = new MeetingLocation(1L, "KonKuk University", "Library", "Seoul", null);
+            Exercise exercise = new Exercise(1L, "Running");
+            MeetingType meetingType = new MeetingType(1L, "Play");
+            MeetingLocation meetingLocation = new MeetingLocation(1L, "KonKuk University", "Library", "Seoul", null);
 
             List<UserMeeting> userMeetings = new ArrayList<>();
             userMeetings.add(createUserMeeting(owner, MeetingStatus.OWNER));
@@ -301,7 +284,504 @@ public class MeetingServiceTest {
             @DisplayName("[API][Service] 모임 단건 조회 실패 테스트")
             class Fail {
 
+                @Test
+                @DisplayName("[API][Service] DB에 존재하지 않는 모임 ID로 모임 단건 조회시 실패 테스트")
+                void findMeetingOneFail1() {
+                    when(meetingRepository.findById(any())).thenReturn(Optional.empty());
+
+                    assertThrows(NotFoundException.class, () -> meetingService.findMeetingById(1L));
+                }
+
             }
+        }
+
+    }
+
+
+    @Nested
+    @DisplayName("[API][Service] 모임 삭제 테스트")
+    class DeleteMeeting {
+
+        private User user;
+        private Meeting meeting;
+
+        @BeforeEach
+        void setUp() {
+            user = User.builder()
+                    .id(1L)
+                    .name("홍길동")
+                    .profileImg("https://api.scoop.com/user/profile/1.png")
+                    .build();
+
+            meeting = Meeting.builder()
+                    .id(1L)
+                    .build();
+        }
+
+        @Nested
+        @DisplayName("[API][Service] 모임 삭제 성공 테스트")
+        class Success {
+
+            @Test
+            @DisplayName("[API][Service] 모임 삭제 성공 테스트")
+            void deleteMeetingSuccess1() {
+                when(meetingRepository.findByUserAndId(any(), any())).thenReturn(Optional.of(meeting));
+
+                meetingService.deleteMeeting(user, 1L);
+
+                Assertions.assertThat(meeting.isDeleted()).isTrue();
+            }
+
+        }
+
+        @Nested
+        @DisplayName("[API][Service] 모임 삭제 실패 테스트")
+        class Fail {
+
+            @Test
+            @DisplayName("[API][Service] DB에 존재하지 않는 모임 ID로 모임 삭제시 실패 테스트")
+            void deleteMeetingFail1() {
+                when(meetingRepository.findByUserAndId(any(), any())).thenReturn(Optional.empty());
+
+                assertThrows(NotFoundException.class, () -> meetingService.deleteMeeting(user, 1L));
+            }
+
+        }
+
+    }
+
+
+    @Nested
+    @DisplayName("[API][Service] 모임 참여 테스트")
+    class JoinMeeting {
+
+        @Nested
+        @DisplayName("[API][Service] 모임 참여 성공 테스트")
+        class Success {
+
+        }
+
+        @Nested
+        @DisplayName("[API][Service] 모임 참여 실패 테스트")
+        class Fail {
+
+        }
+
+
+    }
+
+
+    @Nested
+    @DisplayName("[API][Service] 모임 탈퇴 테스트")
+    class LeaveMeeting {
+
+        private User owner;
+
+        private User participantUser1;
+
+        private Meeting meeting;
+
+        private UserMeeting ownerMeeting;
+
+        private UserMeeting userMeeting;
+
+        @BeforeEach
+        void setUp() {
+
+            owner = User.builder()
+                    .id(1L)
+                    .name("홍길동")
+                    .profileImg("https://api.scoop.com/user/profile/1.png")
+                    .build();
+
+            participantUser1 = User.builder()
+                    .id(2L)
+                    .name("홍길동")
+                    .profileImg("https://api.scoop.com/user/profile/2.png")
+                    .build();
+
+            ownerMeeting = UserMeeting.builder()
+                    .user(owner)
+                    .meeting(meeting)
+                    .status(MeetingStatus.OWNER)
+                    .build();
+
+            userMeeting = UserMeeting.builder()
+                    .user(participantUser1)
+                    .meeting(meeting)
+                    .status(MeetingStatus.ACCEPTED)
+                    .build();
+
+
+            meeting = Meeting.builder()
+                    .id(1L)
+                    .build();
+
+        }
+
+        @Nested
+        @DisplayName("[API][Service] 모임 탈퇴 성공 테스트")
+        class Success {
+            @Test
+            @DisplayName("[API][Service] ACCEPTED 상태 유저 모임 탈퇴 성공 테스트")
+            void leaveMeetingSuccess1() {
+                when(meetingRepository.findById(any())).thenReturn(Optional.of(meeting));
+                when(userMeetingRepository.findByMeetingAndUser(any(), any())).thenReturn(Optional.of(userMeeting));
+
+                meetingService.leaveMeeting(participantUser1, 1L);
+                verify(userMeetingRepository, times(1)).delete(any());
+
+            }
+
+            @Test
+            @DisplayName("[API][Service] WAITING 상태 유저 모임 탈퇴 성공 테스트")
+            void leaveMeetingSuccess2() {
+                userMeeting.setStatus(MeetingStatus.WAITING);
+                when(meetingRepository.findById(any())).thenReturn(Optional.of(meeting));
+                when(userMeetingRepository.findByMeetingAndUser(any(), any())).thenReturn(Optional.of(userMeeting));
+
+                meetingService.leaveMeeting(participantUser1, 1L);
+                verify(userMeetingRepository, times(1)).delete(any());
+
+            }
+
+        }
+
+        @Nested
+        @DisplayName("[API][Service] 모임 탈퇴 실패 테스트")
+        class Fail {
+
+            @Test
+            @DisplayName("[API][Service] OWNER 상태 유저 모임 탈퇴 실패 테스트")
+            void leaveMeetingFail1() {
+                when(meetingRepository.findById(any())).thenReturn(Optional.of(meeting));
+                when(userMeetingRepository.findByMeetingAndUser(any(), any())).thenReturn(Optional.of(ownerMeeting));
+
+                Exception e = assertThrows(BusinessException.class, () -> meetingService.leaveMeeting(owner, 1L));
+                Assertions.assertThat(e.getMessage()).isEqualTo("Owner Cannot Leave the Meeting");
+
+            }
+
+            @Test
+            @DisplayName("[API][Service] REJECT 상태 유저 모임 탈퇴 실패 테스트")
+            void leaveMeetingFail2() {
+                userMeeting.setStatus(MeetingStatus.REJECTED);
+                when(meetingRepository.findById(any())).thenReturn(Optional.of(meeting));
+                when(userMeetingRepository.findByMeetingAndUser(any(), any())).thenReturn(Optional.of(userMeeting));
+
+                Exception e = assertThrows(BusinessException.class, () -> meetingService.leaveMeeting(participantUser1, 1L));
+                Assertions.assertThat(e.getMessage()).isEqualTo("Rejected User Cannot Leave the Meeting");
+
+            }
+
+
+            @Test
+            @DisplayName("[API][Service] DB에 존재하지 않는 모임 ID로 모임 탈퇴 실패 테스트")
+            void leaveMeetingFail3() {
+                when(meetingRepository.findById(any())).thenReturn(Optional.empty());
+
+                assertThrows(NotFoundException.class, () -> meetingService.leaveMeeting(participantUser1, 1L));
+            }
+
+            @Test
+            @DisplayName("[API][Service] DB에 존재하지 않는 유저모임 ID로 모임 탈퇴 실패 테스트")
+            void leaveMeetingFail4() {
+                when(meetingRepository.findById(any())).thenReturn(Optional.of(meeting));
+                when(userMeetingRepository.findByMeetingAndUser(any(), any())).thenReturn(Optional.empty());
+
+                assertThrows(NotFoundException.class, () -> meetingService.leaveMeeting(participantUser1, 1L));
+            }
+        }
+
+    }
+
+    @Nested
+    @DisplayName("[API][Service] 유저별 조회 테스트 테스트 - 예정, 참여, 대기")
+    class MeetingByUser {
+
+
+        List<Meeting> meetings = new ArrayList<>();
+
+        User user;
+        Meeting meeting;
+
+        @BeforeEach
+        void setUp() {
+            user = User.builder()
+                    .id(1L)
+                    .name("홍길동")
+                    .profileImg("https://api.scoop.com/user/profile/1.png")
+                    .build();
+
+            MeetingType meetingType = new MeetingType(1L, "Play");
+            Exercise exercise = new Exercise(1L, "Running");
+
+            GeometryFactory gf = new GeometryFactory();
+            Point point = gf.createPoint(new Coordinate(1.3, 1.4));
+
+
+            MeetingLocation meetingLocation = MeetingLocation.builder()
+                    .location(point)
+                    .locationName("Konkuk university")
+                    .locationDetail("library")
+                    .city("Seoul")
+                    .build();
+
+            UserMeeting userMeeting = UserMeeting.builder()
+                    .user(user)
+                    .meeting(meeting)
+                    .status(MeetingStatus.OWNER)
+                    .build();
+
+
+            meeting = Meeting.builder()
+                    .id(1L)
+                    .title("모임 제목")
+                    .content("모임 내용")
+                    .user(user)
+                    .memberCount(1)
+                    .viewCount(0)
+                    .memberLimit(10)
+                    .eventDate(LocalDateTime.now())
+                    .exerciseLevel("Beginner")
+                    .exercise(exercise)
+                    .meetingLocation(meetingLocation)
+                    .userMeetings(Collections.singletonList(userMeeting))
+                    .meetingType(meetingType)
+                    .gender(Gender.MALE)
+                    .build();
+
+            Meeting meeting1 = Meeting.builder()
+                    .id(2L)
+                    .title("모임 제목")
+                    .content("모임 내용")
+                    .user(user)
+                    .memberCount(1)
+                    .viewCount(0)
+                    .memberLimit(10)
+                    .eventDate(LocalDateTime.now())
+                    .exerciseLevel("Beginner")
+                    .exercise(exercise)
+                    .meetingLocation(meetingLocation)
+                    .userMeetings(Collections.singletonList(userMeeting))
+                    .meetingType(meetingType)
+                    .gender(Gender.MALE)
+                    .build();
+
+            meetings.add(meeting);
+            meetings.add(meeting1);
+
+        }
+
+        @Nested
+        @DisplayName("[API][Service] 유저별 예정된 모임 조회 테스트")
+        class UpcomingMeeting {
+
+            @Nested
+            @DisplayName("[API][Service] 유저별 예정된 모임 조회 성공 테스트")
+            class Success {
+
+                @Test
+                @DisplayName("[API][Service] 유저별 예정된 모임 조회 성공 테스트")
+                void getUpcomingMeetingSuccess() {
+                    when(meetingRepository.findUserNextMeeting(any(), any(), any())).thenReturn(meetings);
+                    Pageable pageable = PageRequest.of(1, 10);
+
+                    List<MeetingListResponseDto> meetingResponses = meetingService.findUserUpcomingMeeting(user, pageable);
+                    Assertions.assertThat(meetingResponses.size()).isEqualTo(2);
+                    Assertions.assertThat(meetingResponses.get(0).getId()).isEqualTo(1L);
+                    Assertions.assertThat(meetingResponses.get(1).getId()).isEqualTo(2L);
+                }
+
+            }
+
+        }
+
+        @Nested
+        @DisplayName("[API][Service] 유저별 참여했던 모임 조회 테스트")
+        class PastMeeting {
+
+            @Nested
+            @DisplayName("[API][Service] 유저별 참여했던 모임 조회 성공 테스트")
+            class Success {
+
+                @Test
+                @DisplayName("[API][Service] 유저별 참여했던 모임 조회 성공 테스트")
+                void getPastMeetingSuccess() {
+                    when(meetingRepository.findUserPastMeeting(any(), any(), any())).thenReturn(meetings);
+                    Pageable pageable = PageRequest.of(1, 10);
+
+                    List<MeetingListResponseDto> meetingResponses = meetingService.findUserPastMeeting(user, pageable);
+                    Assertions.assertThat(meetingResponses.size()).isEqualTo(2);
+                    Assertions.assertThat(meetingResponses.get(0).getId()).isEqualTo(1L);
+                    Assertions.assertThat(meetingResponses.get(1).getId()).isEqualTo(2L);
+                }
+
+            }
+
+
+        }
+
+        @Nested
+        @DisplayName("[API][Service] 유저별 승인 대기중인 모임 조회 테스트")
+        class WaitingMeeting {
+
+            @Nested
+            @DisplayName("[API][Service] 유저별 승인 대기중인 모임 조회 성공 테스트")
+            class Success {
+
+                @Test
+                @DisplayName("[API][Service] 유저별 승인 대기중인 모임 조회 성공 테스트")
+                void getWaitingMeetingSuccess() {
+                    when(meetingRepository.findUserWaitingMeeting(any(), any(), any())).thenReturn(meetings);
+                    Pageable pageable = PageRequest.of(1, 10);
+
+                    List<MeetingListResponseDto> meetingResponses = meetingService.findUserWaitingMeeting(user, pageable);
+                    Assertions.assertThat(meetingResponses.size()).isEqualTo(2);
+                    Assertions.assertThat(meetingResponses.get(0).getId()).isEqualTo(1L);
+                    Assertions.assertThat(meetingResponses.get(1).getId()).isEqualTo(2L);
+                }
+
+            }
+
+        }
+
+    }
+
+
+    @Nested
+    @DisplayName("[API][Service] 유저별 좋아요 표시한 모임 조회 테스트")
+    class FindLikeMeeting {
+
+        class Success {
+
+        }
+
+        class Fail {
+
+        }
+
+    }
+
+    @Nested
+    @DisplayName("[API][Service] 모임 좋아요 테스트")
+    class LikeMeeting {
+        User user;
+        Meeting meeting;
+
+        @BeforeEach
+        void setUp() {
+            user = User.builder()
+                    .id(1L)
+                    .build();
+
+            meeting = Meeting.builder()
+                    .id(1L)
+                    .build();
+        }
+
+
+        @Nested
+        @DisplayName("[API][Service] 모임 좋아요 성공 테스트")
+        class Success {
+
+            @Test
+            @DisplayName("[API][Service] 모임 좋아요 성공 테스트")
+            void likeMeetingSuccess() {
+                when(meetingRepository.findById(any())).thenReturn(Optional.of(meeting));
+                when(meetingLikeRepository.save(any())).thenReturn(new MeetingLike());
+
+                meetingService.likeMeeting(user, 1L);
+
+                verify(meetingLikeRepository, times(1)).save(any());
+            }
+
+
+        }
+
+        @Nested
+        @DisplayName("[API][Service] 모임 좋아요 실패 테스트")
+        class Fail {
+
+            @Test
+            @DisplayName("[API][Service] 좋아요할 모임의 id가 존재하지 않을 경우 실패 테스트")
+            void likeMeetingFail() {
+                when(meetingRepository.findById(any())).thenReturn(Optional.empty());
+
+                Exception e = assertThrows(NotFoundException.class, () -> meetingService.likeMeeting(user, 1L));
+                Assertions.assertThat(e.getMessage()).isEqualTo("Not Found the Meeting with id 1");
+            }
+
+        }
+
+    }
+
+    @Nested
+    @DisplayName("[API][Service] 모임 좋아요 취소 테스트")
+    class UnLikeMeeting {
+        User user;
+        Meeting meeting;
+        MeetingLike meetingLike;
+
+        @BeforeEach
+        void setUp() {
+            user = User.builder()
+                    .id(1L)
+                    .build();
+
+            meeting = Meeting.builder()
+                    .id(1L)
+                    .build();
+
+            meetingLike = MeetingLike.builder()
+                    .id(1L)
+                    .meeting(meeting)
+                    .user(user)
+                    .build();
+
+        }
+
+        @Nested
+        @DisplayName("[API][Service] 모임 좋아요 취소 성공 테스트")
+        class Success {
+
+            @Test
+            @DisplayName("[API][Service] 모임 좋아요 취소 성공 테스트")
+            void unLikeMeetingSuccess() {
+                when(meetingRepository.findById(any())).thenReturn(Optional.of(meeting));
+                when(meetingLikeRepository.findByMeetingAndUser(any(), any())).thenReturn(Optional.of(meetingLike));
+
+                meetingService.unLikeMeeting(user, 1L);
+
+                verify(meetingLikeRepository, times(1)).delete(any());
+            }
+
+        }
+
+        @Nested
+        @DisplayName("[API][Service] 모임 좋아요 취소 실패 테스트")
+        class Fail {
+
+            @Test
+            @DisplayName("[API][Service] 좋아요 취소할 모임의 id가 존재하지 않을 경우 실패 테스트")
+            void unLikeMeetingFail() {
+                when(meetingRepository.findById(any())).thenReturn(Optional.empty());
+
+                Exception e = assertThrows(NotFoundException.class, () -> meetingService.unLikeMeeting(user, 1L));
+                Assertions.assertThat(e.getMessage()).isEqualTo("Not Found the Meeting with id 1");
+            }
+
+            @Test
+            @DisplayName("[API][Service] 모임을 좋아요 하지 않았을 경우 실패 테스트")
+            void unLikeMeetingFail2() {
+                when(meetingRepository.findById(any())).thenReturn(Optional.of(meeting));
+                when(meetingLikeRepository.findByMeetingAndUser(any(), any())).thenReturn(Optional.empty());
+
+                Exception e = assertThrows(BusinessException.class, () -> meetingService.unLikeMeeting(user, 1L));
+                Assertions.assertThat(e.getMessage()).isEqualTo("Not Liked the Meeting");
+            }
+
+
         }
 
     }

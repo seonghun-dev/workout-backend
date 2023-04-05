@@ -6,7 +6,7 @@ public class NotFoundException extends BusinessException {
     }
 
     public NotFoundException(ErrorCode errorCode, long id) {
-        super(errorCode, "id " + id + " is not found");
+        super(errorCode, errorCode.getMessage() + " with id " + id);
     }
 
     public NotFoundException(ErrorCode errorCode, String content) {

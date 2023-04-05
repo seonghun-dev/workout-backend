@@ -151,13 +151,18 @@ public class MeetingService {
         return null;
     }
 
-    public MeetingDetailResponseDto quitMeeting(User user, Long id) {
+    public MeetingDetailResponseDto leaveMeeting(User user, Long id) {
         Meeting meeting = meetingRepository.findById(id)
                 .orElseThrow(() -> new NotFoundException(ErrorCode.MEETING_NOT_FOUND, id));
 
         UserMeeting userMeeting = userMeetingRepository.findByMeetingAndUser(meeting, user)
                 .orElseThrow(() -> new NotFoundException(ErrorCode.MEETING_NOT_FOUND, id));
-
+        if (userMeeting.getStatus() == MeetingStatus.OWNER) {
+            throw new BusinessException(ErrorCode.OWNER_CANNOT_LEAVE_MEETING);
+        }
+        if (userMeeting.getStatus() == MeetingStatus.REJECTED) {
+            throw new BusinessException(ErrorCode.REJECTED_USER_CANNOT_LEAVE_MEETING);
+        }
         userMeetingRepository.delete(userMeeting);
 
         return null;
@@ -204,7 +209,7 @@ public class MeetingService {
         return null;
     }
 
-    public MeetingDetailResponseDto unlikeMeeting(User user, Long meetingId) {
+    public MeetingDetailResponseDto unLikeMeeting(User user, Long meetingId) {
         Meeting meeting = meetingRepository.findById(meetingId)
                 .orElseThrow(() -> new NotFoundException(ErrorCode.MEETING_NOT_FOUND, meetingId));
         MeetingLike meetingLike = meetingLikeRepository.findByMeetingAndUser(meeting, user).orElseThrow(() -> new BusinessException(ErrorCode.NOT_LIKED_MEETING));
