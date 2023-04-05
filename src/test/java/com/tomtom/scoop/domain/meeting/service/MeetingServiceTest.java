@@ -2,6 +2,7 @@ package com.tomtom.scoop.domain.meeting.service;
 
 import com.tomtom.scoop.domain.common.Gender;
 import com.tomtom.scoop.domain.meeting.model.dto.request.MeetingRequestDto;
+import com.tomtom.scoop.domain.meeting.model.dto.response.MeetingListResponseDto;
 import com.tomtom.scoop.domain.meeting.model.entity.*;
 import com.tomtom.scoop.domain.meeting.repository.*;
 import com.tomtom.scoop.domain.user.model.entity.Exercise;
@@ -22,9 +23,12 @@ import org.locationtech.jts.geom.Point;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 
@@ -37,30 +41,22 @@ import static org.mockito.Mockito.*;
 @DisplayName("[API][Service] 모임 관련 테스트")
 public class MeetingServiceTest {
 
-    @InjectMocks
-    private MeetingService meetingService;
-
     @Mock
     MeetingRepository meetingRepository;
-
     @Mock
     UserMeetingRepository userMeetingRepository;
-
     @Mock
     MeetingLocationRepository meetingLocationRepository;
-
     @Mock
     MeetingTypeRepository meetingTypeRepository;
-
     @Mock
     ExerciseRepository exerciseRepository;
-
     @Mock
     UserRepository userRepository;
-
     @Mock
     MeetingLikeRepository meetingLikeRepository;
-
+    @InjectMocks
+    private MeetingService meetingService;
 
     @Nested
     @DisplayName("[API][Service] 모임 생성 테스트")
@@ -78,7 +74,6 @@ public class MeetingServiceTest {
 
         @BeforeEach
         void setUp() {
-            //given
             user = User.builder()
                     .id(1L)
                     .name("홍길동")
@@ -500,4 +495,294 @@ public class MeetingServiceTest {
 
     }
 
+    @Nested
+    @DisplayName("[API][Service] 유저별 조회 테스트 테스트 - 예정, 참여, 대기")
+    class MeetingByUser {
+
+
+        List<Meeting> meetings = new ArrayList<>();
+
+        User user;
+        Meeting meeting;
+
+        @BeforeEach
+        void setUp() {
+            user = User.builder()
+                    .id(1L)
+                    .name("홍길동")
+                    .profileImg("https://api.scoop.com/user/profile/1.png")
+                    .build();
+
+            MeetingType meetingType = new MeetingType(1L, "Play");
+            Exercise exercise = new Exercise(1L, "Running");
+
+            GeometryFactory gf = new GeometryFactory();
+            Point point = gf.createPoint(new Coordinate(1.3, 1.4));
+
+
+            MeetingLocation meetingLocation = MeetingLocation.builder()
+                    .location(point)
+                    .locationName("Konkuk university")
+                    .locationDetail("library")
+                    .city("Seoul")
+                    .build();
+
+            UserMeeting userMeeting = UserMeeting.builder()
+                    .user(user)
+                    .meeting(meeting)
+                    .status(MeetingStatus.OWNER)
+                    .build();
+
+
+            meeting = Meeting.builder()
+                    .id(1L)
+                    .title("모임 제목")
+                    .content("모임 내용")
+                    .user(user)
+                    .memberCount(1)
+                    .viewCount(0)
+                    .memberLimit(10)
+                    .eventDate(LocalDateTime.now())
+                    .exerciseLevel("Beginner")
+                    .exercise(exercise)
+                    .meetingLocation(meetingLocation)
+                    .userMeetings(Collections.singletonList(userMeeting))
+                    .meetingType(meetingType)
+                    .gender(Gender.MALE)
+                    .build();
+
+            Meeting meeting1 = Meeting.builder()
+                    .id(2L)
+                    .title("모임 제목")
+                    .content("모임 내용")
+                    .user(user)
+                    .memberCount(1)
+                    .viewCount(0)
+                    .memberLimit(10)
+                    .eventDate(LocalDateTime.now())
+                    .exerciseLevel("Beginner")
+                    .exercise(exercise)
+                    .meetingLocation(meetingLocation)
+                    .userMeetings(Collections.singletonList(userMeeting))
+                    .meetingType(meetingType)
+                    .gender(Gender.MALE)
+                    .build();
+
+            meetings.add(meeting);
+            meetings.add(meeting1);
+
+        }
+
+        @Nested
+        @DisplayName("[API][Service] 유저별 예정된 모임 조회 테스트")
+        class UpcomingMeeting {
+
+            @Nested
+            @DisplayName("[API][Service] 유저별 예정된 모임 조회 성공 테스트")
+            class Success {
+
+                @Test
+                @DisplayName("[API][Service] 유저별 예정된 모임 조회 성공 테스트")
+                void getUpcomingMeetingSuccess() {
+                    when(meetingRepository.findUserNextMeeting(any(), any(), any())).thenReturn(meetings);
+                    Pageable pageable = PageRequest.of(1, 10);
+
+                    List<MeetingListResponseDto> meetingResponses = meetingService.findUserUpcomingMeeting(user, pageable);
+                    Assertions.assertThat(meetingResponses.size()).isEqualTo(2);
+                    Assertions.assertThat(meetingResponses.get(0).getId()).isEqualTo(1L);
+                    Assertions.assertThat(meetingResponses.get(1).getId()).isEqualTo(2L);
+                }
+
+            }
+
+        }
+
+        @Nested
+        @DisplayName("[API][Service] 유저별 참여했던 모임 조회 테스트")
+        class PastMeeting {
+
+            @Nested
+            @DisplayName("[API][Service] 유저별 참여했던 모임 조회 성공 테스트")
+            class Success {
+
+                @Test
+                @DisplayName("[API][Service] 유저별 참여했던 모임 조회 성공 테스트")
+                void getPastMeetingSuccess() {
+                    when(meetingRepository.findUserPastMeeting(any(), any(), any())).thenReturn(meetings);
+                    Pageable pageable = PageRequest.of(1, 10);
+
+                    List<MeetingListResponseDto> meetingResponses = meetingService.findUserPastMeeting(user, pageable);
+                    Assertions.assertThat(meetingResponses.size()).isEqualTo(2);
+                    Assertions.assertThat(meetingResponses.get(0).getId()).isEqualTo(1L);
+                    Assertions.assertThat(meetingResponses.get(1).getId()).isEqualTo(2L);
+                }
+
+            }
+
+
+        }
+
+        @Nested
+        @DisplayName("[API][Service] 유저별 승인 대기중인 모임 조회 테스트")
+        class WaitingMeeting {
+
+            @Nested
+            @DisplayName("[API][Service] 유저별 승인 대기중인 모임 조회 성공 테스트")
+            class Success {
+
+                @Test
+                @DisplayName("[API][Service] 유저별 승인 대기중인 모임 조회 성공 테스트")
+                void getWaitingMeetingSuccess() {
+                    when(meetingRepository.findUserWaitingMeeting(any(), any(), any())).thenReturn(meetings);
+                    Pageable pageable = PageRequest.of(1, 10);
+
+                    List<MeetingListResponseDto> meetingResponses = meetingService.findUserWaitingMeeting(user, pageable);
+                    Assertions.assertThat(meetingResponses.size()).isEqualTo(2);
+                    Assertions.assertThat(meetingResponses.get(0).getId()).isEqualTo(1L);
+                    Assertions.assertThat(meetingResponses.get(1).getId()).isEqualTo(2L);
+                }
+
+            }
+
+        }
+
+    }
+
+
+    @Nested
+    @DisplayName("[API][Service] 유저별 좋아요 표시한 모임 조회 테스트")
+    class FindLikeMeeting {
+
+        class Success {
+
+        }
+
+        class Fail {
+
+        }
+
+    }
+
+    @Nested
+    @DisplayName("[API][Service] 모임 좋아요 테스트")
+    class LikeMeeting {
+        User user;
+        Meeting meeting;
+
+        @BeforeEach
+        void setUp() {
+            user = User.builder()
+                    .id(1L)
+                    .build();
+
+            meeting = Meeting.builder()
+                    .id(1L)
+                    .build();
+        }
+
+
+        @Nested
+        @DisplayName("[API][Service] 모임 좋아요 성공 테스트")
+        class Success {
+
+            @Test
+            @DisplayName("[API][Service] 모임 좋아요 성공 테스트")
+            void likeMeetingSuccess() {
+                when(meetingRepository.findById(any())).thenReturn(Optional.of(meeting));
+                when(meetingLikeRepository.save(any())).thenReturn(new MeetingLike());
+
+                meetingService.likeMeeting(user, 1L);
+
+                verify(meetingLikeRepository, times(1)).save(any());
+            }
+
+
+        }
+
+        @Nested
+        @DisplayName("[API][Service] 모임 좋아요 실패 테스트")
+        class Fail {
+
+            @Test
+            @DisplayName("[API][Service] 좋아요할 모임의 id가 존재하지 않을 경우 실패 테스트")
+            void likeMeetingFail() {
+                when(meetingRepository.findById(any())).thenReturn(Optional.empty());
+
+                Exception e = assertThrows(NotFoundException.class, () -> meetingService.likeMeeting(user, 1L));
+                Assertions.assertThat(e.getMessage()).isEqualTo("Not Found the Meeting with id 1");
+            }
+
+        }
+
+    }
+
+    @Nested
+    @DisplayName("[API][Service] 모임 좋아요 취소 테스트")
+    class UnLikeMeeting {
+        User user;
+        Meeting meeting;
+        MeetingLike meetingLike;
+
+        @BeforeEach
+        void setUp() {
+            user = User.builder()
+                    .id(1L)
+                    .build();
+
+            meeting = Meeting.builder()
+                    .id(1L)
+                    .build();
+
+            meetingLike = MeetingLike.builder()
+                    .id(1L)
+                    .meeting(meeting)
+                    .user(user)
+                    .build();
+
+        }
+
+        @Nested
+        @DisplayName("[API][Service] 모임 좋아요 취소 성공 테스트")
+        class Success {
+
+            @Test
+            @DisplayName("[API][Service] 모임 좋아요 취소 성공 테스트")
+            void unLikeMeetingSuccess() {
+                when(meetingRepository.findById(any())).thenReturn(Optional.of(meeting));
+                when(meetingLikeRepository.findByMeetingAndUser(any(), any())).thenReturn(Optional.of(meetingLike));
+
+                meetingService.unLikeMeeting(user, 1L);
+
+                verify(meetingLikeRepository, times(1)).delete(any());
+            }
+
+        }
+
+        @Nested
+        @DisplayName("[API][Service] 모임 좋아요 취소 실패 테스트")
+        class Fail {
+
+            @Test
+            @DisplayName("[API][Service] 좋아요 취소할 모임의 id가 존재하지 않을 경우 실패 테스트")
+            void unLikeMeetingFail() {
+                when(meetingRepository.findById(any())).thenReturn(Optional.empty());
+
+                Exception e = assertThrows(NotFoundException.class, () -> meetingService.unLikeMeeting(user, 1L));
+                Assertions.assertThat(e.getMessage()).isEqualTo("Not Found the Meeting with id 1");
+            }
+
+            @Test
+            @DisplayName("[API][Service] 모임을 좋아요 하지 않았을 경우 실패 테스트")
+            void unLikeMeetingFail2() {
+                when(meetingRepository.findById(any())).thenReturn(Optional.of(meeting));
+                when(meetingLikeRepository.findByMeetingAndUser(any(), any())).thenReturn(Optional.empty());
+
+                Exception e = assertThrows(BusinessException.class, () -> meetingService.unLikeMeeting(user, 1L));
+                Assertions.assertThat(e.getMessage()).isEqualTo("Not Liked the Meeting");
+            }
+
+
+        }
+
+    }
 }
