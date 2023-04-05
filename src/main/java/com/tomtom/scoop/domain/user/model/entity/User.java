@@ -4,15 +4,15 @@ import com.tomtom.scoop.domain.common.Gender;
 import com.tomtom.scoop.domain.user.model.dto.request.UserJoinDto;
 import com.tomtom.scoop.domain.user.model.dto.request.UserUpdateDto;
 import jakarta.persistence.*;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
+import lombok.*;
 
 import java.util.List;
 
 @Entity
 @Getter
 @NoArgsConstructor
+@AllArgsConstructor
+@Builder
 public class User {
 
     @Id

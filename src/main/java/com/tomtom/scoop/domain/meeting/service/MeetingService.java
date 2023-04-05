@@ -299,7 +299,9 @@ public class MeetingService {
                 .meetingType(meeting.getMeetingType().getName())
                 .isLiked(false)
                 .meetingUserProfiles(
-                        meeting.getUserMeetings().stream().map(
+                        meeting.getUserMeetings().stream().filter(
+                                userMeeting -> userMeeting.getStatus() == MeetingStatus.ACCEPTED || userMeeting.getStatus() == MeetingStatus.OWNER
+                        ).map(
                                 userMeeting ->
                                         userMeeting.getUser().getProfileImg()
                         ).toList())
