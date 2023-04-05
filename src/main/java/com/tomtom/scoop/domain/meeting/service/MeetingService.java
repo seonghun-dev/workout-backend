@@ -209,7 +209,7 @@ public class MeetingService {
         return null;
     }
 
-    public MeetingDetailResponseDto unlikeMeeting(User user, Long meetingId) {
+    public MeetingDetailResponseDto unLikeMeeting(User user, Long meetingId) {
         Meeting meeting = meetingRepository.findById(meetingId)
                 .orElseThrow(() -> new NotFoundException(ErrorCode.MEETING_NOT_FOUND, meetingId));
         MeetingLike meetingLike = meetingLikeRepository.findByMeetingAndUser(meeting, user).orElseThrow(() -> new BusinessException(ErrorCode.NOT_LIKED_MEETING));
