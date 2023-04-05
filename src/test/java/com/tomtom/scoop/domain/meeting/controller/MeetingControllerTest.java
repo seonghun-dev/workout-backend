@@ -1,9 +1,8 @@
-package com.tomtom.scoop.domain.meeting;
+package com.tomtom.scoop.domain.meeting.controller;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.tomtom.scoop.common.mock.annotation.MockLoginUser;
 import com.tomtom.scoop.domain.common.Gender;
-import com.tomtom.scoop.domain.meeting.controller.MeetingController;
 import com.tomtom.scoop.domain.meeting.model.dto.request.FindAllMeetingRequestDto;
 import com.tomtom.scoop.domain.meeting.model.dto.request.MeetingRequestDto;
 import com.tomtom.scoop.domain.meeting.model.dto.response.MeetingDetailResponseDto;
