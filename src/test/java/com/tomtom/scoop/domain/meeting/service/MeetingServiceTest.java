@@ -11,6 +11,7 @@ import com.tomtom.scoop.domain.user.repository.ExerciseRepository;
 import com.tomtom.scoop.domain.user.repository.UserRepository;
 import com.tomtom.scoop.global.exception.BusinessException;
 import com.tomtom.scoop.global.exception.NotFoundException;
+import com.tomtom.scoop.infrastructor.s3.S3Service;
 import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -26,7 +27,10 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
+import org.springframework.mock.web.MockMultipartFile;
+import org.springframework.web.multipart.MultipartFile;
 
+import java.io.IOException;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -58,6 +62,9 @@ public class MeetingServiceTest {
     MeetingLikeRepository meetingLikeRepository;
     @Mock
     ApplicationEventPublisher eventPublisher;
+    @Mock
+    S3Service s3Service;
+
     @InjectMocks
     private MeetingService meetingService;
 
@@ -1121,6 +1128,34 @@ public class MeetingServiceTest {
 
                 }
             }
+        }
+
+        @Nested
+        @DisplayName("[API][Service] 모임 이미지 업로드 테스트")
+        class uploadMeetingImage {
+
+            MultipartFile multipartFile;
+
+            @Test
+            @DisplayName("[API][Service] 모임 이미지 업로드 성공 테스트")
+            void uploadMeetingImageSuccess() throws IOException {
+                multipartFile = new MockMultipartFile("file", "image.jpg", "image/jpeg", "image".getBytes());
+                when(s3Service.upload(any(), any())).thenReturn("image.jpg");
+
+                meetingService.uploadMeetingImage(multipartFile);
+                verify(s3Service, times(1)).upload(any(), any());
+            }
+
+            @Test
+            @DisplayName("[API][Service] 모임 이미지 업로드 실패 테스트")
+            void uploadMeetingImageFail() throws IOException {
+                multipartFile = new MockMultipartFile("file", "image.jpg", "image/jpeg", "image".getBytes());
+                when(s3Service.upload(any(), any())).thenThrow(IOException.class);
+
+                Exception e = assertThrows(BusinessException.class, () -> meetingService.uploadMeetingImage(multipartFile));
+                Assertions.assertThat(e.getMessage()).isEqualTo("File Upload Error");
+            }
+
         }
     }
 }
