@@ -23,10 +23,13 @@ import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.ResultActions;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.BDDMockito.given;
 import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.csrf;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
@@ -67,7 +70,7 @@ public class ReviewControllerTest {
     @Test
     @DisplayName("[API][POST][Controller] 리뷰 생성 테스트")
     @MockLoginUser
-    void tetCreateReview() throws Exception {
+    void testCreateReview() throws Exception {
 
         User reviewer = User.builder()
                 .id(1L)
@@ -121,5 +124,97 @@ public class ReviewControllerTest {
 
     }
 
+
+    @Test
+    @DisplayName("[API][GET][Controller] 받은 리뷰 전체 조회 테스트")
+    @MockLoginUser
+    void testFindAllReceivedReviews() throws Exception {
+
+        List<Review> reviews = new ArrayList<>();
+        reviews.add(Review.builder().id(1L).build());
+        reviews.add(Review.builder().id(2L).build());
+
+        given(reviewService.findAllReceivedReviews(any())).willReturn(reviews);
+
+        ResultActions actions = mvc.perform(
+                get("/v1/reviews/received")
+                        .with(csrf())
+                        .accept(MediaType.APPLICATION_JSON)
+        );
+
+        actions.andExpect(status().isOk());
+        actions.andExpectAll(
+                jsonPath("$[0].id").value(1L),
+                jsonPath("$[1].id").value(2L)
+        );
+
+    }
+
+
+    @Test
+    @DisplayName("[API][GET][Controller] 작성 리뷰 전체 조회 테스트")
+    @MockLoginUser
+    void testFindAllReviewedReviews() throws Exception {
+
+        List<Review> reviews = new ArrayList<>();
+        reviews.add(Review.builder().id(1L).build());
+        reviews.add(Review.builder().id(2L).build());
+
+        given(reviewService.findAllReviewerReviews(any())).willReturn(reviews);
+
+        ResultActions actions = mvc.perform(
+                get("/v1/reviews/reviewed")
+                        .with(csrf())
+                        .accept(MediaType.APPLICATION_JSON)
+        );
+
+        actions.andExpect(status().isOk());
+        actions.andExpectAll(
+                jsonPath("$[0].id").value(1L),
+                jsonPath("$[1].id").value(2L)
+        );
+
+    }
+
+
+    @Test
+    @DisplayName("[API][GET][Controller] 미팅별 리뷰 작성해야할 유저 리스트")
+    @MockLoginUser
+    public void testFindUsersToReview() throws Exception {
+
+        List<User> users = new ArrayList<>();
+        users.add(User.builder().id(1L).build());
+        users.add(User.builder().id(2L).build());
+
+        given(reviewService.findAllReceivedUser(any(), any())).willReturn(users);
+
+        ResultActions actions = mvc.perform(
+                get("/v1/reviews/meetings/1")
+                        .with(csrf())
+                        .accept(MediaType.APPLICATION_JSON)
+        );
+
+        actions.andExpect(status().isOk());
+        actions.andExpectAll(
+                jsonPath("$[0].id").value(1L),
+                jsonPath("$[1].id").value(2L)
+        );
+
+    }
+
+
+    @Test
+    @DisplayName("[API][POST][Controller] 리뷰 삭제 테스트")
+    @MockLoginUser
+    public void testDeleteReview() throws Exception {
+
+        ResultActions actions = mvc.perform(
+                delete("/v1/reviews/1")
+                        .with(csrf())
+                        .accept(MediaType.APPLICATION_JSON)
+        );
+
+        actions.andExpect(status().isNoContent());
+    }
 
 }

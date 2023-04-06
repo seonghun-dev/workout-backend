@@ -53,9 +53,9 @@ public class ReviewController {
 
     @DeleteMapping("/{id}")
     @Operation(summary = "Delete a review")
-    @ResponseBody
-    public void deleteReview(@ReqUser User user, @PathVariable("id") Long id) {
+    public ResponseEntity<Void> deleteReview(@ReqUser User user, @PathVariable("id") Long id) {
         reviewService.deleteReview(user, id);
+        return ResponseDto.noContent();
     }
 
 }
