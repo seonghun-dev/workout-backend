@@ -43,4 +43,5 @@ jobs:
         id: jacoco
         uses: codecov/codecov-action@v3
         with:
-          files: ./build/reports/tests/test/index.html
+          fail_ci_if_error: true
+          files: ${{ github.workspace }}/build/reports/tests/test/index.html
