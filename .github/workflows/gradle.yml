@@ -38,3 +38,9 @@ jobs:
         with:
           name: jacoco-report
           path: build/reports/tests/test/index.html
+
+      - name: Upload test coverage
+        id: jacoco
+        uses: coverallsapp/github-action@v1
+        with:
+          files : build/reports/tests/test/index.html
