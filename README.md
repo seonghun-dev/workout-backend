@@ -1,4 +1,7 @@
 # WorkOut
+
+[![codecov](https://codecov.io/gh/seonghun-dev/workout-backend/branch/master/graph/badge.svg?token=M9FSC8Z40P)](https://codecov.io/gh/seonghun-dev/workout-backend)
+
 ## ⚽ 언제 어디서든 , workout ⚽
 
 언제 어디서나 운동 모임을 구해보세요!
