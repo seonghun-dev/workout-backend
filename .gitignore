@@ -38,3 +38,7 @@ out/
 /src/main/resources/application-oauth.properties
 /src/main/resources/scoop-fcm.json
 /src/main/resources/application-secret.properties
+
+
+/src/main/resources/application-local.properties
+/src/main/resources/application-prod.properties
