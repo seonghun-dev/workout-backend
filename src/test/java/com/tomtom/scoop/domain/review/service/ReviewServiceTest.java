@@ -303,6 +303,46 @@ public class ReviewServiceTest {
             }
         }
 
+        @Nested
+        @DisplayName("[API][Service] 작성 리뷰 삭제 실패 테스트")
+        class Fail {
+            @Test
+            @DisplayName("[API][Service] 리뷰의 ID가 존재하지 않는 경우 테스트")
+            void deleteReviewFail1(){
+                User user = User.builder().id(1L).build();
+
+                when(reviewRepository.findById(any())).thenReturn(Optional.empty());
+
+                Exception e = assertThrows(NotFoundException.class, () -> reviewService.deleteReview(user, 1L));
+                Assertions.assertThat(e.getMessage()).isEqualTo("Not Found Review with id 1");
+            }
+
+
+            @Test
+            @DisplayName("[API][Service] 리뷰의 작성자나 받은 사람이 아닌 경우 실패 테스트")
+            void deleteReview2(){
+                User user = User.builder().id(1L).build();
+                User writer = User.builder().id(2L).build();
+                User receiver = User.builder().id(3L).build();
+                Meeting meeting = Meeting.builder().id(3L).build();
+                Review review = Review.builder()
+                        .id(1L)
+                        .comment("good")
+                        .rating(5)
+                        .reviewer(writer)
+                        .receiver(receiver)
+                        .isReviewerHidden(false)
+                        .isReceiverHidden(false)
+                        .meeting(meeting)
+                        .build();
+
+                when(reviewRepository.findById(any())).thenReturn(Optional.of(review));
+                Exception e =  assertThrows(BusinessException.class, ()-> reviewService.deleteReview(user, 1L));
+
+                Assertions.assertThat(e.getMessage()).isEqualTo("Writer Or Who received the review Can Delete Review");
+            }
+        }
+
     }
 
 
