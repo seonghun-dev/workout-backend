@@ -180,4 +180,68 @@ public class ReviewServiceTest {
     }
 
 
+    @Nested
+    @DisplayName("[API][Service] 받은 리뷰 전체 조회 테스트")
+    class FindAllReceivedReviews {
+
+        @Nested
+        @DisplayName("[API][Service] 받은 리뷰 전체 조회 성공 테스트")
+        class Success{
+
+            @Test
+            @DisplayName("[API][Service] 받은 리뷰 전체 조회 성공 테스트")
+            void findAllReceivedReviews(){
+                User user = User.builder().id(1L).build();
+                User sender = User.builder().id(2L).build();
+                Meeting meeting = Meeting.builder().id(3L).build();
+                Review review = Review.builder()
+                        .id(1L)
+                        .comment("good")
+                        .rating(5)
+                        .reviewer(sender)
+                        .receiver(user)
+                        .meeting(meeting)
+                        .build();
+
+                when(reviewRepository.findByReceiver(user)).thenReturn(List.of(review));
+                var result = reviewService.findAllReceivedReviews(user);
+                Assertions.assertThat(result).isEqualTo(List.of(review));
+            }
+        }
+    }
+
+    @Nested
+    @DisplayName("[API][Service] 작성 리뷰 전체 조회 테스트")
+    class FindAllReviewerReviews {
+
+        @Nested
+        @DisplayName("[API][Service] 작성 리뷰 전체 조회 성공 테스트")
+        class Success{
+
+            @Test
+            @DisplayName("[API][Service] 작성 리뷰 전체 조회 성공 테스트")
+            void findAllReviewerReviews(){
+                User user = User.builder().id(1L).build();
+                User receiver = User.builder().id(2L).build();
+                Meeting meeting = Meeting.builder().id(3L).build();
+                Review review = Review.builder()
+                        .id(1L)
+                        .comment("good")
+                        .rating(5)
+                        .reviewer(user)
+                        .receiver(receiver)
+                        .meeting(meeting)
+                        .build();
+
+                when(reviewRepository.findByReviewer(user)).thenReturn(List.of(review));
+                var result = reviewService.findAllReviewerReviews(user);
+                Assertions.assertThat(result).isEqualTo(List.of(review));
+            }
+        }
+    }
+
+
+
+
+
 }
