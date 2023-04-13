@@ -48,6 +48,7 @@ public class ReviewService {
                 .rating(reviewRequestDto.getRating())
                 .meeting(meeting)
                 .build();
+
         return reviewRepository.save(review);
     }
 

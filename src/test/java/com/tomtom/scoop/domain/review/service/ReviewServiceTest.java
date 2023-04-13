@@ -169,7 +169,6 @@ public class ReviewServiceTest {
             void createReviewFail6() {
                 when(userRepository.findById(any())).thenReturn(Optional.of(receiver));
                 when(meetingRepository.findById(any())).thenReturn(Optional.of(meeting));
-                when(reviewRepository.save(any(Review.class))).thenReturn(review);
                 when(userMeetingRepository.findByMeetingAndUser(any(), any(User.class))).thenReturn(Optional.of(UserMeeting.builder().user(receiver).build())).thenReturn(Optional.of(UserMeeting.builder().user(user).build()));
                 when(reviewRepository.findByMeetingAndReceiverAndReviewer(any(), any(), any())).thenReturn(Optional.of(review));
 
