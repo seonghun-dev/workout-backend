@@ -30,17 +30,17 @@ jobs:
       - name: Setup Gradle
         uses: gradle/gradle-build-action@v2
         with:
-          arguments: build -Pprofile=test
+          arguments: build test -Pprofile=test
           cache-read-only: ${{ github.ref != 'refs/heads/master' && github.ref != 'refs/heads/dev' }}
 
       - name: Upload Jacoco Report
         uses: actions/upload-artifact@v3
         with:
           name: jacoco-report
-          path: build/reports/tests/test/index.html
+          path: ./build/reports/tests/test/index.html
 
       - name: Upload test coverage
         id: jacoco
         uses: codecov/codecov-action@v3
         with:
-          files: build/reports/tests/test/index.html
+          files: ./build/reports/tests/test/index.html
