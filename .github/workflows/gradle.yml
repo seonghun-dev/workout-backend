@@ -43,4 +43,4 @@ jobs:
         id: jacoco
         uses: coverallsapp/github-action@v1
         with:
-          files : build/reports/tests/test/index.html
+          path-to-lcov : build/reports/tests/test/index.html
