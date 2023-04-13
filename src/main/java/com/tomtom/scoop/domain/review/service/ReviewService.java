@@ -76,6 +76,6 @@ public class ReviewService {
         Meeting meeting = meetingRepository.findById(meetingId).orElseThrow(() -> new NotFoundException(ErrorCode.MEETING_NOT_FOUND, meetingId));
         List<Review> reviews = reviewRepository.findByMeeting(meeting);
         List<User> doneUser = reviews.stream().map(Review::getReceiver).toList();
-        return meeting.getUserMeetings().stream().map(UserMeeting::getUser).filter(userMeetingUser -> !doneUser.contains(userMeetingUser)).toList();
+        return meeting.getUserMeetings().stream().map(UserMeeting::getUser).filter(userMeetingUser -> !doneUser.contains(userMeetingUser)).filter(meetingUser -> !meetingUser.equals(user)).toList();
     }
 }
