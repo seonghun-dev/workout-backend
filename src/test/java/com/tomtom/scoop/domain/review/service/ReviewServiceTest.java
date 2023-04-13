@@ -240,8 +240,70 @@ public class ReviewServiceTest {
         }
     }
 
+    @Nested
+    @DisplayName("[API][Service] 작성 리류 삭제 테스트")
+    class DeleteReview{
+        @Nested
+        @DisplayName("[API][Service] 작성 리뷰 삭제 성공 테스트")
+        class Success {
+            @Test
+            @DisplayName("[API][Service] 리뷰 작성자 삭제 성공 테스트")
+            void deleteReview(){
+                User user = User.builder().id(1L).build();
+                User receiver = User.builder().id(2L).build();
+                Meeting meeting = Meeting.builder().id(3L).build();
+                Review review = Review.builder()
+                        .id(1L)
+                        .comment("good")
+                        .rating(5)
+                        .reviewer(user)
+                        .receiver(receiver)
+                        .isReviewerHidden(false)
+                        .isReceiverHidden(false)
+                        .meeting(meeting)
+                        .build();
+
+                when(reviewRepository.findById(any())).thenReturn(Optional.of(review));
+                when(reviewRepository.save(any(Review.class))).thenReturn(review);
+
+                reviewService.deleteReview(user, 1L);
+
+                Assertions.assertThat(review.getIsReviewerHidden()).isEqualTo(true);
+                Assertions.assertThat(review.getIsReceiverHidden()).isEqualTo(false);
+            }
 
 
+            @Test
+            @DisplayName("[API][Service] 리뷰 받은 사람 삭제 성공 테스트")
+            void deleteReview2(){
+                User user = User.builder().id(1L).build();
+                User writer = User.builder().id(2L).build();
+                Meeting meeting = Meeting.builder().id(3L).build();
+                Review review = Review.builder()
+                        .id(1L)
+                        .comment("good")
+                        .rating(5)
+                        .reviewer(writer)
+                        .receiver(user)
+                        .isReviewerHidden(false)
+                        .isReceiverHidden(false)
+                        .meeting(meeting)
+                        .build();
+
+                when(reviewRepository.findById(any())).thenReturn(Optional.of(review));
+                when(reviewRepository.save(any(Review.class))).thenReturn(review);
+
+                reviewService.deleteReview(user, 1L);
+
+                Assertions.assertThat(review.getIsReviewerHidden()).isEqualTo(false);
+                Assertions.assertThat(review.getIsReceiverHidden()).isEqualTo(true);
+
+
+
+            }
+        }
+
+    }
 
 
 }
