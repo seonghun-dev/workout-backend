@@ -55,13 +55,9 @@ public class MeetingRequestDto {
     @NotNull
     private String locationCity;
 
-    @Schema(description = "Meeting Exercise name", example = "Running")
+    @Schema(description = "Meeting Exercise Level id", example = "1")
     @NotNull
-    private String exerciseName;
-
-    @Schema(description = "Meeting Exercise level", example = "Beginner")
-    @NotNull
-    private String exerciseLevel;
+    private Long exerciseLevel;
 
     @Schema(description = "Meeting Exercise type", example = "Play")
     @NotNull

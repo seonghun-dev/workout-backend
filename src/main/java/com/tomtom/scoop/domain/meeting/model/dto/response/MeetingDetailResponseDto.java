@@ -33,6 +33,9 @@ public class MeetingDetailResponseDto {
     @Schema(description = "Meeting exercise level", example = "Beginner")
     private String exerciseLevel;
 
+    @Schema(description = "Meeting exercise", example = "Running")
+    private String exercise;
+
     @Schema(description = "Meeting Owner name", example = "Seonghun")
     private String ownerName;
 

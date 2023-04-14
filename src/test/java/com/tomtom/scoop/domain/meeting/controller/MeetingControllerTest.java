@@ -98,8 +98,7 @@ public class MeetingControllerTest {
                 "KonKuk University",
                 "Library",
                 "Seoul",
-                "Running",
-                "Beginner",
+                1L,
                 "Play");
 
 
