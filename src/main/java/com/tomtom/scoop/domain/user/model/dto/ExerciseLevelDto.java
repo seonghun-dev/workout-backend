@@ -13,5 +13,4 @@ public class ExerciseLevelDto {
     private String exerciseName;
     private String level;
 
-
 }

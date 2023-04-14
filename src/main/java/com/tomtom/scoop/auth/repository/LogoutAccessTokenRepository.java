@@ -1,6 +1,6 @@
-package com.tomtom.scoop.domain.user.repository;
+package com.tomtom.scoop.auth.repository;
 
-import com.tomtom.scoop.domain.user.model.dao.LogoutAccessToken;
+import com.tomtom.scoop.auth.model.dao.LogoutAccessToken;
 import org.springframework.data.repository.CrudRepository;
 
 public interface LogoutAccessTokenRepository extends CrudRepository<LogoutAccessToken, String> {

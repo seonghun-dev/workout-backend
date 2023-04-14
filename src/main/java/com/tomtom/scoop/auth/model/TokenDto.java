@@ -1,4 +1,4 @@
-package com.tomtom.scoop.domain.user.model.dto;
+package com.tomtom.scoop.auth.model;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;

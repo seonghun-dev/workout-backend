@@ -1,7 +1,7 @@
-package com.tomtom.scoop.domain.user.controller;
+package com.tomtom.scoop.auth.controller;
 
-import com.tomtom.scoop.domain.user.model.dto.TokenDto;
-import com.tomtom.scoop.domain.user.service.AuthService;
+import com.tomtom.scoop.auth.model.TokenDto;
+import com.tomtom.scoop.auth.service.AuthService;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import org.springframework.beans.factory.annotation.Autowired;
