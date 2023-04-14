@@ -72,7 +72,7 @@ public class OAuthSuccessHandler extends SimpleUrlAuthenticationSuccessHandler {
     @Setter
     @NoArgsConstructor
     @AllArgsConstructor
-    private class LoginResult {
+    private static class LoginResult {
         private String accessToken;
         private String refreshToken;
         private boolean isFirst;

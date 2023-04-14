@@ -2,7 +2,7 @@ package com.tomtom.scoop.domain.meeting.model.entity;
 
 import com.tomtom.scoop.domain.common.BaseTimeEntity;
 import com.tomtom.scoop.domain.common.Gender;
-import com.tomtom.scoop.domain.user.model.entity.Exercise;
+import com.tomtom.scoop.domain.exercise.model.entity.ExerciseLevel;
 import com.tomtom.scoop.domain.user.model.entity.User;
 import jakarta.persistence.*;
 import lombok.*;
@@ -68,11 +68,8 @@ public class Meeting extends BaseTimeEntity {
     @OneToMany(mappedBy = "meeting")
     private List<UserMeeting> userMeetings;
 
-    @Column(nullable = false)
-    private String exerciseLevel;
-
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "exercise_id")
-    private Exercise exercise;
+    @JoinColumn(name = "exercise_level_id")
+    private ExerciseLevel exerciseLevel;
 
 }

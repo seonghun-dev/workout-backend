@@ -1,6 +1,7 @@
 package com.tomtom.scoop.domain.user.model.entity;
 
 import com.tomtom.scoop.domain.common.BaseTimeEntity;
+import com.tomtom.scoop.domain.exercise.model.entity.ExerciseLevel;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -18,12 +19,9 @@ public class UserExerciseLevel extends BaseTimeEntity {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column
-    private String level;
-
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "exercise_id")
-    private Exercise exercise;
+    @JoinColumn(name = "exercise_level_id")
+    private ExerciseLevel exerciseLevel;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "user_id")

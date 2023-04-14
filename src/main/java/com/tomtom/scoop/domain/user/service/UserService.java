@@ -1,22 +1,33 @@
 package com.tomtom.scoop.domain.user.service;
 
+import com.tomtom.scoop.domain.exercise.model.entity.ExerciseLevel;
+import com.tomtom.scoop.domain.exercise.repository.ExerciseLevelRepository;
 import com.tomtom.scoop.domain.user.model.dto.ExerciseLevelDto;
 import com.tomtom.scoop.domain.user.model.dto.UserLocationDto;
 import com.tomtom.scoop.domain.user.model.dto.request.UserJoinDto;
 import com.tomtom.scoop.domain.user.model.dto.request.UserUpdateDto;
 import com.tomtom.scoop.domain.user.model.dto.response.UserResponseDto;
-import com.tomtom.scoop.domain.user.model.entity.*;
-import com.tomtom.scoop.domain.user.repository.*;
+import com.tomtom.scoop.domain.user.model.entity.User;
+import com.tomtom.scoop.domain.user.model.entity.UserExerciseLevel;
+import com.tomtom.scoop.domain.user.model.entity.UserKeyword;
+import com.tomtom.scoop.domain.user.model.entity.UserLocation;
+import com.tomtom.scoop.domain.user.repository.UserExerciseLevelRepository;
+import com.tomtom.scoop.domain.user.repository.UserKeywordRepository;
+import com.tomtom.scoop.domain.user.repository.UserLocationRepository;
+import com.tomtom.scoop.domain.user.repository.UserRepository;
 import com.tomtom.scoop.global.exception.BusinessException;
 import com.tomtom.scoop.global.exception.ErrorCode;
-import com.tomtom.scoop.global.exception.NotFoundException;
 import lombok.RequiredArgsConstructor;
+import org.locationtech.jts.geom.Coordinate;
+import org.locationtech.jts.geom.GeometryFactory;
+import org.locationtech.jts.geom.Point;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.web.multipart.MultipartFile;
 
+import java.time.LocalDateTime;
 import java.util.List;
-import java.util.Optional;
+import java.util.Objects;
+import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -24,8 +35,8 @@ import java.util.Optional;
 public class UserService {
 
     private final UserRepository userRepository;
-    private final ExerciseRepository exerciseRepository;
     private final UserExerciseLevelRepository userExerciseLevelRepository;
+    private final ExerciseLevelRepository exerciseLevelRepository;
     private final UserKeywordRepository userKeywordRepository;
     private final UserLocationRepository userLocationRepository;
 
@@ -35,17 +46,30 @@ public class UserService {
         return userRepository.findByOauthId(oauthId).orElseThrow(() -> new BusinessException(ErrorCode.AUTH_ID_NOT_FOUND));
     }
 
-    public UserResponseDto join(User user, UserJoinDto userJoinDto, MultipartFile file) {
+    @Transactional
+    public UserResponseDto join(User user, UserJoinDto userJoinDto) {
+        List<ExerciseLevel> exerciseLevelList = exerciseLevelRepository.findAllById(userJoinDto.getExerciseLevels().stream().map(Integer::longValue).toList());
+        List<UserExerciseLevel> userExerciseLevelList = exerciseLevelList.stream().map(v -> UserExerciseLevel.builder().exerciseLevel(v).user(user).build()).toList();
+        List<UserKeyword> userKeywordList = userJoinDto.getKeywords().stream().map(keyword -> UserKeyword.builder().keyword(keyword).user(user).build()).toList();
 
-        saveUserExerciseLevel(user, userJoinDto.getExerciseLevels());
+        userExerciseLevelRepository.saveAll(userExerciseLevelList);
+        userKeywordRepository.saveAll(userKeywordList);
 
-        saveUserKeyword(userJoinDto.getKeywords(), user);
-
-        UserLocation userLocation = saveUserLocation(userJoinDto.getUserLocation());
+        UserLocationDto userLocationDto = userJoinDto.getUserLocation();
+        GeometryFactory gf = new GeometryFactory();
+        Point point = gf.createPoint(new Coordinate(userLocationDto.getLatitude(), userLocationDto.getLongitude()));
+        UserLocation userLocation = UserLocation.builder().location(point).user(user).range(100)
+                .isVerified(true).verifiedDate(LocalDateTime.now())
+                .county(userLocationDto.getCounty())
+                .city(userLocationDto.getCity())
+                .build();
 
         userLocationRepository.save(userLocation);
-        user.join(userJoinDto, userLocation, file.getName());
+
+        user.join(userJoinDto, userLocation);
         userRepository.save(user);
+
+        List<ExerciseLevelDto> exerciseLevelDtoList = exerciseLevelList.stream().map(v -> new ExerciseLevelDto(v.getExercise(), v.getLevel())).toList();
 
         return UserResponseDto.builder()
                 .id(user.getId())
@@ -56,29 +80,42 @@ public class UserService {
                 .gender(user.getGender())
                 .profileImg(user.getProfileImg())
                 .statusMessage(user.getStatusMessage())
-                .userExerciseLevels(userJoinDto.getExerciseLevels())
+                .userExerciseLevels(exerciseLevelDtoList)
                 .userLocation(userJoinDto.getUserLocation())
                 .userKeywords(userJoinDto.getKeywords())
                 .build();
     }
 
-    public UserResponseDto update(User user, UserUpdateDto userUpdateDto, MultipartFile file) {
+    public UserResponseDto update(User user, UserUpdateDto userUpdateDto) {
+        List<ExerciseLevel> exerciseLevelList = exerciseLevelRepository.findAllById(userUpdateDto.getExerciseLevels().stream().map(Integer::longValue).toList());
 
-        userExerciseLevelRepository.deleteAllByUser(user);
+        List<UserExerciseLevel> userExerciseLevels = userExerciseLevelRepository.findAllByUser(user);
+        List<UserExerciseLevel> userExerciseLevelsToDelete = userExerciseLevels.stream()
+                .filter(userExerciseLevel -> exerciseLevelList.stream().noneMatch(exerciseLevel -> Objects.equals(exerciseLevel.getId(), userExerciseLevel.getId())))
+                .collect(Collectors.toList());
 
-        saveUserExerciseLevel(user, userUpdateDto.getExerciseLevels());
+        List<UserExerciseLevel> userExerciseLevelsToSave = exerciseLevelList.stream()
+                .filter(exerciseLevel -> userExerciseLevels.stream().noneMatch(userExerciseLevel -> Objects.equals(userExerciseLevel.getId(), exerciseLevel.getId())))
+                .map(exerciseLevel -> UserExerciseLevel.builder().exerciseLevel(exerciseLevel).user(user).build())
+                .collect(Collectors.toList());
 
-        List<UserKeyword> userKeywords = userKeywordRepository.findByUser(user);
-        if (userKeywords != null || !userKeywords.isEmpty()) {
+        userExerciseLevelRepository.deleteAll(userExerciseLevelsToDelete);
+        userExerciseLevelRepository.saveAll(userExerciseLevelsToSave);
+
+        List<UserKeyword> userKeywordList = userKeywordRepository.findByUser(user);
+        if (userKeywordList != null) {
             userKeywordRepository.deleteAllByUser(user);
         }
-        saveUserKeyword(userUpdateDto.getKeywords(), user);
+        var userKeywords = userUpdateDto.getKeywords();
+        userKeywords.stream().map(e -> UserKeyword.builder().keyword(e).user(user).build()).forEach(userKeywordRepository::save);
 
-        UserLocation userLocation = saveUserLocation(userUpdateDto.getUserLocation());
-        userLocationRepository.save(userLocation);
-        user.setUserLocation(userLocation);
-        user.update(userUpdateDto, file.getName());
+        user.update(userUpdateDto);
         userRepository.save(user);
+
+        var userLocationDto = UserLocationDto.builder().county(user.getUserLocation().getCounty()).city(user.getUserLocation().getCity())
+                .latitude((float) user.getUserLocation().getLocation().getCoordinate().getX())
+                .longitude((float) user.getUserLocation().getLocation().getCoordinate().getY()).build();
+
 
         return UserResponseDto.builder()
                 .id(user.getId())
@@ -89,15 +126,13 @@ public class UserService {
                 .gender(user.getGender())
                 .profileImg(user.getProfileImg())
                 .statusMessage(user.getStatusMessage())
-                .userExerciseLevels(userUpdateDto.getExerciseLevels())
-                .userLocation(userUpdateDto.getUserLocation())
+                .userLocation(userLocationDto)
                 .userKeywords(userUpdateDto.getKeywords())
                 .build();
     }
 
     @Transactional(readOnly = true)
     public UserResponseDto me(User user) {
-        user = userRepository.findById(user.getId()).get();
         return UserResponseDto.builder()
                 .id(user.getId())
                 .name(user.getName())
@@ -107,48 +142,27 @@ public class UserService {
                 .gender(user.getGender())
                 .profileImg(user.getProfileImg())
                 .statusMessage(user.getStatusMessage())
-                .userExerciseLevels(user.getUserExerciseLevels().stream().map(
-                        userExerciseLevel -> new ExerciseLevelDto(
-                                userExerciseLevel.getExercise().getName(),
-                                userExerciseLevel.getLevel())
-                ).toList())
-                .userLocation(user.getUserLocation() == null ? null :
-                        new UserLocationDto(
-                                user.getUserLocation().getCounty(),
-                                user.getUserLocation().getCity(),
-                                user.getUserLocation().getDong()))
                 .userKeywords(user.getUserKeywords().stream().map(
                         UserKeyword::getKeyword
                 ).toList())
                 .build();
     }
 
-    public void saveUserExerciseLevel(User user, List<ExerciseLevelDto> exerciseLevels) {
-        exerciseLevels.forEach(exerciseLevelDto -> {
-            Exercise exercise = exerciseRepository.findByName(exerciseLevelDto.getExerciseName())
-                    .orElseThrow(() -> new NotFoundException(ErrorCode.NOT_FOUND, exerciseLevelDto.getExerciseName()));
-            UserExerciseLevel userExerciseLevel = UserExerciseLevel.builder().exercise(exercise).level(exerciseLevelDto.getLevel()).user(user).build();
-            userExerciseLevelRepository.save(userExerciseLevel);
-        });
+    public UserResponseDto updateUserLocation(User user, UserLocationDto userLocationDto) {
+        return UserResponseDto.builder()
+                .id(user.getId())
+                .name(user.getName())
+                .phone(user.getPhone())
+                .nickname(user.getNickname())
+                .rating(user.getRating())
+                .gender(user.getGender())
+                .profileImg(user.getProfileImg())
+                .statusMessage(user.getStatusMessage())
+                .userKeywords(user.getUserKeywords().stream().map(
+                        UserKeyword::getKeyword
+                ).toList())
+                .build();
     }
 
-    public void saveUserKeyword(List<String> userKeywords, User user) {
-        userKeywords.forEach(keyword -> {
-            UserKeyword userKeyword = UserKeyword.builder().keyword(keyword).user(user).build();
-            userKeywordRepository.save(userKeyword);
-        });
-    }
-
-    public UserLocation saveUserLocation(UserLocationDto userLocationDto) {
-        Optional<UserLocation> findUserLocation = userLocationRepository.findByCountyAndCityAndDong(
-                userLocationDto.getCounty(),
-                userLocationDto.getCity(),
-                userLocationDto.getDong());
-        return findUserLocation.orElseGet(
-                () -> UserLocation.builder()
-                        .county(userLocationDto.getCounty())
-                        .city(userLocationDto.getCity())
-                        .dong(userLocationDto.getDong()).build());
-    }
 
 }

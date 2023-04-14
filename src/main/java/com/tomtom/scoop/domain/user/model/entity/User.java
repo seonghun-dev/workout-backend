@@ -4,7 +4,10 @@ import com.tomtom.scoop.domain.common.Gender;
 import com.tomtom.scoop.domain.user.model.dto.request.UserJoinDto;
 import com.tomtom.scoop.domain.user.model.dto.request.UserUpdateDto;
 import jakarta.persistence.*;
-import lombok.*;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
 
 import java.util.List;
 
@@ -49,9 +52,7 @@ public class User {
     @OneToMany(mappedBy = "user")
     private List<UserExerciseLevel> userExerciseLevels;
 
-    @OneToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "user_location_id")
-    @Setter
+    @OneToOne
     private UserLocation userLocation;
 
     @OneToMany(mappedBy = "user")
@@ -68,19 +69,19 @@ public class User {
         return new User(oauthId);
     }
 
-    public void join(UserJoinDto userJoinDto, UserLocation userLocation, String imgUrl) {
+    public void join(UserJoinDto userJoinDto, UserLocation userLocation) {
         this.name = userJoinDto.getName();
         this.nickname = userJoinDto.getNickname();
         this.phone = userJoinDto.getPhone();
         this.gender = userJoinDto.getGender();
         this.deviceToken = userJoinDto.getDeviceToken();
         this.userLocation = userLocation;
-        this.profileImg = imgUrl;
+        this.profileImg = userJoinDto.getProfileImgUrl();
     }
 
-    public void update(UserUpdateDto userUpdateDto, String imgUrl) {
+    public void update(UserUpdateDto userUpdateDto) {
         this.nickname = userUpdateDto.getNickname();
-        this.profileImg = imgUrl;
+        this.profileImg = userUpdateDto.getProfileImgUrl();
         this.statusMessage = userUpdateDto.getStatusMessage();
     }
 

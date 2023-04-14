@@ -4,7 +4,8 @@ import com.tomtom.scoop.domain.user.model.entity.User;
 import com.tomtom.scoop.domain.user.model.entity.UserExerciseLevel;
 import org.springframework.data.jpa.repository.JpaRepository;
 
-public interface UserExerciseLevelRepository extends JpaRepository<UserExerciseLevel, Long> {
+import java.util.List;
 
-    void deleteAllByUser(User user);
+public interface UserExerciseLevelRepository extends JpaRepository<UserExerciseLevel, Long> {
+    List<UserExerciseLevel> findAllByUser(User user);
 }

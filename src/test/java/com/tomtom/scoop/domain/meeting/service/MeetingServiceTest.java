@@ -1,14 +1,14 @@
 package com.tomtom.scoop.domain.meeting.service;
 
 import com.tomtom.scoop.domain.common.Gender;
+import com.tomtom.scoop.domain.exercise.model.entity.ExerciseLevel;
+import com.tomtom.scoop.domain.exercise.repository.ExerciseLevelRepository;
 import com.tomtom.scoop.domain.meeting.model.dto.request.FindAllMeetingRequestDto;
 import com.tomtom.scoop.domain.meeting.model.dto.request.MeetingRequestDto;
 import com.tomtom.scoop.domain.meeting.model.dto.response.MeetingListResponseDto;
 import com.tomtom.scoop.domain.meeting.model.entity.*;
 import com.tomtom.scoop.domain.meeting.repository.*;
-import com.tomtom.scoop.domain.user.model.entity.Exercise;
 import com.tomtom.scoop.domain.user.model.entity.User;
-import com.tomtom.scoop.domain.user.repository.ExerciseRepository;
 import com.tomtom.scoop.domain.user.repository.UserRepository;
 import com.tomtom.scoop.global.exception.BusinessException;
 import com.tomtom.scoop.global.exception.NotFoundException;
@@ -56,11 +56,11 @@ public class MeetingServiceTest {
     @Mock
     MeetingTypeRepository meetingTypeRepository;
     @Mock
-    ExerciseRepository exerciseRepository;
-    @Mock
     UserRepository userRepository;
     @Mock
     MeetingLikeRepository meetingLikeRepository;
+    @Mock
+    ExerciseLevelRepository exerciseLevelRepository;
     @Mock
     ApplicationEventPublisher eventPublisher;
     @Mock
@@ -77,11 +77,12 @@ public class MeetingServiceTest {
         private MeetingRequestDto meetingRequestDto;
         private MeetingType meetingType;
         private Meeting meeting;
-        private Exercise exercise;
 
         private MeetingLocation meetingLocation;
 
         private UserMeeting userMeeting;
+
+        private ExerciseLevel exerciseLevel;
 
         @BeforeEach
         void setUp() {
@@ -102,13 +103,13 @@ public class MeetingServiceTest {
                     .locationName("KonKuk University")
                     .locationDetail("Library")
                     .locationCity("Seoul")
-                    .exerciseName("Running")
-                    .exerciseLevel("Beginner")
+                    .exerciseLevel(1L)
                     .meetingType("Play")
                     .build();
 
             meetingType = new MeetingType(1L, "Play");
-            exercise = new Exercise(1L, "Running");
+
+            exerciseLevel = new ExerciseLevel(1L, "Running", "Beginner");
 
             GeometryFactory gf = new GeometryFactory();
             Point point = gf.createPoint(new Coordinate(meetingRequestDto.getLocationLatitude(), meetingRequestDto.getLocationLongitude()));
@@ -130,8 +131,7 @@ public class MeetingServiceTest {
                     .viewCount(0)
                     .memberLimit(meetingRequestDto.getMemberLimit())
                     .eventDate(meetingRequestDto.getMeetingDate())
-                    .exerciseLevel(meetingRequestDto.getExerciseLevel())
-                    .exercise(exercise)
+                    .exerciseLevel(exerciseLevel)
                     .meetingLocation(meetingLocation)
                     .meetingType(meetingType)
                     .gender(meetingRequestDto.getGender())
@@ -156,14 +156,13 @@ public class MeetingServiceTest {
             void createMeetingSuccess1() {
 
                 when(meetingTypeRepository.findByName(any())).thenReturn(Optional.of(meetingType));
-                when(exerciseRepository.findByName(any())).thenReturn(Optional.of(exercise));
+                when(exerciseLevelRepository.findById(any())).thenReturn(Optional.of(exerciseLevel));
                 when(meetingLocationRepository.save(any(MeetingLocation.class))).thenReturn(meetingLocation);
                 when(meetingRepository.save(any(Meeting.class))).thenReturn(meeting);
                 when(userMeetingRepository.save(any(UserMeeting.class))).thenReturn(userMeeting);
 
                 var result = meetingService.createMeeting(user, meetingRequestDto);
 
-                System.out.println("result = " + result);
 
                 Assertions.assertThat(result).isNotNull();
                 Assertions.assertThat(result.getMeetingType()).isEqualTo("Play");
@@ -194,7 +193,7 @@ public class MeetingServiceTest {
             void createMeetingFail2() {
 
                 when(meetingTypeRepository.findByName(any())).thenReturn(Optional.of(meetingType));
-                when(exerciseRepository.findByName(any())).thenReturn(Optional.empty());
+                when(exerciseLevelRepository.findById(any())).thenReturn(Optional.empty());
 
                 assertThrows(NotFoundException.class, () -> meetingService.createMeeting(user, meetingRequestDto));
 
@@ -236,7 +235,7 @@ public class MeetingServiceTest {
 
             LocalDateTime today = LocalDateTime.now();
 
-            Exercise exercise = new Exercise(1L, "Running");
+            ExerciseLevel exerciseLevel = new ExerciseLevel(1L, "Running", "Beginner");
             MeetingType meetingType = new MeetingType(1L, "Play");
             MeetingLocation meetingLocation = new MeetingLocation(1L, "KonKuk University", "Library", "Seoul", null);
 
@@ -255,8 +254,7 @@ public class MeetingServiceTest {
                     .viewCount(0)
                     .memberLimit(10)
                     .eventDate(today)
-                    .exerciseLevel("Beginner")
-                    .exercise(exercise)
+                    .exerciseLevel(exerciseLevel)
                     .meetingLocation(meetingLocation)
                     .userMeetings(userMeetings)
                     .meetingType(meetingType)
@@ -589,7 +587,7 @@ public class MeetingServiceTest {
         @BeforeEach
         void setUp() {
             MeetingType meetingType = new MeetingType(1L, "Play");
-            Exercise exercise = new Exercise(1L, "Running");
+            ExerciseLevel exerciseLevel = new ExerciseLevel(1L, "Running", "Beginner");
 
             GeometryFactory gf = new GeometryFactory();
             Point point = gf.createPoint(new Coordinate(1.3, 1.4));
@@ -618,8 +616,7 @@ public class MeetingServiceTest {
                     .viewCount(0)
                     .memberLimit(10)
                     .eventDate(LocalDateTime.now())
-                    .exerciseLevel("Beginner")
-                    .exercise(exercise)
+                    .exerciseLevel(exerciseLevel)
                     .meetingLocation(meetingLocation)
                     .userMeetings(Collections.singletonList(userMeeting))
                     .meetingType(meetingType)
@@ -635,8 +632,7 @@ public class MeetingServiceTest {
                     .viewCount(0)
                     .memberLimit(10)
                     .eventDate(LocalDateTime.now())
-                    .exerciseLevel("Beginner")
-                    .exercise(exercise)
+                    .exerciseLevel(exerciseLevel)
                     .meetingLocation(meetingLocation)
                     .userMeetings(Collections.singletonList(userMeeting))
                     .meetingType(meetingType)
@@ -676,7 +672,7 @@ public class MeetingServiceTest {
                     .build();
 
             MeetingType meetingType = new MeetingType(1L, "Play");
-            Exercise exercise = new Exercise(1L, "Running");
+            ExerciseLevel exerciseLevel = new ExerciseLevel(1L, "Running", "Beginner");
 
             GeometryFactory gf = new GeometryFactory();
             Point point = gf.createPoint(new Coordinate(1.3, 1.4));
@@ -705,8 +701,7 @@ public class MeetingServiceTest {
                     .viewCount(0)
                     .memberLimit(10)
                     .eventDate(LocalDateTime.now())
-                    .exerciseLevel("Beginner")
-                    .exercise(exercise)
+                    .exerciseLevel(exerciseLevel)
                     .meetingLocation(meetingLocation)
                     .userMeetings(Collections.singletonList(userMeeting))
                     .meetingType(meetingType)
@@ -722,8 +717,7 @@ public class MeetingServiceTest {
                     .viewCount(0)
                     .memberLimit(10)
                     .eventDate(LocalDateTime.now())
-                    .exerciseLevel("Beginner")
-                    .exercise(exercise)
+                    .exerciseLevel(exerciseLevel)
                     .meetingLocation(meetingLocation)
                     .userMeetings(Collections.singletonList(userMeeting))
                     .meetingType(meetingType)
@@ -1343,7 +1337,7 @@ public class MeetingServiceTest {
                     .build();
 
             MeetingType meetingType = new MeetingType(1L, "Play");
-            Exercise exercise = new Exercise(1L, "Running");
+            ExerciseLevel exerciseLevel = new ExerciseLevel(1L, "Running", "Beginner");
 
             GeometryFactory gf = new GeometryFactory();
             Point point = gf.createPoint(new Coordinate(1.3, 1.4));
@@ -1372,8 +1366,7 @@ public class MeetingServiceTest {
                     .viewCount(0)
                     .memberLimit(10)
                     .eventDate(LocalDateTime.now())
-                    .exerciseLevel("Beginner")
-                    .exercise(exercise)
+                    .exerciseLevel(exerciseLevel)
                     .meetingLocation(meetingLocation)
                     .userMeetings(Collections.singletonList(userMeeting))
                     .meetingType(meetingType)

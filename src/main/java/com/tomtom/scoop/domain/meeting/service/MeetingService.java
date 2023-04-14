@@ -1,5 +1,7 @@
 package com.tomtom.scoop.domain.meeting.service;
 
+import com.tomtom.scoop.domain.exercise.model.entity.ExerciseLevel;
+import com.tomtom.scoop.domain.exercise.repository.ExerciseLevelRepository;
 import com.tomtom.scoop.domain.meeting.model.dto.request.FindAllMeetingRequestDto;
 import com.tomtom.scoop.domain.meeting.model.dto.request.MeetingRequestDto;
 import com.tomtom.scoop.domain.meeting.model.dto.response.MeetingDetailResponseDto;
@@ -9,9 +11,7 @@ import com.tomtom.scoop.domain.meeting.model.entity.*;
 import com.tomtom.scoop.domain.meeting.repository.*;
 import com.tomtom.scoop.domain.notification.event.JoinMeetingEvent;
 import com.tomtom.scoop.domain.notification.event.JoinMeetingResultEvent;
-import com.tomtom.scoop.domain.user.model.entity.Exercise;
 import com.tomtom.scoop.domain.user.model.entity.User;
-import com.tomtom.scoop.domain.user.repository.ExerciseRepository;
 import com.tomtom.scoop.domain.user.repository.UserRepository;
 import com.tomtom.scoop.global.exception.BusinessException;
 import com.tomtom.scoop.global.exception.ErrorCode;
@@ -39,9 +39,9 @@ public class MeetingService {
     private final UserMeetingRepository userMeetingRepository;
     private final MeetingLocationRepository meetingLocationRepository;
     private final MeetingTypeRepository meetingTypeRepository;
-    private final ExerciseRepository exerciseRepository;
     private final UserRepository userRepository;
     private final MeetingLikeRepository meetingLikeRepository;
+    private final ExerciseLevelRepository exerciseLevelRepository;
 
     private final S3Service s3Service;
 
@@ -54,8 +54,8 @@ public class MeetingService {
         MeetingType meetingType = meetingTypeRepository.findByName(meetingDto.getMeetingType())
                 .orElseThrow(() -> new NotFoundException(ErrorCode.MEETING_TYPE_NOT_FOUND, meetingDto.getMeetingType()));
 
-        Exercise exercise = exerciseRepository.findByName(meetingDto.getExerciseName())
-                .orElseThrow(() -> new NotFoundException(ErrorCode.EXERCISE_NOT_FOUND, meetingDto.getExerciseName()));
+        ExerciseLevel exerciseLevel = exerciseLevelRepository.findById(meetingDto.getExerciseLevel())
+                .orElseThrow(() -> new NotFoundException(ErrorCode.EXERCISE_LEVEL_NOT_FOUND, meetingDto.getExerciseLevel()));
 
 
         LocalDateTime today = meetingDto.getMeetingDate();
@@ -79,8 +79,7 @@ public class MeetingService {
                 .memberLimit(meetingDto.getMemberLimit())
                 .eventDate(today)
                 .viewCount(DEFAULT_VIEW_COUNT)
-                .exerciseLevel(meetingDto.getExerciseLevel())
-                .exercise(exercise)
+                .exerciseLevel(exerciseLevel)
                 .meetingLocation(meetingLocation)
                 .meetingType(meetingType)
                 .gender(meetingDto.getGender()).build();
@@ -105,7 +104,8 @@ public class MeetingService {
                 .ownerProfile(meeting.getUser().getProfileImg())
                 .meetingType(meeting.getMeetingType().getName())
                 .isLiked(false)
-                .exerciseLevel(meeting.getExerciseLevel())
+                .exerciseLevel(meeting.getExerciseLevel().getLevel())
+                .exercise(meeting.getExerciseLevel().getExercise())
                 .build();
     }
 
@@ -298,8 +298,8 @@ public class MeetingService {
                         .eventDate(meeting.getEventDate())
                         .memberCount(meeting.getMemberCount())
                         .memberLimit(meeting.getMemberLimit())
-                        .exerciseName(meeting.getExercise().getName())
-                        .exerciseLevel(meeting.getExerciseLevel())
+                        .exerciseName(meeting.getExerciseLevel().getExercise())
+                        .exerciseLevel(meeting.getExerciseLevel().getLevel())
                         .meetingType(meeting.getMeetingType().getName())
                         .imgUrl(meeting.getImgUrl())
                         .build()
@@ -325,7 +325,7 @@ public class MeetingService {
                                 userMeeting ->
                                         userMeeting.getUser().getProfileImg()
                         ).toList())
-                .exerciseLevel(meeting.getExerciseLevel())
+                .exerciseLevel(meeting.getExerciseLevel().getLevel())
                 .build();
     }
 
