@@ -1,15 +1,15 @@
-package com.tomtom.scoop.domain.user.service;
+package com.tomtom.scoop.auth.service;
 
-import com.tomtom.scoop.domain.user.model.dao.LogoutAccessToken;
-import com.tomtom.scoop.domain.user.model.dao.RefreshToken;
-import com.tomtom.scoop.domain.user.model.dto.TokenDto;
+import com.tomtom.scoop.auth.model.TokenDto;
+import com.tomtom.scoop.auth.model.dao.LogoutAccessToken;
+import com.tomtom.scoop.auth.model.dao.RefreshToken;
+import com.tomtom.scoop.auth.repository.LogoutAccessTokenRepository;
+import com.tomtom.scoop.auth.repository.RefreshTokenRepository;
+import com.tomtom.scoop.auth.util.JwtTokenUtil;
 import com.tomtom.scoop.domain.user.model.entity.User;
-import com.tomtom.scoop.domain.user.repository.LogoutAccessTokenRepository;
-import com.tomtom.scoop.domain.user.repository.RefreshTokenRepository;
 import com.tomtom.scoop.domain.user.repository.UserRepository;
 import com.tomtom.scoop.global.exception.BusinessException;
 import com.tomtom.scoop.global.exception.ErrorCode;
-import com.tomtom.scoop.global.util.JwtTokenUtil;
 import io.jsonwebtoken.ExpiredJwtException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;

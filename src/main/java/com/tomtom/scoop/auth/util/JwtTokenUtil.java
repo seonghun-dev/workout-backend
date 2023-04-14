@@ -1,6 +1,6 @@
-package com.tomtom.scoop.global.util;
+package com.tomtom.scoop.auth.util;
 
-import com.tomtom.scoop.domain.user.repository.RefreshTokenRepository;
+import com.tomtom.scoop.auth.repository.RefreshTokenRepository;
 import com.tomtom.scoop.global.security.CustomUserDetails;
 import com.tomtom.scoop.global.security.CustomUserDetailsService;
 import io.jsonwebtoken.Claims;

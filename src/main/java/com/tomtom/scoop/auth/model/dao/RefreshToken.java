@@ -1,4 +1,4 @@
-package com.tomtom.scoop.domain.user.model.dao;
+package com.tomtom.scoop.auth.model.dao;
 
 import lombok.Builder;
 import lombok.Getter;
@@ -11,9 +11,9 @@ import org.springframework.data.redis.core.index.Indexed;
 
 @Getter
 @Setter
-@RedisHash("AT")
+@RedisHash("RT")
 @NoArgsConstructor
-public class LogoutAccessToken {
+public class RefreshToken {
 
     @Id
     @Indexed
@@ -23,10 +23,9 @@ public class LogoutAccessToken {
     private Long expiredTime;
 
     @Builder
-    public LogoutAccessToken(String key, String value, Long expiredTime) {
+    public RefreshToken(String key, String value, Long expiredTime) {
         this.key = key;
         this.value = value;
         this.expiredTime = expiredTime;
     }
-
 }

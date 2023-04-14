@@ -1,6 +1,6 @@
 package com.tomtom.scoop.global.security;
 
-import com.tomtom.scoop.global.util.JwtTokenUtil;
+import com.tomtom.scoop.auth.util.JwtTokenUtil;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;

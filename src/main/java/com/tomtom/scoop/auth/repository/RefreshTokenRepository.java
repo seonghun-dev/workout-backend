@@ -1,6 +1,6 @@
-package com.tomtom.scoop.domain.user.repository;
+package com.tomtom.scoop.auth.repository;
 
-import com.tomtom.scoop.domain.user.model.dao.RefreshToken;
+import com.tomtom.scoop.auth.model.dao.RefreshToken;
 import org.springframework.data.repository.CrudRepository;
 
 import java.util.Optional;

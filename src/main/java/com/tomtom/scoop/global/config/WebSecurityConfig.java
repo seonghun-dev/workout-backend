@@ -1,7 +1,7 @@
 package com.tomtom.scoop.global.config;
 
+import com.tomtom.scoop.auth.util.JwtTokenUtil;
 import com.tomtom.scoop.global.security.*;
-import com.tomtom.scoop.global.util.JwtTokenUtil;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
