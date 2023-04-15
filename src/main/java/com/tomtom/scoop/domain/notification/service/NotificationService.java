@@ -5,6 +5,7 @@ import com.tomtom.scoop.domain.notification.model.dto.NotificationListResponseDt
 import com.tomtom.scoop.domain.notification.model.entity.Notification;
 import com.tomtom.scoop.domain.notification.repository.NotificationRepository;
 import com.tomtom.scoop.domain.user.model.entity.User;
+import com.tomtom.scoop.global.exception.BusinessException;
 import com.tomtom.scoop.global.exception.ErrorCode;
 import com.tomtom.scoop.global.exception.NotFoundException;
 import lombok.RequiredArgsConstructor;
@@ -38,7 +39,7 @@ public class NotificationService {
     public void markNotificationsAsRead(User user, Long notificationId) {
         Notification notification = notificationRepository.findById(notificationId).orElseThrow(() -> new NotFoundException(ErrorCode.NOTIFICATION_NOT_FOUND, notificationId));
         if (notification.getUser() != user)
-            throw new IllegalArgumentException(String.format("Notification with id %s does not belong to user with id %s", notificationId, user.getId()));
+            throw new BusinessException(ErrorCode.NOT_USER_NOTIFICATION);
         notification.setIsRead(true);
         notificationRepository.save(notification);
     }
@@ -46,10 +47,9 @@ public class NotificationService {
     public void deleteNotification(User user, Long notificationId) {
         Notification notification = notificationRepository.findById(notificationId).orElseThrow(() ->  new NotFoundException(ErrorCode.NOTIFICATION_NOT_FOUND, notificationId));
         if (notification.getUser() != user)
-            throw new IllegalArgumentException(String.format("Notification with id %s does not belong to user with id %s", notificationId, user.getId()));
+            throw new BusinessException(ErrorCode.NOT_USER_NOTIFICATION);
         notification.setIsDeleted(true);
         notificationRepository.save(notification);
     }
-
 
 }

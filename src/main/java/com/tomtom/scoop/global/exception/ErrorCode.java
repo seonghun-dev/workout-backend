@@ -52,7 +52,8 @@ public enum ErrorCode {
 
 
     // Notification
-    NOTIFICATION_NOT_FOUND(HttpStatus.NOT_FOUND, "NOTIFICATION_0001", "Not Found Notification");
+    NOTIFICATION_NOT_FOUND(HttpStatus.NOT_FOUND, "NOTIFICATION-0001", "Not Found Notification"),
+    NOT_USER_NOTIFICATION(HttpStatus.BAD_REQUEST, "NOTIFICATION-0002", "Not Users Notification");
 
 
     private final HttpStatus status;
