@@ -1,11 +1,13 @@
 package com.tomtom.scoop.domain.notification.controller;
 
+import com.tomtom.scoop.domain.common.model.ResponseDto;
 import com.tomtom.scoop.domain.notification.model.dto.NotificationListResponseDto;
 import com.tomtom.scoop.domain.notification.service.NotificationService;
 import com.tomtom.scoop.domain.user.model.entity.User;
 import com.tomtom.scoop.global.annotation.ReqUser;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Pageable;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -19,19 +21,21 @@ public class NotificationController {
 
     @GetMapping
     @ResponseBody
-    public List<NotificationListResponseDto> findAllNotifications(@ReqUser() User user, Pageable pageable) {
-        return notificationService.findAllNotifications(user, pageable);
+    public ResponseEntity<List<NotificationListResponseDto>> findAllNotifications(@ReqUser() User user, Pageable pageable) {
+        var response = notificationService.findAllNotifications(user, pageable);
+        return ResponseDto.ok(response);
     }
 
     @PostMapping("/{notificationId}/read")
-    public void markNotificationsAsRead(@ReqUser() User user, @PathVariable("notificationId") Long notificationId) {
+    public ResponseEntity<Void> markNotificationsAsRead(@ReqUser() User user, @PathVariable("notificationId") Long notificationId) {
         notificationService.markNotificationsAsRead(user, notificationId);
+        return ResponseDto.noContent();
     }
 
     @DeleteMapping("/{notificationId}")
-    public void deleteNotification(@ReqUser() User user, @PathVariable("notificationId") Long notificationId) {
+    public ResponseEntity<Void>  deleteNotification(@ReqUser() User user, @PathVariable("notificationId") Long notificationId) {
         notificationService.deleteNotification(user, notificationId);
+        return ResponseDto.noContent();
     }
-
 
 }
