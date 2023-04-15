@@ -12,7 +12,6 @@ import org.springframework.stereotype.Service;
 import org.webjars.NotFoundException;
 
 import java.util.List;
-import java.util.Objects;
 
 @Service
 @RequiredArgsConstructor
@@ -22,10 +21,7 @@ public class NotificationService {
 
     private final UserRepository userRepository;
 
-    public List<NotificationListResponseDto> findAllNotifications(Long userId, Pageable pageable) {
-
-        User user = userRepository.findById(userId)
-                .orElseThrow(() -> new NotFoundException(String.format("User with id %s not found", userId)));
+    public List<NotificationListResponseDto> findAllNotifications(User user, Pageable pageable) {
         List<Notification> notifications = notificationRepository.findByUser(user, pageable);
         return notifications.stream().map(
                 notification ->
@@ -42,20 +38,20 @@ public class NotificationService {
         ).toList();
     }
 
-    public void markNotificationsAsRead(Long userId, Long notificationId) {
+    public void markNotificationsAsRead(User user, Long notificationId) {
         Notification notification = notificationRepository.findById(notificationId)
                 .orElseThrow(() -> new NotFoundException(String.format("Notification with id %s not found", notificationId)));
-        if (notification.getUser() != null && !Objects.equals(notification.getUser().getId(), userId))
-            throw new IllegalArgumentException(String.format("Notification with id %s does not belong to user with id %s", notificationId, userId));
+        if (notification.getUser() != user)
+            throw new IllegalArgumentException(String.format("Notification with id %s does not belong to user with id %s", notificationId, user.getId()));
         notification.setIsRead(true);
         notificationRepository.save(notification);
     }
 
-    public void deleteNotification(Long userId, Long notificationId) {
+    public void deleteNotification(User user, Long notificationId) {
         Notification notification = notificationRepository.findById(notificationId)
                 .orElseThrow(() -> new NotFoundException(String.format("Notification with id %s not found", notificationId)));
-        if (notification.getUser() != null && !Objects.equals(notification.getUser().getId(), userId))
-            throw new IllegalArgumentException(String.format("Notification with id %s does not belong to user with id %s", notificationId, userId));
+        if (notification.getUser() != user)
+            throw new IllegalArgumentException(String.format("Notification with id %s does not belong to user with id %s", notificationId, user.getId()));
         notification.setIsDeleted(true);
         notificationRepository.save(notification);
     }
