@@ -72,13 +72,11 @@ public class NotificationControllerTest {
                 NotificationListResponseDto.builder().id(2L).title("hello2").content("test alert2").isRead(false).createdAt(LocalDateTime.of(2022, 4, 1, 3, 0)).action(notificationActionDto).build()
         );
 
-        given(notificationService.findAllNotifications(any(), any())).willReturn(notificationListResponseDtoList);
+        given(notificationService.findAllNotifications(any())).willReturn(notificationListResponseDtoList);
 
         ResultActions actions = mvc.perform(
                 get("/v1/notifications")
                         .with(csrf())
-                        .param("page", "0")
-                        .param("size", "10")
                         .contentType(MediaType.APPLICATION_JSON)
                         .accept(MediaType.APPLICATION_JSON)
         );

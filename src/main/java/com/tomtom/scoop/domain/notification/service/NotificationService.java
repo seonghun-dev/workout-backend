@@ -5,9 +5,7 @@ import com.tomtom.scoop.domain.notification.model.dto.NotificationListResponseDt
 import com.tomtom.scoop.domain.notification.model.entity.Notification;
 import com.tomtom.scoop.domain.notification.repository.NotificationRepository;
 import com.tomtom.scoop.domain.user.model.entity.User;
-import com.tomtom.scoop.domain.user.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
-import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.webjars.NotFoundException;
 
@@ -19,22 +17,20 @@ public class NotificationService {
 
     private final NotificationRepository notificationRepository;
 
-    private final UserRepository userRepository;
-
-    public List<NotificationListResponseDto> findAllNotifications(User user, Pageable pageable) {
-        List<Notification> notifications = notificationRepository.findByUser(user, pageable);
-        return notifications.stream().map(
-                notification ->
-                        NotificationListResponseDto.builder()
-                                .id(notification.getId())
-                                .title(notification.getTitle())
-                                .content(notification.getContent())
-                                .isRead(notification.getIsRead())
-                                .createdAt(notification.getCreatedAt())
-                                .action(NotificationActionDto.builder()
-                                        .page(notification.getNotificationAction().getPage())
-                                        .contentId(notification.getNotificationAction().getContentId())
-                                        .build()).build()
+    public List<NotificationListResponseDto> findAllNotifications(User user) {
+        List<Notification> notifications = notificationRepository.findAllByUserAndIsDeletedFalse(user);
+        return notifications.stream().map(notification ->
+                NotificationListResponseDto.builder()
+                        .id(notification.getId())
+                        .title(notification.getTitle())
+                        .content(notification.getContent())
+                        .isRead(notification.getIsRead())
+                        .createdAt(notification.getCreatedAt())
+                        .action(NotificationActionDto.builder()
+                                .page(notification.getNotificationAction().getPage())
+                                .contentId(notification.getNotificationAction().getContentId())
+                                .build())
+                        .build()
         ).toList();
     }
 
