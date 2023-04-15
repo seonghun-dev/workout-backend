@@ -6,7 +6,6 @@ import com.tomtom.scoop.domain.notification.service.NotificationService;
 import com.tomtom.scoop.domain.user.model.entity.User;
 import com.tomtom.scoop.global.annotation.ReqUser;
 import lombok.RequiredArgsConstructor;
-import org.springframework.data.domain.Pageable;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -21,8 +20,8 @@ public class NotificationController {
 
     @GetMapping
     @ResponseBody
-    public ResponseEntity<List<NotificationListResponseDto>> findAllNotifications(@ReqUser() User user, Pageable pageable) {
-        var response = notificationService.findAllNotifications(user, pageable);
+    public ResponseEntity<List<NotificationListResponseDto>> findAllNotifications(@ReqUser() User user) {
+        var response = notificationService.findAllNotifications(user);
         return ResponseDto.ok(response);
     }
 

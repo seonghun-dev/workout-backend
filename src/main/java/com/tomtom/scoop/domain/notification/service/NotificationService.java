@@ -5,11 +5,11 @@ import com.tomtom.scoop.domain.notification.model.dto.NotificationListResponseDt
 import com.tomtom.scoop.domain.notification.model.entity.Notification;
 import com.tomtom.scoop.domain.notification.repository.NotificationRepository;
 import com.tomtom.scoop.domain.user.model.entity.User;
-import com.tomtom.scoop.domain.user.repository.UserRepository;
+import com.tomtom.scoop.global.exception.BusinessException;
+import com.tomtom.scoop.global.exception.ErrorCode;
+import com.tomtom.scoop.global.exception.NotFoundException;
 import lombok.RequiredArgsConstructor;
-import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
-import org.webjars.NotFoundException;
 
 import java.util.List;
 
@@ -19,42 +19,37 @@ public class NotificationService {
 
     private final NotificationRepository notificationRepository;
 
-    private final UserRepository userRepository;
-
-    public List<NotificationListResponseDto> findAllNotifications(User user, Pageable pageable) {
-        List<Notification> notifications = notificationRepository.findByUser(user, pageable);
-        return notifications.stream().map(
-                notification ->
-                        NotificationListResponseDto.builder()
-                                .id(notification.getId())
-                                .title(notification.getTitle())
-                                .content(notification.getContent())
-                                .isRead(notification.getIsRead())
-                                .createdAt(notification.getCreatedAt())
-                                .action(NotificationActionDto.builder()
-                                        .page(notification.getNotificationAction().getPage())
-                                        .contentId(notification.getNotificationAction().getContentId())
-                                        .build()).build()
+    public List<NotificationListResponseDto> findAllNotifications(User user) {
+        List<Notification> notifications = notificationRepository.findAllByUserAndIsDeletedFalse(user);
+        return notifications.stream().map(notification ->
+                NotificationListResponseDto.builder()
+                        .id(notification.getId())
+                        .title(notification.getTitle())
+                        .content(notification.getContent())
+                        .isRead(notification.getIsRead())
+                        .createdAt(notification.getCreatedAt())
+                        .action(NotificationActionDto.builder()
+                                .page(notification.getNotificationAction().getPage())
+                                .contentId(notification.getNotificationAction().getContentId())
+                                .build())
+                        .build()
         ).toList();
     }
 
     public void markNotificationsAsRead(User user, Long notificationId) {
-        Notification notification = notificationRepository.findById(notificationId)
-                .orElseThrow(() -> new NotFoundException(String.format("Notification with id %s not found", notificationId)));
+        Notification notification = notificationRepository.findById(notificationId).orElseThrow(() -> new NotFoundException(ErrorCode.NOTIFICATION_NOT_FOUND, notificationId));
         if (notification.getUser() != user)
-            throw new IllegalArgumentException(String.format("Notification with id %s does not belong to user with id %s", notificationId, user.getId()));
+            throw new BusinessException(ErrorCode.NOT_USER_NOTIFICATION);
         notification.setIsRead(true);
         notificationRepository.save(notification);
     }
 
     public void deleteNotification(User user, Long notificationId) {
-        Notification notification = notificationRepository.findById(notificationId)
-                .orElseThrow(() -> new NotFoundException(String.format("Notification with id %s not found", notificationId)));
+        Notification notification = notificationRepository.findById(notificationId).orElseThrow(() ->  new NotFoundException(ErrorCode.NOTIFICATION_NOT_FOUND, notificationId));
         if (notification.getUser() != user)
-            throw new IllegalArgumentException(String.format("Notification with id %s does not belong to user with id %s", notificationId, user.getId()));
+            throw new BusinessException(ErrorCode.NOT_USER_NOTIFICATION);
         notification.setIsDeleted(true);
         notificationRepository.save(notification);
     }
-
 
 }
