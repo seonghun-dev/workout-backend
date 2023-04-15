@@ -48,7 +48,12 @@ public enum ErrorCode {
     REVIEW_WRITER_NOT_PARTICIPATE_MEETING(HttpStatus.BAD_REQUEST,"REVIEW-0004", "Writer did not participate meeting"),
     NOT_REVIEW_USER_SELF(HttpStatus.BAD_REQUEST, "REVIEW-0005", "Can't Review Your Self"),
     REVIEW_ALREADY_WRITTEN(HttpStatus.BAD_REQUEST, "REVIEW-0006", "Review Already Written"),
-    REVIEW_NOT_FOUND(HttpStatus.NOT_FOUND, "REVIEW-0003", "Not Found Review");
+    REVIEW_NOT_FOUND(HttpStatus.NOT_FOUND, "REVIEW-0003", "Not Found Review"),
+
+
+    // Notification
+    NOTIFICATION_NOT_FOUND(HttpStatus.NOT_FOUND, "NOTIFICATION_0001", "Not Found Notification");
+
 
     private final HttpStatus status;
     private final String code;
