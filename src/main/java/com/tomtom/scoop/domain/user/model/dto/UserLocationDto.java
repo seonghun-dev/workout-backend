@@ -1,5 +1,6 @@
 package com.tomtom.scoop.domain.user.model.dto;
 
+import com.tomtom.scoop.domain.user.model.entity.UserLocation;
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -23,4 +24,13 @@ public class UserLocationDto {
 
     @Schema(description = "User Location Longitude", example = "127.0738")
     private Float longitude;
+
+    public static UserLocationDto fromEntity(UserLocation userLocation){
+        return UserLocationDto.builder()
+                .county(userLocation.getCounty())
+                .city(userLocation.getCity())
+                .latitude((float) userLocation.getLocation().getCoordinate().getX())
+                .longitude((float) userLocation.getLocation().getCoordinate().getY())
+                .build();
+    }
 }

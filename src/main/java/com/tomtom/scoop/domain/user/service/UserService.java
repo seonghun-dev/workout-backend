@@ -2,7 +2,6 @@ package com.tomtom.scoop.domain.user.service;
 
 import com.tomtom.scoop.domain.exercise.model.entity.ExerciseLevel;
 import com.tomtom.scoop.domain.exercise.repository.ExerciseLevelRepository;
-import com.tomtom.scoop.domain.user.model.dto.ExerciseLevelDto;
 import com.tomtom.scoop.domain.user.model.dto.UserLocationDto;
 import com.tomtom.scoop.domain.user.model.dto.request.UserJoinDto;
 import com.tomtom.scoop.domain.user.model.dto.request.UserUpdateDto;
@@ -69,21 +68,7 @@ public class UserService {
         user.join(userJoinDto, userLocation);
         userRepository.save(user);
 
-        List<ExerciseLevelDto> exerciseLevelDtoList = exerciseLevelList.stream().map(v -> new ExerciseLevelDto(v.getExercise(), v.getLevel())).toList();
-
-        return UserResponseDto.builder()
-                .id(user.getId())
-                .name(user.getName())
-                .phone(user.getPhone())
-                .nickname(user.getNickname())
-                .rating(user.getRating())
-                .gender(user.getGender())
-                .profileImg(user.getProfileImg())
-                .statusMessage(user.getStatusMessage())
-                .userExerciseLevels(exerciseLevelDtoList)
-                .userLocation(userJoinDto.getUserLocation())
-                .userKeywords(userJoinDto.getKeywords())
-                .build();
+        return UserResponseDto.fromEntity(user);
     }
 
     public UserResponseDto update(User user, UserUpdateDto userUpdateDto) {
@@ -112,56 +97,16 @@ public class UserService {
         user.update(userUpdateDto);
         userRepository.save(user);
 
-        var userLocationDto = UserLocationDto.builder().county(user.getUserLocation().getCounty()).city(user.getUserLocation().getCity())
-                .latitude((float) user.getUserLocation().getLocation().getCoordinate().getX())
-                .longitude((float) user.getUserLocation().getLocation().getCoordinate().getY()).build();
-
-
-        return UserResponseDto.builder()
-                .id(user.getId())
-                .name(user.getName())
-                .phone(user.getPhone())
-                .nickname(user.getNickname())
-                .rating(user.getRating())
-                .gender(user.getGender())
-                .profileImg(user.getProfileImg())
-                .statusMessage(user.getStatusMessage())
-                .userLocation(userLocationDto)
-                .userKeywords(userUpdateDto.getKeywords())
-                .build();
+        return UserResponseDto.fromEntity(user);
     }
 
     @Transactional(readOnly = true)
     public UserResponseDto me(User user) {
-        return UserResponseDto.builder()
-                .id(user.getId())
-                .name(user.getName())
-                .phone(user.getPhone())
-                .nickname(user.getNickname())
-                .rating(user.getRating())
-                .gender(user.getGender())
-                .profileImg(user.getProfileImg())
-                .statusMessage(user.getStatusMessage())
-                .userKeywords(user.getUserKeywords().stream().map(
-                        UserKeyword::getKeyword
-                ).toList())
-                .build();
+        return UserResponseDto.fromEntity(user);
     }
 
     public UserResponseDto updateUserLocation(User user, UserLocationDto userLocationDto) {
-        return UserResponseDto.builder()
-                .id(user.getId())
-                .name(user.getName())
-                .phone(user.getPhone())
-                .nickname(user.getNickname())
-                .rating(user.getRating())
-                .gender(user.getGender())
-                .profileImg(user.getProfileImg())
-                .statusMessage(user.getStatusMessage())
-                .userKeywords(user.getUserKeywords().stream().map(
-                        UserKeyword::getKeyword
-                ).toList())
-                .build();
+        return UserResponseDto.fromEntity(user);
     }
 
 
