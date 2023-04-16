@@ -43,7 +43,7 @@ public class MeetingResponseDto {
     @Schema(description = "Meeting Exercise type", example = "Play")
     private String meetingType;
 
-    public static MeetingResponseDto fromEntity(Meeting meeting){
+    public static MeetingResponseDto fromEntity(Meeting meeting) {
         return MeetingResponseDto
                 .builder()
                 .id(meeting.getId())

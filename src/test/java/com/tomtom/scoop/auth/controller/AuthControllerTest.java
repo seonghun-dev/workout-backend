@@ -37,20 +37,6 @@ public class AuthControllerTest {
     @MockBean
     private AuthService authService;
 
-    @Configuration
-    static class TestConfig {
-        @Bean
-        public TelegramService telegramService() {
-            return new TelegramService();
-        }
-
-        @Bean
-        public TelegramProvider telegramProvider(TelegramService telegramService) {
-            return new TelegramProvider(telegramService);
-        }
-    }
-
-
     @Test
     @MockLoginUser
     public void testReissue() throws Exception {
@@ -71,6 +57,19 @@ public class AuthControllerTest {
                 jsonPath("$.refreshToken").value("refreshToken")
         );
 
+    }
+
+    @Configuration
+    static class TestConfig {
+        @Bean
+        public TelegramService telegramService() {
+            return new TelegramService();
+        }
+
+        @Bean
+        public TelegramProvider telegramProvider(TelegramService telegramService) {
+            return new TelegramProvider(telegramService);
+        }
     }
 
 }

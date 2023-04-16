@@ -53,20 +53,6 @@ public class UserControllerTest {
     @MockBean
     UserRepository userRepository;
 
-    @Configuration
-    static class TestConfig {
-        @Bean
-        public TelegramService telegramService() {
-            return new TelegramService();
-        }
-
-        @Bean
-        public TelegramProvider telegramProvider(TelegramService telegramService) {
-            return new TelegramProvider(telegramService);
-        }
-    }
-
-
     @Test
     @DisplayName("[API][POST][Controller] 유저 가입 테스트")
     @MockLoginUser
@@ -119,7 +105,6 @@ public class UserControllerTest {
         );
     }
 
-
     @Test
     @DisplayName("[API][POST][Controller] 유저 정보 업데이트 테스트")
     @MockLoginUser
@@ -171,7 +156,7 @@ public class UserControllerTest {
         given(userService.me(any())).willReturn(userResponseDto);
 
         ResultActions actions = mvc.perform(
-                        get("/v1/user"));
+                get("/v1/user"));
 
         actions.andExpect(status().isOk());
 
@@ -194,11 +179,6 @@ public class UserControllerTest {
                 jsonPath("$.userKeywords[1]").value("Poor")
         );
     }
-
-
-
-
-
 
     @Test
     @DisplayName("[API][PATCH][Controller] 유저 지역 정보 업데이트 테스트")
@@ -235,5 +215,18 @@ public class UserControllerTest {
                 jsonPath("$.userLocation.longitude").value(127.0738F)
         );
 
+    }
+
+    @Configuration
+    static class TestConfig {
+        @Bean
+        public TelegramService telegramService() {
+            return new TelegramService();
+        }
+
+        @Bean
+        public TelegramProvider telegramProvider(TelegramService telegramService) {
+            return new TelegramProvider(telegramService);
+        }
     }
 }

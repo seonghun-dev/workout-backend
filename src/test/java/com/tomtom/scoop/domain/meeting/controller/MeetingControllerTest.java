@@ -54,20 +54,6 @@ public class MeetingControllerTest {
     @MockBean
     UserRepository userRepository;
 
-    @Configuration
-    static class TestConfig {
-        @Bean
-        public TelegramService telegramService() {
-            return new TelegramService();
-        }
-
-        @Bean
-        public TelegramProvider telegramProvider(TelegramService telegramService) {
-            return new TelegramProvider(telegramService);
-        }
-    }
-
-
     @Test
     @DisplayName("[API][POST][Controller] 모임 생성 테스트")
     @MockLoginUser
@@ -231,7 +217,6 @@ public class MeetingControllerTest {
         );
     }
 
-
     @Test
     @DisplayName("[API][DELETE][Controller] 모임 삭제 테스트")
     @MockLoginUser
@@ -276,7 +261,6 @@ public class MeetingControllerTest {
 
         actions.andExpect(status().isOk());
     }
-
 
     @Test
     @DisplayName("[API][POST][Controller] 모임 가입 허가 테스트")
@@ -352,7 +336,6 @@ public class MeetingControllerTest {
         );
     }
 
-
     @Test
     @DisplayName("[API][GET][Controller] 유저별 참여 완료 모임 조회 테스트")
     @MockLoginUser
@@ -396,7 +379,6 @@ public class MeetingControllerTest {
                 jsonPath("$[0].meetingType").value("Play")
         );
     }
-
 
     @Test
     @DisplayName("[API][GET][Controller] 유저별 참여 대기 모임 조회 테스트")
@@ -561,7 +543,6 @@ public class MeetingControllerTest {
         actions.andExpect(status().isOk());
     }
 
-
     @Test
     @DisplayName("[API][POST][Controller] 모임 키워드로 조회 테스트")
     @MockLoginUser
@@ -576,6 +557,19 @@ public class MeetingControllerTest {
         );
 
         actions.andExpect(status().isOk());
+    }
+
+    @Configuration
+    static class TestConfig {
+        @Bean
+        public TelegramService telegramService() {
+            return new TelegramService();
+        }
+
+        @Bean
+        public TelegramProvider telegramProvider(TelegramService telegramService) {
+            return new TelegramProvider(telegramService);
+        }
     }
 
 

@@ -54,21 +54,6 @@ public class ReviewControllerTest {
     @MockBean
     ReviewRepository reviewRepository;
 
-
-    @Configuration
-    static class TestConfig {
-        @Bean
-        public TelegramService telegramService() {
-            return new TelegramService();
-        }
-
-        @Bean
-        public TelegramProvider telegramProvider(TelegramService telegramService) {
-            return new TelegramProvider(telegramService);
-        }
-    }
-
-
     @Test
     @DisplayName("[API][POST][Controller] 리뷰 생성 테스트")
     @MockLoginUser
@@ -126,7 +111,6 @@ public class ReviewControllerTest {
 
     }
 
-
     @Test
     @DisplayName("[API][GET][Controller] 받은 리뷰 전체 조회 테스트")
     @MockLoginUser
@@ -151,7 +135,6 @@ public class ReviewControllerTest {
         );
 
     }
-
 
     @Test
     @DisplayName("[API][GET][Controller] 작성 리뷰 전체 조회 테스트")
@@ -178,7 +161,6 @@ public class ReviewControllerTest {
 
     }
 
-
     @Test
     @DisplayName("[API][GET][Controller] 미팅별 리뷰 작성해야할 유저 리스트")
     @MockLoginUser
@@ -204,7 +186,6 @@ public class ReviewControllerTest {
 
     }
 
-
     @Test
     @DisplayName("[API][POST][Controller] 리뷰 삭제 테스트")
     @MockLoginUser
@@ -217,6 +198,19 @@ public class ReviewControllerTest {
         );
 
         actions.andExpect(status().isNoContent());
+    }
+
+    @Configuration
+    static class TestConfig {
+        @Bean
+        public TelegramService telegramService() {
+            return new TelegramService();
+        }
+
+        @Bean
+        public TelegramProvider telegramProvider(TelegramService telegramService) {
+            return new TelegramProvider(telegramService);
+        }
     }
 
 }

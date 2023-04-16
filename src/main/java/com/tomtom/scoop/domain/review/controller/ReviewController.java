@@ -23,7 +23,7 @@ public class ReviewController {
     @Operation(summary = "Find All Meeting Reviews User")
     @ResponseBody
     public ResponseEntity<List<User>> findAllReceivedUser(@ReqUser User user, @PathVariable("meetingId") Long meetingId) {
-        var response =  reviewService.findAllReceivedUser(user, meetingId);
+        var response = reviewService.findAllReceivedUser(user, meetingId);
         return ResponseDto.ok(response);
     }
 

@@ -40,19 +40,6 @@ public class MeetingKeywordControllerTest {
     @MockBean
     MeetingKeywordService meetingKeywordService;
 
-    @Configuration
-    static class TestConfig {
-        @Bean
-        public TelegramService telegramService() {
-            return new TelegramService();
-        }
-
-        @Bean
-        public TelegramProvider telegramProvider(TelegramService telegramService) {
-            return new TelegramProvider(telegramService);
-        }
-    }
-
     @Test
     @DisplayName("[API][GET][Controller] 모임 키워드 전체 조회 테스트")
     @MockLoginUser
@@ -74,6 +61,19 @@ public class MeetingKeywordControllerTest {
                 .andExpect(MockMvcResultMatchers.jsonPath("$[0].id").value(1L))
                 .andExpect(MockMvcResultMatchers.jsonPath("$[0].keyword").value("test"));
 
+    }
+
+    @Configuration
+    static class TestConfig {
+        @Bean
+        public TelegramService telegramService() {
+            return new TelegramService();
+        }
+
+        @Bean
+        public TelegramProvider telegramProvider(TelegramService telegramService) {
+            return new TelegramProvider(telegramService);
+        }
     }
 
 

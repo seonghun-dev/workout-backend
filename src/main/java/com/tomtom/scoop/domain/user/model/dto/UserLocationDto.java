@@ -25,7 +25,7 @@ public class UserLocationDto {
     @Schema(description = "User Location Longitude", example = "127.0738")
     private Float longitude;
 
-    public static UserLocationDto fromEntity(UserLocation userLocation){
+    public static UserLocationDto fromEntity(UserLocation userLocation) {
         return UserLocationDto.builder()
                 .county(userLocation.getCounty())
                 .city(userLocation.getCity())

@@ -48,20 +48,6 @@ public class NotificationControllerTest {
     @MockBean
     NotificationRepository notificationRepository;
 
-    @Configuration
-    static class TestConfig {
-        @Bean
-        public TelegramService telegramService() {
-            return new TelegramService();
-        }
-
-        @Bean
-        public TelegramProvider telegramProvider(TelegramService telegramService) {
-            return new TelegramProvider(telegramService);
-        }
-    }
-
-
     @Test
     @DisplayName("[API][GET][Controller] 알림 전체 조회 테스트")
     @MockLoginUser
@@ -116,6 +102,19 @@ public class NotificationControllerTest {
     void testDeleteNotification() throws Exception {
         mvc.perform(delete("/v1/notifications/1").with(csrf()))
                 .andExpect(status().isNoContent());
+    }
+
+    @Configuration
+    static class TestConfig {
+        @Bean
+        public TelegramService telegramService() {
+            return new TelegramService();
+        }
+
+        @Bean
+        public TelegramProvider telegramProvider(TelegramService telegramService) {
+            return new TelegramProvider(telegramService);
+        }
     }
 
 

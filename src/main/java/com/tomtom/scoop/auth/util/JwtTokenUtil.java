@@ -17,11 +17,10 @@ import java.util.Date;
 @Component
 public class JwtTokenUtil {
 
-    @Value("${jwt.secret-key}")
-    private String secretKey;
     private final long accessTokenValidTime = Duration.ofMinutes(30).toMillis();
     private final long refreshTokenValidTime = Duration.ofDays(14).toMillis();
-
+    @Value("${jwt.secret-key}")
+    private String secretKey;
 
     public Boolean validate(String token, String oauthId) {
         String oauthIdByToken = getOauthId(token);

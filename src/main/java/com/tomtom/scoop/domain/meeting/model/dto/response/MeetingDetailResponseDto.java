@@ -53,7 +53,7 @@ public class MeetingDetailResponseDto {
     @Schema(description = "Is user liked meeting", example = "true")
     private Boolean isLiked;
 
-    public static MeetingDetailResponseDto fromEntity(Meeting meeting){
+    public static MeetingDetailResponseDto fromEntity(Meeting meeting) {
         return MeetingDetailResponseDto.builder()
                 .id(meeting.getId())
                 .title(meeting.getTitle())

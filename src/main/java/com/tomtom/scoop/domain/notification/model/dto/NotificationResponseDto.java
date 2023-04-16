@@ -30,7 +30,7 @@ public class NotificationResponseDto {
 
     private NotificationActionDto action;
 
-    public static NotificationResponseDto fromEntity(Notification notification){
+    public static NotificationResponseDto fromEntity(Notification notification) {
         return NotificationResponseDto.builder()
                 .id(notification.getId())
                 .title(notification.getTitle())

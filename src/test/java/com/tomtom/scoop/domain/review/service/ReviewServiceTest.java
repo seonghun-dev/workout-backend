@@ -186,11 +186,11 @@ public class ReviewServiceTest {
 
         @Nested
         @DisplayName("[API][Service] 받은 리뷰 전체 조회 성공 테스트")
-        class Success{
+        class Success {
 
             @Test
             @DisplayName("[API][Service] 받은 리뷰 전체 조회 성공 테스트")
-            void findAllReceivedReviews(){
+            void findAllReceivedReviews() {
                 User user = User.builder().id(1L).build();
                 User sender = User.builder().id(2L).build();
                 Meeting meeting = Meeting.builder().id(3L).build();
@@ -216,11 +216,11 @@ public class ReviewServiceTest {
 
         @Nested
         @DisplayName("[API][Service] 작성 리뷰 전체 조회 성공 테스트")
-        class Success{
+        class Success {
 
             @Test
             @DisplayName("[API][Service] 작성 리뷰 전체 조회 성공 테스트")
-            void findAllReviewerReviews(){
+            void findAllReviewerReviews() {
                 User user = User.builder().id(1L).build();
                 User receiver = User.builder().id(2L).build();
                 Meeting meeting = Meeting.builder().id(3L).build();
@@ -242,13 +242,13 @@ public class ReviewServiceTest {
 
     @Nested
     @DisplayName("[API][Service] 작성 리류 삭제 테스트")
-    class DeleteReview{
+    class DeleteReview {
         @Nested
         @DisplayName("[API][Service] 작성 리뷰 삭제 성공 테스트")
         class Success {
             @Test
             @DisplayName("[API][Service] 리뷰 작성자 삭제 성공 테스트")
-            void deleteReview(){
+            void deleteReview() {
                 User user = User.builder().id(1L).build();
                 User receiver = User.builder().id(2L).build();
                 Meeting meeting = Meeting.builder().id(3L).build();
@@ -275,7 +275,7 @@ public class ReviewServiceTest {
 
             @Test
             @DisplayName("[API][Service] 리뷰 받은 사람 삭제 성공 테스트")
-            void deleteReview2(){
+            void deleteReview2() {
                 User user = User.builder().id(1L).build();
                 User writer = User.builder().id(2L).build();
                 Meeting meeting = Meeting.builder().id(3L).build();
@@ -299,7 +299,6 @@ public class ReviewServiceTest {
                 Assertions.assertThat(review.getIsReceiverHidden()).isEqualTo(true);
 
 
-
             }
         }
 
@@ -308,7 +307,7 @@ public class ReviewServiceTest {
         class Fail {
             @Test
             @DisplayName("[API][Service] 리뷰의 ID가 존재하지 않는 경우 테스트")
-            void deleteReviewFail1(){
+            void deleteReviewFail1() {
                 User user = User.builder().id(1L).build();
 
                 when(reviewRepository.findById(any())).thenReturn(Optional.empty());
@@ -320,7 +319,7 @@ public class ReviewServiceTest {
 
             @Test
             @DisplayName("[API][Service] 리뷰의 작성자나 받은 사람이 아닌 경우 실패 테스트")
-            void deleteReview2(){
+            void deleteReview2() {
                 User user = User.builder().id(1L).build();
                 User writer = User.builder().id(2L).build();
                 User receiver = User.builder().id(3L).build();
@@ -337,7 +336,7 @@ public class ReviewServiceTest {
                         .build();
 
                 when(reviewRepository.findById(any())).thenReturn(Optional.of(review));
-                Exception e =  assertThrows(BusinessException.class, ()-> reviewService.deleteReview(user, 1L));
+                Exception e = assertThrows(BusinessException.class, () -> reviewService.deleteReview(user, 1L));
 
                 Assertions.assertThat(e.getMessage()).isEqualTo("Writer Or Who received the review Can Delete Review");
             }
