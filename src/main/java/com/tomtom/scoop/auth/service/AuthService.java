@@ -12,39 +12,32 @@ import com.tomtom.scoop.global.exception.BusinessException;
 import com.tomtom.scoop.global.exception.ErrorCode;
 import io.jsonwebtoken.ExpiredJwtException;
 import jakarta.servlet.http.HttpServletRequest;
-import jakarta.servlet.http.HttpServletResponse;
-import org.springframework.beans.factory.annotation.Autowired;
+import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
 import java.time.Duration;
 import java.util.Optional;
 
 @Service
+@RequiredArgsConstructor
 public class AuthService {
 
-    @Autowired
-    JwtTokenUtil jwtTokenUtil;
+    private final JwtTokenUtil jwtTokenUtil;
 
-    @Autowired
-    RefreshTokenRepository refreshTokenRepository;
+    private final RefreshTokenRepository refreshTokenRepository;
 
-    @Autowired
-    LogoutAccessTokenRepository logoutAccessTokenRepository;
+    private final LogoutAccessTokenRepository logoutAccessTokenRepository;
 
-    @Autowired
-    UserRepository userRepository;
+    private final UserRepository userRepository;
 
-    public TokenDto reissue(HttpServletRequest request, HttpServletResponse response) {
+    public TokenDto reissue(HttpServletRequest request) {
         try {
             String token = jwtTokenUtil.resolveToken(request);
             String oauthId = jwtTokenUtil.getOauthId(token);
 
-            Optional<RefreshToken> refreshToken = refreshTokenRepository.findById(oauthId);
-            refreshToken.orElseThrow(
-                    () -> new BusinessException(ErrorCode.UNAUTHORIZED)
-            );
+            RefreshToken refreshToken = refreshTokenRepository.findById(oauthId).orElseThrow(() -> new BusinessException(ErrorCode.UNAUTHORIZED));
 
-            boolean isTokenValid = jwtTokenUtil.validate(refreshToken.get().getValue(), oauthId);
+            boolean isTokenValid = jwtTokenUtil.validate(refreshToken.getValue(), oauthId);
 
             if (isTokenValid) {
 
