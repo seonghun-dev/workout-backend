@@ -52,7 +52,8 @@ public class User {
     @OneToMany(mappedBy = "user")
     private List<UserExerciseLevel> userExerciseLevels;
 
-    @OneToOne
+    @OneToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "user_location_id")
     private UserLocation userLocation;
 
     @OneToMany(mappedBy = "user")
