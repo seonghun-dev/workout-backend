@@ -5,7 +5,7 @@ import com.tomtom.scoop.domain.meeting.model.dto.request.FindAllMeetingRequestDt
 import com.tomtom.scoop.domain.meeting.model.dto.request.MeetingRequestDto;
 import com.tomtom.scoop.domain.meeting.model.dto.response.MeetingDetailResponseDto;
 import com.tomtom.scoop.domain.meeting.model.dto.response.MeetingImageResponseDto;
-import com.tomtom.scoop.domain.meeting.model.dto.response.MeetingListResponseDto;
+import com.tomtom.scoop.domain.meeting.model.dto.response.MeetingResponseDto;
 import com.tomtom.scoop.domain.meeting.service.MeetingService;
 import com.tomtom.scoop.domain.user.model.entity.User;
 import com.tomtom.scoop.global.annotation.ReqUser;
@@ -53,7 +53,7 @@ public class MeetingController {
 
     @GetMapping
     @Operation(summary = "Find All Meetings")
-    public ResponseEntity<List<MeetingListResponseDto>> findAllMeetings(FindAllMeetingRequestDto findAllMeetingRequestDto
+    public ResponseEntity<List<MeetingResponseDto>> findAllMeetings(FindAllMeetingRequestDto findAllMeetingRequestDto
     ) {
         var response = meetingService.findAllMeetings(findAllMeetingRequestDto);
         return ResponseDto.ok(response);
@@ -109,35 +109,35 @@ public class MeetingController {
 
     @GetMapping("/upcoming")
     @Operation(summary = "Find upcoming meetings by user")
-    public ResponseEntity<List<MeetingListResponseDto>> findUserUpcomingMeeting(@ReqUser() User user, Pageable pageable) {
+    public ResponseEntity<List<MeetingResponseDto>> findUserUpcomingMeeting(@ReqUser() User user, Pageable pageable) {
         var response = meetingService.findUserUpcomingMeeting(user, pageable);
         return ResponseDto.ok(response);
     }
 
     @GetMapping("/past")
     @Operation(summary = "Find past meetings by user")
-    public ResponseEntity<List<MeetingListResponseDto>> findUserPastMeeting(@ReqUser() User user, Pageable pageable) {
+    public ResponseEntity<List<MeetingResponseDto>> findUserPastMeeting(@ReqUser() User user, Pageable pageable) {
         var response = meetingService.findUserPastMeeting(user, pageable);
         return ResponseDto.ok(response);
     }
 
     @GetMapping("/waiting")
     @Operation(summary = "Find waiting meetings by user")
-    public ResponseEntity<List<MeetingListResponseDto>> findWaitingMeetingByUser(@ReqUser() User user, Pageable pageable) {
+    public ResponseEntity<List<MeetingResponseDto>> findWaitingMeetingByUser(@ReqUser() User user, Pageable pageable) {
         var response = meetingService.findUserWaitingMeeting(user, pageable);
         return ResponseDto.ok(response);
     }
 
     @GetMapping("/owner")
     @Operation(summary = "Find owner meetings by user")
-    public ResponseEntity<List<MeetingListResponseDto>> findOwnerMeetingByUser(@ReqUser() User user, Pageable pageable) {
+    public ResponseEntity<List<MeetingResponseDto>> findOwnerMeetingByUser(@ReqUser() User user, Pageable pageable) {
         var response = meetingService.findOwnerMeetingByUser(user, pageable);
         return ResponseDto.ok(response);
     }
 
     @GetMapping("/like")
     @Operation(summary = "Find like meetings by user")
-    public ResponseEntity<List<MeetingListResponseDto>> findLikeMeetingByUser(@ReqUser() User user, Pageable pageable) {
+    public ResponseEntity<List<MeetingResponseDto>> findLikeMeetingByUser(@ReqUser() User user, Pageable pageable) {
         var response = meetingService.findLikeMeetingByUser(user, pageable);
         return ResponseDto.ok(response);
     }
@@ -158,7 +158,7 @@ public class MeetingController {
 
     @GetMapping("/search")
     @Operation(summary = "Search meetings by keyword in title and content")
-    public ResponseEntity<List<MeetingListResponseDto>> searchMeetingByKeyword(@RequestParam("keyword") String keyword, Pageable pageable) {
+    public ResponseEntity<List<MeetingResponseDto>> searchMeetingByKeyword(@RequestParam("keyword") String keyword, Pageable pageable) {
         var response = meetingService.searchMeetingByKeyword(keyword, pageable);
         return ResponseDto.ok(response);
     }

@@ -6,7 +6,7 @@ import com.tomtom.scoop.domain.common.Gender;
 import com.tomtom.scoop.domain.meeting.model.dto.request.FindAllMeetingRequestDto;
 import com.tomtom.scoop.domain.meeting.model.dto.request.MeetingRequestDto;
 import com.tomtom.scoop.domain.meeting.model.dto.response.MeetingDetailResponseDto;
-import com.tomtom.scoop.domain.meeting.model.dto.response.MeetingListResponseDto;
+import com.tomtom.scoop.domain.meeting.model.dto.response.MeetingResponseDto;
 import com.tomtom.scoop.domain.meeting.service.MeetingService;
 import com.tomtom.scoop.domain.user.repository.UserRepository;
 import com.tomtom.scoop.global.telegram.TelegramProvider;
@@ -140,7 +140,7 @@ public class MeetingControllerTest {
         String body = mapper.writeValueAsString(query);
 
 
-        MeetingListResponseDto element = new MeetingListResponseDto(
+        MeetingResponseDto element = new MeetingResponseDto(
                 1L,
                 "Running in the park",
                 "seoul",
@@ -152,7 +152,7 @@ public class MeetingControllerTest {
                 "Beginner",
                 "Play");
 
-        List<MeetingListResponseDto> result = Collections.singletonList(element);
+        List<MeetingResponseDto> result = Collections.singletonList(element);
 
         given(meetingService.findAllMeetings(any())).willReturn(result);
         System.out.println("result" + result);
@@ -313,7 +313,7 @@ public class MeetingControllerTest {
     @MockLoginUser
     void testGetUserMeetings() throws Exception {
 
-        MeetingListResponseDto element = new MeetingListResponseDto(
+        MeetingResponseDto element = new MeetingResponseDto(
                 1L,
                 "Running in the park",
                 "seoul",
@@ -325,7 +325,7 @@ public class MeetingControllerTest {
                 "Beginner",
                 "Play");
 
-        List<MeetingListResponseDto> result = Collections.singletonList(element);
+        List<MeetingResponseDto> result = Collections.singletonList(element);
 
         given(meetingService.findUserUpcomingMeeting(any(), any())).willReturn(result);
 
@@ -358,7 +358,7 @@ public class MeetingControllerTest {
     @MockLoginUser
     void testGetUserCompletedMeetings() throws Exception {
 
-        MeetingListResponseDto element = new MeetingListResponseDto(
+        MeetingResponseDto element = new MeetingResponseDto(
                 1L,
                 "Running in the park",
                 "seoul",
@@ -370,7 +370,7 @@ public class MeetingControllerTest {
                 "Beginner",
                 "Play");
 
-        List<MeetingListResponseDto> result = Collections.singletonList(element);
+        List<MeetingResponseDto> result = Collections.singletonList(element);
 
         given(meetingService.findUserPastMeeting(any(), any())).willReturn(result);
 
@@ -403,7 +403,7 @@ public class MeetingControllerTest {
     @MockLoginUser
     void testGetUserWaitingMeetings() throws Exception {
 
-        MeetingListResponseDto element = new MeetingListResponseDto(
+        MeetingResponseDto element = new MeetingResponseDto(
                 1L,
                 "Running in the park",
                 "seoul",
@@ -415,7 +415,7 @@ public class MeetingControllerTest {
                 "Beginner",
                 "Play");
 
-        List<MeetingListResponseDto> result = Collections.singletonList(element);
+        List<MeetingResponseDto> result = Collections.singletonList(element);
 
         given(meetingService.findUserWaitingMeeting(any(), any())).willReturn(result);
 
@@ -447,7 +447,7 @@ public class MeetingControllerTest {
     @MockLoginUser
     void testGetUserHostMeetings() throws Exception {
 
-        MeetingListResponseDto element = new MeetingListResponseDto(
+        MeetingResponseDto element = new MeetingResponseDto(
                 1L,
                 "Running in the park",
                 "seoul",
@@ -459,7 +459,7 @@ public class MeetingControllerTest {
                 "Beginner",
                 "Play");
 
-        List<MeetingListResponseDto> result = Collections.singletonList(element);
+        List<MeetingResponseDto> result = Collections.singletonList(element);
 
         given(meetingService.findOwnerMeetingByUser(any(), any())).willReturn(result);
 
@@ -491,7 +491,7 @@ public class MeetingControllerTest {
     @MockLoginUser
     void testGetUserLikeMeetings() throws Exception {
 
-        MeetingListResponseDto element = new MeetingListResponseDto(
+        MeetingResponseDto element = new MeetingResponseDto(
                 1L,
                 "Running in the park",
                 "seoul",
@@ -503,7 +503,7 @@ public class MeetingControllerTest {
                 "Beginner",
                 "Play");
 
-        List<MeetingListResponseDto> result = Collections.singletonList(element);
+        List<MeetingResponseDto> result = Collections.singletonList(element);
 
         given(meetingService.findLikeMeetingByUser(any(), any())).willReturn(result);
 

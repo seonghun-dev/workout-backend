@@ -1,5 +1,6 @@
 package com.tomtom.scoop.domain.meeting.model.dto.response;
 
+import com.tomtom.scoop.domain.meeting.model.entity.Meeting;
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -10,7 +11,7 @@ import java.time.LocalDateTime;
 @Getter
 @Builder
 @AllArgsConstructor
-public class MeetingListResponseDto {
+public class MeetingResponseDto {
 
     @Schema(description = "Meeting id", example = "1")
     private Long id;
@@ -41,5 +42,21 @@ public class MeetingListResponseDto {
 
     @Schema(description = "Meeting Exercise type", example = "Play")
     private String meetingType;
+
+    public static MeetingResponseDto fromEntity(Meeting meeting){
+        return MeetingResponseDto
+                .builder()
+                .id(meeting.getId())
+                .title(meeting.getTitle())
+                .city(meeting.getMeetingLocation().getCity())
+                .eventDate(meeting.getEventDate())
+                .memberCount(meeting.getMemberCount())
+                .memberLimit(meeting.getMemberLimit())
+                .exerciseName(meeting.getExerciseLevel().getExercise())
+                .exerciseLevel(meeting.getExerciseLevel().getLevel())
+                .meetingType(meeting.getMeetingType().getName())
+                .imgUrl(meeting.getImgUrl())
+                .build();
+    }
 
 }

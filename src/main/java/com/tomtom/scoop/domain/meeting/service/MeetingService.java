@@ -6,7 +6,7 @@ import com.tomtom.scoop.domain.meeting.model.dto.request.FindAllMeetingRequestDt
 import com.tomtom.scoop.domain.meeting.model.dto.request.MeetingRequestDto;
 import com.tomtom.scoop.domain.meeting.model.dto.response.MeetingDetailResponseDto;
 import com.tomtom.scoop.domain.meeting.model.dto.response.MeetingImageResponseDto;
-import com.tomtom.scoop.domain.meeting.model.dto.response.MeetingListResponseDto;
+import com.tomtom.scoop.domain.meeting.model.dto.response.MeetingResponseDto;
 import com.tomtom.scoop.domain.meeting.model.entity.*;
 import com.tomtom.scoop.domain.meeting.repository.*;
 import com.tomtom.scoop.domain.notification.event.JoinMeetingEvent;
@@ -94,26 +94,14 @@ public class MeetingService {
         meetingRepository.save(meeting);
         userMeetingRepository.save(userMeeting);
 
-        return MeetingDetailResponseDto.builder()
-                .id(meeting.getId())
-                .title(meeting.getTitle())
-                .content(meeting.getContent())
-                .memberLimit(meeting.getMemberLimit())
-                .memberCount(meeting.getMemberCount())
-                .ownerName(meeting.getUser().getName())
-                .ownerProfile(meeting.getUser().getProfileImg())
-                .meetingType(meeting.getMeetingType().getName())
-                .isLiked(false)
-                .exerciseLevel(meeting.getExerciseLevel().getLevel())
-                .exercise(meeting.getExerciseLevel().getExercise())
-                .build();
+        return MeetingDetailResponseDto.fromEntity(meeting);
     }
 
     public MeetingDetailResponseDto findMeetingById(Long id) {
         Meeting meeting = meetingRepository.findById(id)
                 .orElseThrow(() -> new NotFoundException(ErrorCode.MEETING_NOT_FOUND, id));
 
-        return getMeetingDetailResponseDto(meeting);
+        return MeetingDetailResponseDto.fromEntity(meeting);
     }
 
     public void deleteMeeting(User user, Long id) {
@@ -168,34 +156,29 @@ public class MeetingService {
         return null;
     }
 
-    public List<MeetingListResponseDto> findAllMeetings(FindAllMeetingRequestDto findAllMeetingRequestDto) {
-        List<Meeting> meetings = meetingRepository.findByEventDateGreaterThanOrderByEventDateAsc();
-        return getMeetingListResponseDto(meetings);
+    public List<MeetingResponseDto> findAllMeetings(FindAllMeetingRequestDto findAllMeetingRequestDto) {
+        return meetingRepository.findByEventDateGreaterThanOrderByEventDateAsc().stream()
+                .map(MeetingResponseDto::fromEntity).toList();
     }
 
-    public List<MeetingListResponseDto> findUserUpcomingMeeting(User user, Pageable pageable) {
-        List<Meeting> meetings = meetingRepository.findUserNextMeeting(user, LocalDateTime.now(), pageable);
-
-        return getMeetingListResponseDto(meetings);
+    public List<MeetingResponseDto> findUserUpcomingMeeting(User user, Pageable pageable) {
+        return meetingRepository.findUserNextMeeting(user, LocalDateTime.now(), pageable).stream()
+                .map(MeetingResponseDto::fromEntity).toList();
     }
 
-
-    public List<MeetingListResponseDto> findUserPastMeeting(User user, Pageable pageable) {
-        List<Meeting> meetings = meetingRepository.findUserPastMeeting(user, LocalDateTime.now(), pageable);
-
-        return getMeetingListResponseDto(meetings);
+    public List<MeetingResponseDto> findUserPastMeeting(User user, Pageable pageable) {
+        return meetingRepository.findUserPastMeeting(user, LocalDateTime.now(), pageable).stream()
+                .map(MeetingResponseDto::fromEntity).toList();
     }
 
-    public List<MeetingListResponseDto> findUserWaitingMeeting(User user, Pageable pageable) {
-        List<Meeting> meetings = meetingRepository.findUserWaitingMeeting(user, LocalDateTime.now(), pageable);
-
-        return getMeetingListResponseDto(meetings);
+    public List<MeetingResponseDto> findUserWaitingMeeting(User user, Pageable pageable) {
+        return meetingRepository.findUserWaitingMeeting(user, LocalDateTime.now(), pageable).stream()
+                .map(MeetingResponseDto::fromEntity).toList();
     }
 
-    public List<MeetingListResponseDto> findLikeMeetingByUser(User user, Pageable pageable) {
-        List<Meeting> meetings = meetingRepository.findUserLikedMeeting(user, pageable);
-
-        return getMeetingListResponseDto(meetings);
+    public List<MeetingResponseDto> findLikeMeetingByUser(User user, Pageable pageable) {
+        return meetingRepository.findUserLikedMeeting(user, pageable).stream()
+                .map(MeetingResponseDto::fromEntity).toList();
     }
 
     public MeetingDetailResponseDto likeMeeting(User user, Long meetingId) {
@@ -217,9 +200,9 @@ public class MeetingService {
         return null;
     }
 
-    public List<MeetingListResponseDto> searchMeetingByKeyword(String keyword, Pageable pageable) {
-        List<Meeting> meetings = meetingRepository.findByTitleContainingOrContentContainingAndEventDateGreaterThan(keyword, keyword, LocalDateTime.now(), pageable);
-        return getMeetingListResponseDto(meetings);
+    public List<MeetingResponseDto> searchMeetingByKeyword(String keyword, Pageable pageable) {
+        return meetingRepository.findByTitleContainingOrContentContainingAndEventDateGreaterThan(keyword, keyword, LocalDateTime.now(), pageable).stream()
+                .map(MeetingResponseDto::fromEntity).toList();
     }
 
 
@@ -276,57 +259,15 @@ public class MeetingService {
         return null;
     }
 
-    public List<MeetingListResponseDto> findOwnerMeetingByUser(User user, Pageable pageable) {
-        List<Meeting> meetings = meetingRepository.findUserOwnedMeeting(user, pageable);
-        return getMeetingListResponseDto(meetings);
+    public List<MeetingResponseDto> findOwnerMeetingByUser(User user, Pageable pageable) {
+        return meetingRepository.findUserOwnedMeeting(user, pageable).stream()
+                .map(MeetingResponseDto::fromEntity).toList();
     }
 
 
     private User getUser(Long userId) {
         return userRepository.findById(userId)
                 .orElseThrow(() -> new NotFoundException(ErrorCode.USER_NOT_FOUND, userId));
-    }
-
-
-    private List<MeetingListResponseDto> getMeetingListResponseDto(List<Meeting> meetings) {
-        return meetings.stream().map(meeting ->
-                MeetingListResponseDto
-                        .builder()
-                        .id(meeting.getId())
-                        .title(meeting.getTitle())
-                        .city(meeting.getMeetingLocation().getCity())
-                        .eventDate(meeting.getEventDate())
-                        .memberCount(meeting.getMemberCount())
-                        .memberLimit(meeting.getMemberLimit())
-                        .exerciseName(meeting.getExerciseLevel().getExercise())
-                        .exerciseLevel(meeting.getExerciseLevel().getLevel())
-                        .meetingType(meeting.getMeetingType().getName())
-                        .imgUrl(meeting.getImgUrl())
-                        .build()
-        ).toList();
-    }
-
-
-    private MeetingDetailResponseDto getMeetingDetailResponseDto(Meeting meeting) {
-        return MeetingDetailResponseDto.builder()
-                .id(meeting.getId())
-                .title(meeting.getTitle())
-                .content(meeting.getContent())
-                .memberLimit(meeting.getMemberLimit())
-                .memberCount(meeting.getMemberCount())
-                .ownerName(meeting.getUser().getName())
-                .ownerProfile(meeting.getUser().getProfileImg())
-                .meetingType(meeting.getMeetingType().getName())
-                .isLiked(false)
-                .meetingUserProfiles(
-                        meeting.getUserMeetings().stream().filter(
-                                userMeeting -> userMeeting.getStatus() == MeetingStatus.ACCEPTED || userMeeting.getStatus() == MeetingStatus.OWNER
-                        ).map(
-                                userMeeting ->
-                                        userMeeting.getUser().getProfileImg()
-                        ).toList())
-                .exerciseLevel(meeting.getExerciseLevel().getLevel())
-                .build();
     }
 
     public MeetingImageResponseDto uploadMeetingImage(MultipartFile file) {

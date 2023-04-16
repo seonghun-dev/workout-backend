@@ -1,5 +1,7 @@
 package com.tomtom.scoop.domain.meeting.model.dto.response;
 
+import com.tomtom.scoop.domain.meeting.model.entity.Meeting;
+import com.tomtom.scoop.domain.meeting.model.entity.MeetingStatus;
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -50,5 +52,27 @@ public class MeetingDetailResponseDto {
 
     @Schema(description = "Is user liked meeting", example = "true")
     private Boolean isLiked;
+
+    public static MeetingDetailResponseDto fromEntity(Meeting meeting){
+        return MeetingDetailResponseDto.builder()
+                .id(meeting.getId())
+                .title(meeting.getTitle())
+                .content(meeting.getContent())
+                .memberLimit(meeting.getMemberLimit())
+                .memberCount(meeting.getMemberCount())
+                .ownerName(meeting.getUser().getName())
+                .ownerProfile(meeting.getUser().getProfileImg())
+                .meetingType(meeting.getMeetingType().getName())
+                .isLiked(false)
+                .meetingUserProfiles(
+                        meeting.getUserMeetings().stream().filter(
+                                userMeeting -> userMeeting.getStatus() == MeetingStatus.ACCEPTED || userMeeting.getStatus() == MeetingStatus.OWNER
+                        ).map(
+                                userMeeting ->
+                                        userMeeting.getUser().getProfileImg()
+                        ).toList())
+                .exerciseLevel(meeting.getExerciseLevel().getLevel())
+                .build();
+    }
 
 }

@@ -5,7 +5,7 @@ import com.tomtom.scoop.domain.exercise.model.entity.ExerciseLevel;
 import com.tomtom.scoop.domain.exercise.repository.ExerciseLevelRepository;
 import com.tomtom.scoop.domain.meeting.model.dto.request.FindAllMeetingRequestDto;
 import com.tomtom.scoop.domain.meeting.model.dto.request.MeetingRequestDto;
-import com.tomtom.scoop.domain.meeting.model.dto.response.MeetingListResponseDto;
+import com.tomtom.scoop.domain.meeting.model.dto.response.MeetingResponseDto;
 import com.tomtom.scoop.domain.meeting.model.entity.*;
 import com.tomtom.scoop.domain.meeting.repository.*;
 import com.tomtom.scoop.domain.user.model.entity.User;
@@ -647,7 +647,7 @@ public class MeetingServiceTest {
         @DisplayName("[API][Service] 전체 모임 조회 성공 테스트")
         void findAllMeetingSuccess() {
             when(meetingRepository.findByEventDateGreaterThanOrderByEventDateAsc()).thenReturn(meetings);
-            List<MeetingListResponseDto> meetingResponses = meetingService.findAllMeetings(requestDto);
+            List<MeetingResponseDto> meetingResponses = meetingService.findAllMeetings(requestDto);
             Assertions.assertThat(meetingResponses.size()).isEqualTo(2);
             Assertions.assertThat(meetingResponses.get(0).getId()).isEqualTo(1L);
             Assertions.assertThat(meetingResponses.get(1).getId()).isEqualTo(2L);
@@ -743,7 +743,7 @@ public class MeetingServiceTest {
                     when(meetingRepository.findUserNextMeeting(any(), any(), any())).thenReturn(meetings);
                     Pageable pageable = PageRequest.of(1, 10);
 
-                    List<MeetingListResponseDto> meetingResponses = meetingService.findUserUpcomingMeeting(user, pageable);
+                    List<MeetingResponseDto> meetingResponses = meetingService.findUserUpcomingMeeting(user, pageable);
                     Assertions.assertThat(meetingResponses.size()).isEqualTo(2);
                     Assertions.assertThat(meetingResponses.get(0).getId()).isEqualTo(1L);
                     Assertions.assertThat(meetingResponses.get(1).getId()).isEqualTo(2L);
@@ -767,7 +767,7 @@ public class MeetingServiceTest {
                     when(meetingRepository.findUserPastMeeting(any(), any(), any())).thenReturn(meetings);
                     Pageable pageable = PageRequest.of(1, 10);
 
-                    List<MeetingListResponseDto> meetingResponses = meetingService.findUserPastMeeting(user, pageable);
+                    List<MeetingResponseDto> meetingResponses = meetingService.findUserPastMeeting(user, pageable);
                     Assertions.assertThat(meetingResponses.size()).isEqualTo(2);
                     Assertions.assertThat(meetingResponses.get(0).getId()).isEqualTo(1L);
                     Assertions.assertThat(meetingResponses.get(1).getId()).isEqualTo(2L);
@@ -792,7 +792,7 @@ public class MeetingServiceTest {
                     when(meetingRepository.findUserWaitingMeeting(any(), any(), any())).thenReturn(meetings);
                     Pageable pageable = PageRequest.of(1, 10);
 
-                    List<MeetingListResponseDto> meetingResponses = meetingService.findUserWaitingMeeting(user, pageable);
+                    List<MeetingResponseDto> meetingResponses = meetingService.findUserWaitingMeeting(user, pageable);
                     Assertions.assertThat(meetingResponses.size()).isEqualTo(2);
                     Assertions.assertThat(meetingResponses.get(0).getId()).isEqualTo(1L);
                     Assertions.assertThat(meetingResponses.get(1).getId()).isEqualTo(2L);
@@ -817,7 +817,7 @@ public class MeetingServiceTest {
                     when(meetingRepository.findUserOwnedMeeting(any(), any())).thenReturn(meetings);
                     Pageable pageable = PageRequest.of(1, 10);
 
-                    List<MeetingListResponseDto> meetingResponses = meetingService.findOwnerMeetingByUser(user, pageable);
+                    List<MeetingResponseDto> meetingResponses = meetingService.findOwnerMeetingByUser(user, pageable);
                     Assertions.assertThat(meetingResponses.size()).isEqualTo(2);
                     Assertions.assertThat(meetingResponses.get(0).getId()).isEqualTo(1L);
                     Assertions.assertThat(meetingResponses.get(1).getId()).isEqualTo(2L);
@@ -841,7 +841,7 @@ public class MeetingServiceTest {
                     when(meetingRepository.findUserLikedMeeting(any(), any())).thenReturn(meetings);
                     Pageable pageable = PageRequest.of(1, 10);
 
-                    List<MeetingListResponseDto> meetingResponses = meetingService.findLikeMeetingByUser(user, pageable);
+                    List<MeetingResponseDto> meetingResponses = meetingService.findLikeMeetingByUser(user, pageable);
                     Assertions.assertThat(meetingResponses.size()).isEqualTo(2);
                     Assertions.assertThat(meetingResponses.get(0).getId()).isEqualTo(1L);
                     Assertions.assertThat(meetingResponses.get(1).getId()).isEqualTo(2L);
@@ -1380,7 +1380,7 @@ public class MeetingServiceTest {
             when(meetingRepository.findByTitleContainingOrContentContainingAndEventDateGreaterThan(any(), any(), any(), any())).thenReturn(Collections.singletonList(meeting));
 
             Pageable pageable = PageRequest.of(0, 10);
-            List<MeetingListResponseDto> meetings = meetingService.searchMeetingByKeyword("soccer", pageable);
+            List<MeetingResponseDto> meetings = meetingService.searchMeetingByKeyword("soccer", pageable);
             Assertions.assertThat(meetings.size()).isEqualTo(1);
             Assertions.assertThat(meetings.get(0).getTitle()).isEqualTo("soccer");
         }
