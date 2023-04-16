@@ -1,17 +1,11 @@
 package com.tomtom.scoop.auth.util;
 
-import com.tomtom.scoop.auth.repository.RefreshTokenRepository;
-import com.tomtom.scoop.global.security.CustomUserDetails;
-import com.tomtom.scoop.global.security.CustomUserDetailsService;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
 import io.jsonwebtoken.security.Keys;
 import jakarta.servlet.http.HttpServletRequest;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
-import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Component;
 import org.springframework.util.StringUtils;
 
@@ -25,15 +19,9 @@ public class JwtTokenUtil {
 
     @Value("${jwt.secret-key}")
     private String secretKey;
-
     private final long accessTokenValidTime = Duration.ofMinutes(30).toMillis();
     private final long refreshTokenValidTime = Duration.ofDays(14).toMillis();
 
-    @Autowired
-    private CustomUserDetailsService userDetailsService;
-
-    @Autowired
-    private RefreshTokenRepository refreshTokenRepository;
 
     public Boolean validate(String token, String oauthId) {
         String oauthIdByToken = getOauthId(token);
@@ -90,15 +78,6 @@ public class JwtTokenUtil {
             return bearerToken.substring(7);
         }
         return null;
-    }
-
-    public Long getRemainTime(String token) {
-        return extractAllClaims(token).getExpiration().getTime();
-    }
-
-    public Authentication getAuthentication(String token) {
-        CustomUserDetails userDetails = (CustomUserDetails) userDetailsService.loadUserByUsername(getOauthId(token));
-        return new UsernamePasswordAuthenticationToken(userDetails, token, userDetails.getAuthorities());
     }
 
 }

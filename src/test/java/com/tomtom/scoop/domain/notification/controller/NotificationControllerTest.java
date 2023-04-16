@@ -3,7 +3,7 @@ package com.tomtom.scoop.domain.notification.controller;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.tomtom.scoop.common.mock.annotation.MockLoginUser;
 import com.tomtom.scoop.domain.notification.model.dto.NotificationActionDto;
-import com.tomtom.scoop.domain.notification.model.dto.NotificationListResponseDto;
+import com.tomtom.scoop.domain.notification.model.dto.NotificationResponseDto;
 import com.tomtom.scoop.domain.notification.repository.NotificationRepository;
 import com.tomtom.scoop.domain.notification.service.NotificationService;
 import com.tomtom.scoop.global.telegram.TelegramProvider;
@@ -67,9 +67,9 @@ public class NotificationControllerTest {
     @MockLoginUser
     void testFindAllNotification() throws Exception {
         NotificationActionDto notificationActionDto = NotificationActionDto.builder().page("Meeting").contentId(1L).build();
-        List<NotificationListResponseDto> notificationListResponseDtoList = List.of(
-                NotificationListResponseDto.builder().id(1L).title("hello").content("test alert").isRead(false).createdAt(LocalDateTime.of(2022, 3, 1, 3, 0)).action(notificationActionDto).build(),
-                NotificationListResponseDto.builder().id(2L).title("hello2").content("test alert2").isRead(false).createdAt(LocalDateTime.of(2022, 4, 1, 3, 0)).action(notificationActionDto).build()
+        List<NotificationResponseDto> notificationListResponseDtoList = List.of(
+                NotificationResponseDto.builder().id(1L).title("hello").content("test alert").isRead(false).createdAt(LocalDateTime.of(2022, 3, 1, 3, 0)).action(notificationActionDto).build(),
+                NotificationResponseDto.builder().id(2L).title("hello2").content("test alert2").isRead(false).createdAt(LocalDateTime.of(2022, 4, 1, 3, 0)).action(notificationActionDto).build()
         );
 
         given(notificationService.findAllNotifications(any())).willReturn(notificationListResponseDtoList);

@@ -1,7 +1,7 @@
 package com.tomtom.scoop.domain.notification.controller;
 
 import com.tomtom.scoop.domain.common.model.ResponseDto;
-import com.tomtom.scoop.domain.notification.model.dto.NotificationListResponseDto;
+import com.tomtom.scoop.domain.notification.model.dto.NotificationResponseDto;
 import com.tomtom.scoop.domain.notification.service.NotificationService;
 import com.tomtom.scoop.domain.user.model.entity.User;
 import com.tomtom.scoop.global.annotation.ReqUser;
@@ -20,7 +20,7 @@ public class NotificationController {
 
     @GetMapping
     @ResponseBody
-    public ResponseEntity<List<NotificationListResponseDto>> findAllNotifications(@ReqUser() User user) {
+    public ResponseEntity<List<NotificationResponseDto>> findAllNotifications(@ReqUser() User user) {
         var response = notificationService.findAllNotifications(user);
         return ResponseDto.ok(response);
     }

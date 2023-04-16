@@ -1,5 +1,6 @@
 package com.tomtom.scoop.domain.notification.model.dto;
 
+import com.tomtom.scoop.domain.notification.model.entity.Notification;
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -10,7 +11,7 @@ import java.time.LocalDateTime;
 @Getter
 @AllArgsConstructor
 @Builder
-public class NotificationListResponseDto {
+public class NotificationResponseDto {
 
     @Schema(description = "The unique identifier of the notification.", example = "1")
     private Long id;
@@ -28,6 +29,20 @@ public class NotificationListResponseDto {
     private LocalDateTime createdAt;
 
     private NotificationActionDto action;
+
+    public static NotificationResponseDto fromEntity(Notification notification){
+        return NotificationResponseDto.builder()
+                .id(notification.getId())
+                .title(notification.getTitle())
+                .content(notification.getContent())
+                .isRead(notification.getIsRead())
+                .createdAt(notification.getCreatedAt())
+                .action(NotificationActionDto.builder()
+                        .page(notification.getNotificationAction().getPage())
+                        .contentId(notification.getNotificationAction().getContentId())
+                        .build())
+                .build();
+    }
 
 }
 

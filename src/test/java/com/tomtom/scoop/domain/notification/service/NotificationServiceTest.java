@@ -22,6 +22,7 @@ import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
 
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertAll;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.any;
@@ -46,33 +47,40 @@ public class NotificationServiceTest {
         @DisplayName("[API][Service] 알림 전체 조회 성공 테스트")
         class Success {
 
+
             @Test
             @DisplayName("[API][Service] 알림 전체 조회 성공 테스트1")
             void FindAllNotification1() {
                 User user = User.builder().id(1L).build();
-                NotificationAction notificationAction = NotificationAction.builder().id(1L).page("Meeting").contentId(1L).build();
-                List<Notification> notificationList = List.of(Notification.builder().id(1L).user(user).title("hello").content("test alert1").isDeleted(false).isRead(false).notificationAction(notificationAction).build());
-                ReflectionTestUtils.setField(
-                        notificationList.get(0),
+                NotificationAction notificationAction = NotificationAction.builder().id(1L)
+                        .page("Meeting").contentId(1L).build();
+                List<Notification> notificationList = List.of(Notification.builder().id(1L)
+                        .user(user).title("hello").content("test alert1")
+                        .isDeleted(false).isRead(false)
+                        .notificationAction(notificationAction)
+                        .build());
+
+                ReflectionTestUtils.setField(notificationList.get(0),
                         BaseTimeEntity.class,
                         "createdAt",
                         LocalDateTime.of(2023, 11, 4, 1, 4),
-                        LocalDateTime.class
-                );
+                        LocalDateTime.class);
+
                 when(notificationRepository.findAllByUserAndIsDeletedFalse(any(User.class))).thenReturn(notificationList);
 
                 var result = notificationService.findAllNotifications(user);
 
+                assertThat(result).isNotNull().hasSize(1);
+                var notification = result.get(0);
+
                 assertAll(
-                        () -> Assertions.assertThat(result).isNotNull(),
-                        () -> Assertions.assertThat(result).hasSize(1),
-                        () -> Assertions.assertThat(result.get(0).getCreatedAt()).isEqualTo(LocalDateTime.of(2023, 11, 4, 1, 4)),
-                        () -> Assertions.assertThat(result.get(0).getId()).isEqualTo(1L),
-                        () -> Assertions.assertThat(result.get(0).getTitle()).isEqualTo("hello"),
-                        () -> Assertions.assertThat(result.get(0).getContent()).isEqualTo("test alert1"),
-                        () -> Assertions.assertThat(result.get(0).getIsRead()).isEqualTo(false),
-                        () -> Assertions.assertThat(result.get(0).getAction().getContentId()).isEqualTo(1L),
-                        () -> Assertions.assertThat(result.get(0).getAction().getPage()).isEqualTo("Meeting")
+                        () -> assertThat(notification.getCreatedAt()).isEqualTo(LocalDateTime.of(2023, 11, 4, 1, 4)),
+                        () -> assertThat(notification.getId()).isEqualTo(1L),
+                        () -> assertThat(notification.getTitle()).isEqualTo("hello"),
+                        () -> assertThat(notification.getContent()).isEqualTo("test alert1"),
+                        () -> assertThat(notification.getIsRead()).isEqualTo(false),
+                        () -> assertThat(notification.getAction().getContentId()).isEqualTo(1L),
+                        () -> assertThat(notification.getAction().getPage()).isEqualTo("Meeting")
                 );
 
             }
