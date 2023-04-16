@@ -31,16 +31,13 @@ public class UserLocation extends BaseTimeEntity {
     private Point location;
 
     @Column(nullable = false)
-    private Integer range;
+    private Integer locationRange;
 
     @Column(nullable = false, columnDefinition = "TINYINT")
     private boolean isVerified;
 
     @Column(nullable = false)
     private LocalDateTime verifiedDate;
-
-    @OneToOne
-    private User user;
 
     @Column(nullable = false, columnDefinition = "TINYINT")
     private boolean isDeleted;

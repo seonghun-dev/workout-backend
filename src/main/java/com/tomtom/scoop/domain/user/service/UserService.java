@@ -58,7 +58,7 @@ public class UserService {
         UserLocationDto userLocationDto = userJoinDto.getUserLocation();
         GeometryFactory gf = new GeometryFactory();
         Point point = gf.createPoint(new Coordinate(userLocationDto.getLatitude(), userLocationDto.getLongitude()));
-        UserLocation userLocation = UserLocation.builder().location(point).user(user).range(100)
+        UserLocation userLocation = UserLocation.builder().location(point).locationRange(100)
                 .isVerified(true).verifiedDate(LocalDateTime.now())
                 .county(userLocationDto.getCounty())
                 .city(userLocationDto.getCity())
