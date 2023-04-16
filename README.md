@@ -1,6 +1,8 @@
 # WorkOut
 
 [![codecov](https://codecov.io/gh/seonghun-dev/workout-backend/branch/master/graph/badge.svg?token=M9FSC8Z40P)](https://codecov.io/gh/seonghun-dev/workout-backend)
+[![codecov](https://github.com/seonghun-dev/workout-backend/actions/workflows/gradle.yml/badge.svg)](https://github.com/seonghun-dev/workout-backend/actions)
+
 
 ## ⚽ Anytime, Anywhere - WorkOut ⚽
 
