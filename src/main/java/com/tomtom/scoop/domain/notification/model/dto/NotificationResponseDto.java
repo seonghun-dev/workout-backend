@@ -37,10 +37,7 @@ public class NotificationResponseDto {
                 .content(notification.getContent())
                 .isRead(notification.getIsRead())
                 .createdAt(notification.getCreatedAt())
-                .action(NotificationActionDto.builder()
-                        .page(notification.getNotificationAction().getPage())
-                        .contentId(notification.getNotificationAction().getContentId())
-                        .build())
+                .action(NotificationActionDto.fromEntity(notification.getNotificationAction()))
                 .build();
     }
 
