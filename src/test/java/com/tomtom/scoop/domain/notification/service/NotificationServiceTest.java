@@ -1,6 +1,5 @@
 package com.tomtom.scoop.domain.notification.service;
 
-import com.tomtom.scoop.domain.common.BaseTimeEntity;
 import com.tomtom.scoop.domain.notification.model.entity.Notification;
 import com.tomtom.scoop.domain.notification.model.entity.NotificationAction;
 import com.tomtom.scoop.domain.notification.repository.NotificationRepository;
@@ -60,11 +59,8 @@ public class NotificationServiceTest {
                         .notificationAction(notificationAction)
                         .build());
 
-                ReflectionTestUtils.setField(notificationList.get(0),
-                        BaseTimeEntity.class,
-                        "createdAt",
-                        LocalDateTime.of(2023, 11, 4, 1, 4),
-                        LocalDateTime.class);
+                ReflectionTestUtils.setField(notificationList.get(0), "createdAt",
+                        LocalDateTime.of(2023, 11, 4, 1, 4));
 
                 when(notificationRepository.findAllByUserAndIsDeletedFalse(any(User.class))).thenReturn(notificationList);
 

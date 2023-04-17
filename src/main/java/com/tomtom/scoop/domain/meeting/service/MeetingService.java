@@ -70,6 +70,7 @@ public class MeetingService {
                 .location(point)
                 .build();
 
+        meetingLocationRepository.save(meetingLocation);
 
         Meeting meeting = Meeting.builder()
                 .title(meetingDto.getTitle())
@@ -84,15 +85,18 @@ public class MeetingService {
                 .meetingType(meetingType)
                 .gender(meetingDto.getGender()).build();
 
+
         UserMeeting userMeeting = UserMeeting.builder()
                 .meeting(meeting)
                 .user(user)
                 .status(MeetingStatus.OWNER)
                 .build();
 
-        meetingLocationRepository.save(meetingLocation);
-        meetingRepository.save(meeting);
         userMeetingRepository.save(userMeeting);
+
+        meeting.setUserMeetings(List.of(userMeeting));
+        meetingRepository.save(meeting);
+
 
         return MeetingDetailResponseDto.fromEntity(meeting);
     }

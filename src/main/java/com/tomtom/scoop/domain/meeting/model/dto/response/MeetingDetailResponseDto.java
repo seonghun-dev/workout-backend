@@ -65,12 +65,8 @@ public class MeetingDetailResponseDto {
                 .meetingType(meeting.getMeetingType().getName())
                 .isLiked(false)
                 .meetingUserProfiles(
-                        meeting.getUserMeetings().stream().filter(
-                                userMeeting -> userMeeting.getStatus() == MeetingStatus.ACCEPTED || userMeeting.getStatus() == MeetingStatus.OWNER
-                        ).map(
-                                userMeeting ->
-                                        userMeeting.getUser().getProfileImg()
-                        ).toList())
+                        meeting.getUserMeetings().stream().filter(userMeeting -> userMeeting.getStatus() == MeetingStatus.ACCEPTED || userMeeting.getStatus() == MeetingStatus.OWNER)
+                                .map(userMeeting -> userMeeting.getUser().getProfileImg()).toList())
                 .exerciseLevel(meeting.getExerciseLevel().getLevel())
                 .build();
     }

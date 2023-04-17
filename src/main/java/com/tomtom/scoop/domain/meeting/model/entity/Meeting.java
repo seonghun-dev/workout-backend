@@ -66,6 +66,7 @@ public class Meeting extends BaseTimeEntity {
     private List<MeetingLike> meetingLikes;
 
     @OneToMany(mappedBy = "meeting")
+    @Setter
     private List<UserMeeting> userMeetings;
 
     @ManyToOne(fetch = FetchType.LAZY)

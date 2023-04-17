@@ -70,7 +70,7 @@ public class User {
         return new User(oauthId);
     }
 
-    public void join(UserJoinDto userJoinDto, UserLocation userLocation) {
+    public void join(UserJoinDto userJoinDto, UserLocation userLocation, List<UserExerciseLevel> userExerciseLevelList, List<UserKeyword> userKeywordList) {
         this.name = userJoinDto.getName();
         this.nickname = userJoinDto.getNickname();
         this.phone = userJoinDto.getPhone();
@@ -78,6 +78,8 @@ public class User {
         this.deviceToken = userJoinDto.getDeviceToken();
         this.userLocation = userLocation;
         this.profileImg = userJoinDto.getProfileImgUrl();
+        this.userExerciseLevels = userExerciseLevelList;
+        this.userKeywords = userKeywordList;
     }
 
     public void update(UserUpdateDto userUpdateDto) {

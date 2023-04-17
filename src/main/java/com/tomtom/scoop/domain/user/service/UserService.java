@@ -65,7 +65,7 @@ public class UserService {
 
         userLocationRepository.save(userLocation);
 
-        user.join(userJoinDto, userLocation);
+        user.join(userJoinDto, userLocation, userExerciseLevelList, userKeywordList);
         userRepository.save(user);
 
         return UserResponseDto.fromEntity(user);
