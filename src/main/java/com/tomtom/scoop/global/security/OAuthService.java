@@ -58,7 +58,6 @@ public class OAuthService implements OAuth2UserService<OAuth2UserRequest, OAuth2
 
     private User saveOrUpdate(UserProfile userProfile) {
         User user = userRepository.findByOauthId(userProfile.getOauthId())
-//                .map(findUser -> findUser.update(userProfile.getNickname()))
                 .orElse(userProfile.toUser());
         return userRepository.save(user);
     }

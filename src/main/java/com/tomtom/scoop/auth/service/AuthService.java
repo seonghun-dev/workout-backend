@@ -3,7 +3,7 @@ package com.tomtom.scoop.auth.service;
 import com.tomtom.scoop.auth.model.TokenDto;
 import com.tomtom.scoop.auth.model.dao.RefreshToken;
 import com.tomtom.scoop.auth.repository.RefreshTokenRepository;
-import com.tomtom.scoop.auth.util.JwtTokenUtil;
+import com.tomtom.scoop.auth.util.JwtTokenProvider;
 import com.tomtom.scoop.domain.user.repository.UserRepository;
 import com.tomtom.scoop.global.exception.BusinessException;
 import com.tomtom.scoop.global.exception.ErrorCode;
@@ -17,7 +17,7 @@ import java.time.Duration;
 @RequiredArgsConstructor
 public class AuthService {
 
-    private final JwtTokenUtil jwtTokenUtil;
+    private final JwtTokenProvider jwtTokenUtil;
 
     private final RefreshTokenRepository refreshTokenRepository;
 

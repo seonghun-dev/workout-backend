@@ -1,6 +1,6 @@
 package com.tomtom.scoop.global.security;
 
-import com.tomtom.scoop.auth.util.JwtTokenUtil;
+import com.tomtom.scoop.auth.util.JwtTokenProvider;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
@@ -19,7 +19,7 @@ import java.io.IOException;
 public class JwtTokenFilter extends OncePerRequestFilter {
     private final CustomUserDetailsService userDetailsService;
 
-    private final JwtTokenUtil jwtTokenUtil;
+    private final JwtTokenProvider jwtTokenProvider;
 
     @Override
     protected void doFilterInternal(HttpServletRequest request,
@@ -27,17 +27,17 @@ public class JwtTokenFilter extends OncePerRequestFilter {
                                     FilterChain chain)
             throws ServletException, IOException {
         try {
-            final String token = jwtTokenUtil.resolveToken(request);
+            final String token = jwtTokenProvider.resolveToken(request);
             if (token == null) {
                 log.error("Authorization Header does not start with Bearer {}", request.getRequestURI());
                 chain.doFilter(request, response);
                 return;
             }
 
-            String oauthId = jwtTokenUtil.getOauthId(token);
+            String oauthId = jwtTokenProvider.getOauthId(token);
             CustomUserDetails userDetails = (CustomUserDetails) userDetailsService.loadUserByUsername(oauthId);
 
-            if (!jwtTokenUtil.validate(token, userDetails.getOauthId())) {
+            if (!jwtTokenProvider.validate(token, userDetails.getOauthId())) {
                 chain.doFilter(request, response);
                 return;
             }
