@@ -3,7 +3,9 @@ package com.tomtom.scoop.auth.service;
 import com.tomtom.scoop.auth.model.TokenDto;
 import com.tomtom.scoop.auth.model.dao.RefreshToken;
 import com.tomtom.scoop.auth.repository.RefreshTokenRepository;
-import com.tomtom.scoop.auth.util.JwtTokenUtil;
+import com.tomtom.scoop.auth.util.JwtTokenProvider;
+import com.tomtom.scoop.auth.util.JwtTokenResolver;
+import com.tomtom.scoop.auth.util.JwtTokenValidator;
 import com.tomtom.scoop.domain.user.model.entity.User;
 import com.tomtom.scoop.domain.user.repository.UserRepository;
 import com.tomtom.scoop.global.exception.BusinessException;
@@ -30,7 +32,13 @@ import static org.mockito.Mockito.*;
 public class AuthServiceTest {
 
     @Mock
-    JwtTokenUtil jwtTokenUtil;
+    JwtTokenProvider jwtTokenProvider;
+
+    @Mock
+    JwtTokenValidator jwtTokenValidator;
+
+    @Mock
+    JwtTokenResolver jwtTokenResolver;
 
     @Mock
     RefreshTokenRepository refreshTokenRepository;
@@ -55,13 +63,13 @@ public class AuthServiceTest {
                 String refreshTokenValue = "test-refresh-token";
                 RefreshToken refreshToken = new RefreshToken(oauthId, refreshTokenValue, System.currentTimeMillis());
 
-                when(jwtTokenUtil.resolveToken(any(HttpServletRequest.class))).thenReturn("test-access-token");
-                when(jwtTokenUtil.getOauthId(anyString())).thenReturn(oauthId);
+                when(jwtTokenResolver.resolveToken(any(HttpServletRequest.class))).thenReturn(Optional.of("test-access-token"));
+                when(jwtTokenValidator.getOauthId(anyString())).thenReturn(oauthId);
                 when(refreshTokenRepository.findById(oauthId)).thenReturn(Optional.of(refreshToken));
-                when(jwtTokenUtil.validate(refreshTokenValue, oauthId)).thenReturn(true);
+                when(jwtTokenValidator.validate(refreshTokenValue, oauthId)).thenReturn(true);
                 when(userRepository.findByOauthId(oauthId)).thenReturn(Optional.of(new User()));
-                when(jwtTokenUtil.generateAccessToken(oauthId)).thenReturn("new-access-token");
-                when(jwtTokenUtil.generateRefreshToken(oauthId)).thenReturn("new-refresh-token");
+                when(jwtTokenProvider.generateAccessToken(oauthId)).thenReturn("new-access-token");
+                when(jwtTokenProvider.generateRefreshToken(oauthId)).thenReturn("new-refresh-token");
 
                 TokenDto result = authService.reissue(mock(HttpServletRequest.class));
 
@@ -90,8 +98,8 @@ public class AuthServiceTest {
             @Test
             @DisplayName("[API][Service] Reissue - 실패: 리프레시 토큰이 존재하지 않음")
             void shouldThrowExceptionWhenRefreshTokenNotFound() {
-                when(jwtTokenUtil.resolveToken(any(HttpServletRequest.class))).thenReturn(accessTokenValue);
-                when(jwtTokenUtil.getOauthId(anyString())).thenReturn(oauthId);
+                when(jwtTokenResolver.resolveToken(any(HttpServletRequest.class))).thenReturn(Optional.of(accessTokenValue));
+                when(jwtTokenValidator.getOauthId(anyString())).thenReturn(oauthId);
                 when(refreshTokenRepository.findById(anyString())).thenReturn(Optional.empty());
 
                 BusinessException exception = assertThrows(BusinessException.class, () -> authService.reissue(mock(HttpServletRequest.class)));
@@ -103,10 +111,10 @@ public class AuthServiceTest {
             void shouldThrowExceptionWhenRefreshTokenIsExpired() {
                 RefreshToken refreshToken = new RefreshToken(oauthId, refreshTokenValue, System.currentTimeMillis() - 10000);
 
-                when(jwtTokenUtil.resolveToken(any(HttpServletRequest.class))).thenReturn(accessTokenValue);
-                when(jwtTokenUtil.getOauthId(anyString())).thenReturn(oauthId);
+                when(jwtTokenResolver.resolveToken(any(HttpServletRequest.class))).thenReturn(Optional.of(accessTokenValue));
+                when(jwtTokenValidator.getOauthId(anyString())).thenReturn(oauthId);
                 when(refreshTokenRepository.findById(oauthId)).thenReturn(Optional.of(refreshToken));
-                when(jwtTokenUtil.validate(refreshTokenValue, oauthId)).thenReturn(false);
+                when(jwtTokenValidator.validate(refreshTokenValue, oauthId)).thenReturn(false);
 
                 BusinessException exception = assertThrows(BusinessException.class, () -> authService.reissue(mock(HttpServletRequest.class)));
                 Assertions.assertThat(exception.getErrorCode()).isEqualTo(ErrorCode.INVALID_TOKEN);
@@ -117,10 +125,10 @@ public class AuthServiceTest {
             void shouldThrowExceptionWhenNoAuthenticatedUser() {
                 RefreshToken refreshToken = new RefreshToken(oauthId, refreshTokenValue, System.currentTimeMillis());
 
-                when(jwtTokenUtil.resolveToken(any(HttpServletRequest.class))).thenReturn(accessTokenValue);
-                when(jwtTokenUtil.getOauthId(anyString())).thenReturn(oauthId);
+                when(jwtTokenResolver.resolveToken(any(HttpServletRequest.class))).thenReturn(Optional.of(accessTokenValue));
+                when(jwtTokenValidator.getOauthId(anyString())).thenReturn(oauthId);
                 when(refreshTokenRepository.findById(oauthId)).thenReturn(Optional.of(refreshToken));
-                when(jwtTokenUtil.validate(refreshTokenValue, oauthId)).thenReturn(true);
+                when(jwtTokenValidator.validate(refreshTokenValue, oauthId)).thenReturn(true);
                 when(userRepository.findByOauthId(any())).thenReturn(Optional.empty());
 
                 BusinessException exception = assertThrows(BusinessException.class, () -> authService.reissue(mock(HttpServletRequest.class)));

@@ -3,7 +3,7 @@ package com.tomtom.scoop.global.security;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.tomtom.scoop.auth.model.dao.RefreshToken;
 import com.tomtom.scoop.auth.repository.RefreshTokenRepository;
-import com.tomtom.scoop.auth.util.JwtTokenUtil;
+import com.tomtom.scoop.auth.util.JwtTokenProvider;
 import com.tomtom.scoop.domain.user.model.entity.User;
 import com.tomtom.scoop.domain.user.service.UserService;
 import jakarta.servlet.ServletException;
@@ -27,7 +27,7 @@ import java.time.Duration;
 public class OAuthSuccessHandler extends SimpleUrlAuthenticationSuccessHandler {
 
     private final UserService userService;
-    private final JwtTokenUtil jwtTokenUtil;
+    private final JwtTokenProvider jwtTokenUtil;
     private final RefreshTokenRepository refreshTokenRepository;
     private final long refreshTokenValidTime = Duration.ofDays(14).toMillis();
 
@@ -50,7 +50,7 @@ public class OAuthSuccessHandler extends SimpleUrlAuthenticationSuccessHandler {
 
         User findUser = userService.findByOauthId(oauthId);
         LoginResult loginResult = new LoginResult(accessToken, refreshToken, false);
-        //새로운 회원일 경우
+
         if (findUser.getName() == null) {
             loginResult.isFirst = true;
         }
