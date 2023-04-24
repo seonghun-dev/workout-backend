@@ -4,6 +4,8 @@ import com.tomtom.scoop.auth.model.TokenDto;
 import com.tomtom.scoop.auth.model.dao.RefreshToken;
 import com.tomtom.scoop.auth.repository.RefreshTokenRepository;
 import com.tomtom.scoop.auth.util.JwtTokenProvider;
+import com.tomtom.scoop.auth.util.JwtTokenResolver;
+import com.tomtom.scoop.auth.util.JwtTokenValidator;
 import com.tomtom.scoop.domain.user.repository.UserRepository;
 import com.tomtom.scoop.global.exception.BusinessException;
 import com.tomtom.scoop.global.exception.ErrorCode;
@@ -17,26 +19,30 @@ import java.time.Duration;
 @RequiredArgsConstructor
 public class AuthService {
 
-    private final JwtTokenProvider jwtTokenUtil;
+    private final JwtTokenProvider jwtTokenProvider;
+
+    private final JwtTokenValidator jwtTokenValidator;
+
+    private final JwtTokenResolver jwtTokenResolver;
 
     private final RefreshTokenRepository refreshTokenRepository;
 
     private final UserRepository userRepository;
 
     public TokenDto reissue(HttpServletRequest request) {
-        String token = jwtTokenUtil.resolveToken(request);
-        String oauthId = jwtTokenUtil.getOauthId(token);
+        String token = jwtTokenResolver.resolveToken(request).orElseThrow(() -> new BusinessException(ErrorCode.INVALID_TOKEN));
+        String oauthId = jwtTokenValidator.getOauthId(token);
 
         RefreshToken refreshToken = refreshTokenRepository.findById(oauthId).orElseThrow(() -> new BusinessException(ErrorCode.JWT_REFRESH_TOKEN_EXPIRED));
 
-        if (!jwtTokenUtil.validate(refreshToken.getValue(), oauthId)) {
+        if (!jwtTokenValidator.validate(refreshToken.getValue(), oauthId)) {
             throw new BusinessException(ErrorCode.INVALID_TOKEN);
         }
 
         userRepository.findByOauthId(oauthId).orElseThrow(() -> new BusinessException(ErrorCode.USER_NOT_FOUND));
 
-        String newAccessToken = jwtTokenUtil.generateAccessToken(oauthId);
-        String newRefreshToken = jwtTokenUtil.generateRefreshToken(oauthId);
+        String newAccessToken = jwtTokenProvider.generateAccessToken(oauthId);
+        String newRefreshToken = jwtTokenProvider.generateRefreshToken(oauthId);
 
         refreshTokenRepository.save(new RefreshToken(oauthId, newRefreshToken, Duration.ofDays(14).toMillis()));
 
