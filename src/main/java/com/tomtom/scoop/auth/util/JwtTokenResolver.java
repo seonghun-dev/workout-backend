@@ -1,10 +1,12 @@
 package com.tomtom.scoop.auth.util;
 
 import jakarta.servlet.http.HttpServletRequest;
+import org.springframework.stereotype.Component;
 import org.springframework.util.StringUtils;
 
 import java.util.Optional;
 
+@Component
 public class JwtTokenResolver {
 
     public Optional<String> resolveToken(HttpServletRequest request) {

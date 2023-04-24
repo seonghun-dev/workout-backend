@@ -3,28 +3,16 @@ package com.tomtom.scoop.auth.util;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
-import io.jsonwebtoken.security.Keys;
-import org.springframework.beans.factory.annotation.Value;
+import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Component;
 
-import java.nio.charset.StandardCharsets;
-import java.security.Key;
 import java.util.Date;
 
 @Component
+@AllArgsConstructor
 public class JwtTokenProvider {
 
-    @Value("${jwt.access-token-valid-time}")
-    private Long accessTokenValidTime;
-    @Value("${jwt.refresh-token-valid-time}")
-    private Long refreshTokenValidTime;
-    @Value("${jwt.secret-key}")
-    private String secretKey;
-
-    private Key getSigningKey() {
-        byte[] keyBytes = secretKey.getBytes(StandardCharsets.UTF_8);
-        return Keys.hmacShaKeyFor(keyBytes);
-    }
+    private final JwtTokenConfig jwtTokenConfig;
 
     private String createToken(String oauthId, Long expiredTime) {
         Claims claims = Jwts.claims();
@@ -34,16 +22,16 @@ public class JwtTokenProvider {
                 .setClaims(claims)
                 .setIssuedAt(new Date(System.currentTimeMillis()))
                 .setExpiration(new Date(System.currentTimeMillis() + expiredTime))
-                .signWith(getSigningKey(), SignatureAlgorithm.HS256)
+                .signWith(jwtTokenConfig.getSigningKey(), SignatureAlgorithm.HS256)
                 .compact();
     }
 
     public String generateAccessToken(String oauthId) {
-        return createToken(oauthId, accessTokenValidTime);
+        return createToken(oauthId, jwtTokenConfig.getAccessTokenValidTime());
     }
 
     public String generateRefreshToken(String oauthId) {
-        return createToken(oauthId, refreshTokenValidTime);
+        return createToken(oauthId, jwtTokenConfig.getRefreshTokenValidTime());
     }
 
 }
