@@ -4,6 +4,7 @@ import jakarta.servlet.http.HttpServletRequest;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
+import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 
@@ -12,16 +13,18 @@ import java.util.Optional;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.when;
 
+@DisplayName("[API][Util] JWT 토큰 테스트 - JwtTokenResolver")
 public class JwtTokenResolverTest {
 
     @Mock
     private HttpServletRequest request;
 
+    @InjectMocks
     private JwtTokenResolver jwtTokenResolver;
 
     @BeforeEach
     public void setUp() {
-        MockitoAnnotations.initMocks(this);
+        MockitoAnnotations.openMocks(this);
         jwtTokenResolver = new JwtTokenResolver();
     }
 
