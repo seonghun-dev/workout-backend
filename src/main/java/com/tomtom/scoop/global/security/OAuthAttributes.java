@@ -6,9 +6,7 @@ import java.util.function.Function;
 
 public enum OAuthAttributes {
 
-    KAKAO("kakao", (attributes) -> {
-        return UserProfile.of(String.valueOf(attributes.get("id")));
-    });
+    KAKAO("kakao", (attributes) -> UserProfile.of(String.valueOf(attributes.get("id"))));
 
 
     private final String registrationId;
