@@ -6,7 +6,7 @@ import com.tomtom.scoop.domain.notification.model.entity.Notification;
 import com.tomtom.scoop.domain.notification.model.entity.NotificationAction;
 import com.tomtom.scoop.domain.notification.repository.NotificationActionRepository;
 import com.tomtom.scoop.domain.notification.repository.NotificationRepository;
-import lombok.AllArgsConstructor;
+import lombok.RequiredArgsConstructor;
 import org.springframework.context.event.EventListener;
 import org.springframework.stereotype.Component;
 
@@ -15,11 +15,11 @@ import org.springframework.stereotype.Component;
  * This class is responsible for sending a notification to owner when user request to join the meeting
  */
 @Component
-@AllArgsConstructor
+@RequiredArgsConstructor
 public class JoinMeetingEventHandler {
 
-    private final NotificationActionRepository NotificationActionRepository;
-    private final NotificationRepository NotificationRepository;
+    private final NotificationActionRepository notificationActionRepository;
+    private final NotificationRepository notificationRepository;
 
     @EventListener
     public void sendNotification(JoinMeetingEvent event) {
@@ -41,8 +41,8 @@ public class JoinMeetingEventHandler {
                 .notificationAction(notificationAction)
                 .build();
 
-        NotificationActionRepository.save(notificationAction);
-        NotificationRepository.save(notification);
+        notificationActionRepository.save(notificationAction);
+        notificationRepository.save(notification);
 
         System.out.printf("Notify : user %s has requested to join the meeting %s%n", joinedUserName, meetingTitle);
     }
