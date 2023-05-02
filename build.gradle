@@ -52,6 +52,25 @@ jacocoTestReport{
 		xml.required.set(true)
 		csv.required.set(false)
 	}
+	def QueryDslDomains = []
+	for (qPattern in '**/QA'..'**/QZ') {
+		QueryDslDomains.add(qPattern + '*')
+	}
+	afterEvaluate {
+		classDirectories.setFrom(
+				files(classDirectories.files.collect {
+					fileTree(dir: it, excludes: [
+							"**/*Application*",
+							"**/*Config*",
+							"**/*Dto*",
+							"**/*Request*",
+							"**/*Response*",
+							"**/*Interceptor*",
+							"**/*Exception*"
+					] + QueryDslDomains)
+				})
+		)
+	}
 	finalizedBy jacocoTestCoverageVerification
 }
 
